@@ -1,0 +1,90 @@
+#!/usr/bin/env tclsh8.6
+
+package require Tk
+
+#
+# view local pkg
+#
+proc view_pkglocal {w} {
+    puts "view pkg local: $w"
+    ttk::frame $w
+    grid rowconfigure $w 0 -weight 1
+    grid columnconfigure $w 0 -weight 1
+    grid $w -sticky nwse
+    pkgcmd $w {}
+}
+
+#
+# dispatch view
+#
+proc dispatch_view {name} {
+    set w .view
+    if [winfo exists $w] {
+        destroy $w
+    }
+    $name $w
+}
+
+#
+# pkgcmd
+#
+proc pkgcmd {w cmd} {
+    tkbusy_hold .
+    sleep 3
+    tkbusy_forget .
+}
+
+#
+# tk busy hold
+#
+proc tkbusy_hold {w} {
+    tk busy hold $w
+    tk busy configure $w -cursor watch
+    update
+}
+
+#
+# tk busy forget
+#
+proc tkbusy_forget {w} {
+    tk busy forget $w
+    update
+}
+
+#
+# main menu
+#
+proc main_menu {} {
+    menu .menu
+    . configure -menu .menu
+    .menu add command -label Quit -underline 0 -command {quit 0}
+}
+
+#
+# exit main loop
+#
+proc quit {rc} {
+    destroy .
+    exit $rc
+}
+
+#
+# sleep func
+#
+proc sleep {t} {
+    after [expr round($t * 1000)]
+}
+
+#
+# main
+#
+proc main {} {
+    wm title . pkgtk
+    wm minsize . 800 600
+    grid rowconfigure . 0 -weight 1
+    grid columnconfigure . 0 -weight 1
+    main_menu
+    dispatch_view view_pkglocal
+}
+
+main
