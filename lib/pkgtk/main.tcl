@@ -241,7 +241,7 @@ proc pkglist_remote {} {
 #
 # main menu
 #
-proc main_menu {} {
+proc ::pkgtk::main_menu {} {
     menu .menu
     . configure -menu .menu
 
@@ -254,15 +254,15 @@ proc main_menu {} {
     .menu.packages add command -label "Autoremove" -underline 4 \
                                -command {dispatch_view view_pkgcmd_autoremove}
     .menu.packages add command -label "Clean cache" -underline 0 \
-                               -command {quit 128}
+                               -command {pkgtk::quit 128}
 
-    .menu add command -label "Quit" -underline 0 -command {quit 0}
+    .menu add command -label "Quit" -underline 0 -command {pkgtk::quit 0}
 }
 
 #
 # exit main loop
 #
-proc quit {rc} {
+proc ::pkgtk::quit {rc} {
     destroy .
     exit $rc
 }
