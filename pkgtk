@@ -8,31 +8,62 @@ package require Tk
 proc view_pkglocal {w} {
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 6
-    grid rowconfigure $w 2 -weight 3
+    grid rowconfigure $w 1 -weight 9
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
     ttk::label $w.info
     grid $w.info -row 0 -column 0 -sticky w
     ttk::treeview $w.pkgtree -show tree -selectmode browse
     grid $w.pkgtree -row 1 -column 0 -sticky nwse
-    tkbusy_hold .
+    tkbusy_hold
     set pkglist [pkglist_local]
     set llen [llength $pkglist]
     $w.info configure -text "Installed packages: $llen"
     set cur_section {}
     for {set i 0} {$i < $llen} {incr i} {
-        set origin [lindex $pkglist $i]
+        set line [lindex $pkglist $i]
+        set origin [lindex [split $line {|}] 0]
         set pkg_section [lindex [split $origin /] 0]
-        set pkg_name [lindex [split $origin /] 1]
-        puts "$origin $pkg_section $pkg_name"
+        set pkg_name [lindex [split $line {|}] 1]
         if {[string compare "$pkg_section" "$cur_section"] != 0} {
             set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
             set cur_section $pkg_section
         }
-        $w.pkgtree insert $cur_section end -id $origin -text $pkg_name
+        $w.pkgtree insert $cur_section end -id $pkg_name -text $pkg_name
     }
-    tkbusy_forget .
+    tkbusy_forget
+}
+
+#
+# view remote (available) packages
+#
+proc view_pkgremote {w} {
+    ttk::frame $w
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 9
+    grid columnconfigure $w 0 -weight 1
+    grid $w -sticky nwse
+    ttk::label $w.info
+    grid $w.info -row 0 -column 0 -sticky w
+    ttk::treeview $w.pkgtree -show tree -selectmode browse
+    grid $w.pkgtree -row 1 -column 0 -sticky nwse
+    tkbusy_hold
+    set pkglist [pkglist_remote]
+    set llen [llength $pkglist]
+    $w.info configure -text "Available packages: $llen"
+    set cur_section {}
+    for {set i 0} {$i < $llen} {incr i} {
+        set line [lindex $pkglist $i]
+        set origin [lindex [split $line {|}] 0]
+        set pkg_section [lindex [split $origin /] 0]
+        set pkg_name [lindex [split $line {|}] 1]
+        if {[string compare "$pkg_section" "$cur_section"] != 0} {
+            set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
+            set cur_section $pkg_section
+        }
+        $w.pkgtree insert $cur_section end -id $pkg_name -text $pkg_name
+    }
+    tkbusy_forget
 }
 
 #
@@ -56,7 +87,7 @@ proc show_error {msg} {
 #
 # tk busy hold
 #
-proc tkbusy_hold {w} {
+proc tkbusy_hold {{w .}} {
     tk busy hold $w
     tk busy configure $w -cursor watch
     update
@@ -65,18 +96,9 @@ proc tkbusy_hold {w} {
 #
 # tk busy forget
 #
-proc tkbusy_forget {w} {
+proc tkbusy_forget {{w .}} {
     tk busy forget $w
     update
-}
-
-#
-# main menu
-#
-proc main_menu {} {
-    menu .menu
-    . configure -menu .menu
-    .menu add command -label Quit -underline 0 -command {quit 0}
 }
 
 #
@@ -84,7 +106,7 @@ proc main_menu {} {
 #
 proc pkglist_local {} {
     try {
-        return [split [exec pkg query -e {%a == 0} %o | sort]]
+        return [split [exec pkg query -e {%a == 0} {%o|%n-%v} | sort -u]]
     } trap CHILDSTATUS {results options} {
         show_error [dict get $options -errorinfo]
     }
@@ -95,10 +117,25 @@ proc pkglist_local {} {
 #
 proc pkglist_remote {} {
     try {
-        return [split [exec pkg rquery -a %o | sort]]
+        return [split [exec pkg rquery -a {%o|%n-%v} | sort]]
     } trap CHILDSTATUS {results options} {
         show_error [dict get $options -errorinfo]
     }
+}
+
+#
+# main menu
+#
+proc main_menu {} {
+    menu .menu
+    . configure -menu .menu
+
+    menu .menu.packages
+    .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
+    .menu.packages add command -label "Install" -underline 0 \
+                               -command {dispatch_view view_pkgremote}
+
+    .menu add command -label "Quit" -underline 0 -command {quit 0}
 }
 
 #
@@ -124,6 +161,7 @@ proc main {} {
     wm minsize . 800 600
     grid rowconfigure . 0 -weight 1
     grid columnconfigure . 0 -weight 1
+    . configure -padx 1 -pady 1
     main_menu
     dispatch_view view_pkglocal
 }
