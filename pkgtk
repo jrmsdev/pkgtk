@@ -3,15 +3,36 @@
 package require Tk
 
 #
-# view local pkg
+# view local (installed) packages
 #
 proc view_pkglocal {w} {
-    puts "view pkg local: $w"
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 6
+    grid rowconfigure $w 2 -weight 3
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
-    pkgcmd $w {}
+    ttk::label $w.info
+    grid $w.info -row 0 -column 0 -sticky w
+    ttk::treeview $w.pkgtree -show tree -selectmode browse
+    grid $w.pkgtree -row 1 -column 0 -sticky nwse
+    tkbusy_hold .
+    set pkglist [pkglist_local]
+    set llen [llength $pkglist]
+    $w.info configure -text "Installed packages: $llen"
+    set cur_section {}
+    for {set i 0} {$i < $llen} {incr i} {
+        set origin [lindex $pkglist $i]
+        set pkg_section [lindex [split $origin /] 0]
+        set pkg_name [lindex [split $origin /] 1]
+        puts "$origin $pkg_section $pkg_name"
+        if {[string compare "$pkg_section" "$cur_section"] != 0} {
+            set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
+            set cur_section $pkg_section
+        }
+        $w.pkgtree insert $cur_section end -id $origin -text $pkg_name
+    }
+    tkbusy_forget .
 }
 
 #
@@ -26,12 +47,10 @@ proc dispatch_view {name} {
 }
 
 #
-# pkgcmd
+# show error message
 #
-proc pkgcmd {w cmd} {
-    tkbusy_hold .
-    sleep 3
-    tkbusy_forget .
+proc show_error {msg} {
+    tk_messageBox -parent . -title "pkgtk error" -message "$msg" -type ok
 }
 
 #
@@ -58,6 +77,28 @@ proc main_menu {} {
     menu .menu
     . configure -menu .menu
     .menu add command -label Quit -underline 0 -command {quit 0}
+}
+
+#
+# pkg list local (installed) packages
+#
+proc pkglist_local {} {
+    try {
+        return [split [exec pkg query -e {%a == 0} %o | sort]]
+    } trap CHILDSTATUS {results options} {
+        show_error [dict get $options -errorinfo]
+    }
+}
+
+#
+# pkg list remote (available) packages
+#
+proc pkglist_remote {} {
+    try {
+        return [split [exec pkg rquery -a %o | sort]]
+    } trap CHILDSTATUS {results options} {
+        show_error [dict get $options -errorinfo]
+    }
 }
 
 #
