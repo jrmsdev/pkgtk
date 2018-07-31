@@ -18,7 +18,7 @@ proc pkgcmd_dorun {w cmd} {
         $w.cmdout insert end [exec pkg $cmd -y]
         $w.cmdout configure -state "disabled"
     } trap CHILDSTATUS {results options} {
-        show_error [dict get $options -errorinfo]
+        show_error $results
     }
     tkbusy_forget
 }
@@ -34,7 +34,7 @@ proc pkgcmd_dryrun {w cmd} {
         $w.cmdout insert end [exec pkg $cmd -n]
         $w.cmdout configure -state "disabled"
     } trap CHILDSTATUS {results options} {
-        show_error [dict get $options -errorinfo]
+        show_error $results
     }
     tkbusy_forget
 }
@@ -229,7 +229,8 @@ proc pkg_show {pkgtree} {
 # show error message
 #
 proc show_error {msg} {
-    tk_messageBox -parent . -title "pkgtk error" -message "$msg" -type ok
+    tk_messageBox -parent . -title "pkgtk error" -message "$msg" \
+                  -type "ok" -icon "error"
 }
 
 #
@@ -256,7 +257,7 @@ proc pkglist_local {} {
     try {
         return [split [exec pkg query -e {%a == 0} {%o|%n-%v} | sort -u]]
     } trap CHILDSTATUS {results options} {
-        show_error [dict get $options -errorinfo]
+        show_error $results
     }
 }
 
@@ -267,7 +268,7 @@ proc pkglist_remote {} {
     try {
         return [split [exec pkg rquery -a {%o|%n-%v} | sort]]
     } trap CHILDSTATUS {results options} {
-        show_error [dict get $options -errorinfo]
+        show_error $results
     }
 }
 
