@@ -1,0 +1,3 @@
+#!/usr/bin/env tclsh8.6
+package require pkgtk 0.0
+pkgtk main

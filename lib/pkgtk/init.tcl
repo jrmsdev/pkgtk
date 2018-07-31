@@ -1,11 +1,18 @@
-#!/usr/bin/env tclsh8.6
-
+package provide pkgtk 0.0
 package require Tk
 
 #
-# global vars
+# create pkgtk namespace
 #
-set pkgbuttons_curstate {disabled}
+namespace eval ::pkgtk {
+    # export commands
+    namespace export main
+    # ensemble commands
+    namespace ensemble create
+
+    # global vars
+    variable pkgbuttons_curstate {disabled}
+}
 
 #
 # pkg command view
@@ -263,7 +270,7 @@ proc quit {rc} {
 #
 # main
 #
-proc main {} {
+proc ::pkgtk::main {} {
     wm title . pkgtk
     wm minsize . 800 600
     grid rowconfigure . 0 -weight 1
@@ -272,5 +279,3 @@ proc main {} {
     main_menu
     dispatch_view view_pkglocal
 }
-
-main
