@@ -8,6 +8,34 @@ package require Tk
 set pkgbuttons_curstate {disabled}
 
 #
+# pkg command view
+#
+proc pkgcmd_view {w cmd} {
+    ttk::frame $w
+    grid rowconfigure $w 0 -weight 1
+    grid columnconfigure $w 0 -weight 1
+    grid $w -sticky nwse
+    text $w.cmdout
+    grid $w.cmdout -sticky nwse
+    try {
+        tkbusy_hold
+        $w.cmdout insert end "pkg $cmd\n\n"
+        $w.cmdout insert end [exec pkg $cmd -n]
+        $w.cmdout configure -state "disabled"
+        tkbusy_forget
+    } trap CHILDSTATUS {results options} {
+        show_error [dict get $options -errorinfo]
+    }
+}
+
+#
+# view pkg autoremove command
+#
+proc view_pkgcmd_autoremove {w} {
+    pkgcmd_view $w "autoremove"
+}
+
+#
 # installed pkg action buttons
 #
 proc pkglocal_buttons {w} {
@@ -21,6 +49,8 @@ proc pkglocal_buttons {w} {
 # available pkg action buttons
 #
 proc pkgremote_buttons {w} {
+    ttk::button $w.install -text {Install} -state {disabled}
+    grid $w.install -row 0 -column 0 -sticky w
 }
 
 #
@@ -38,6 +68,7 @@ proc pkgbuttons_state {w state} {
         $b configure -state $state
     }
     set pkgbuttons_curstate $state
+    update
 }
 
 #
@@ -55,7 +86,7 @@ proc pkgbuttons_disable {w} {
 }
 
 #
-# view packages tree
+# packages tree view
 #
 proc pkgtree_view {w pkgtype pkglist} {
     ttk::frame $w
@@ -70,7 +101,7 @@ proc pkgtree_view {w pkgtype pkglist} {
     grid $w.pkgbuttons -row 0 -column 1 -sticky w
     ttk::treeview $w.pkgtree -show tree -selectmode browse -takefocus 1
     grid $w.pkgtree -row 1 -column 0 -sticky nwse
-    ttk::label $w.pkginfo -takefocus 0
+    ttk::label $w.pkginfo -takefocus 0 -padding [list 5 0]
     grid $w.pkginfo -row 1 -column 1 -sticky nw
     tkbusy_hold
     if {[string equal "Available" $pkgtype]} {
@@ -201,21 +232,6 @@ proc pkglist_remote {} {
 }
 
 #
-# exit main loop
-#
-proc quit {rc} {
-    destroy .
-    exit $rc
-}
-
-#
-# sleep func
-#
-proc sleep {t} {
-    after [expr round($t * 1000)]
-}
-
-#
 # main menu
 #
 proc main_menu {} {
@@ -228,8 +244,20 @@ proc main_menu {} {
                                -command {dispatch_view view_pkglocal}
     .menu.packages add command -label "Available" -underline 0 \
                                -command {dispatch_view view_pkgremote}
+    .menu.packages add command -label "Autoremove" -underline 4 \
+                               -command {dispatch_view view_pkgcmd_autoremove}
+    .menu.packages add command -label "Clean cache" -underline 0 \
+                               -command {quit 128}
 
     .menu add command -label "Quit" -underline 0 -command {quit 0}
+}
+
+#
+# exit main loop
+#
+proc quit {rc} {
+    destroy .
+    exit $rc
 }
 
 #
