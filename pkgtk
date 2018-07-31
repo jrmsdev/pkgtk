@@ -11,27 +11,33 @@ proc view_pkglocal {w} {
     grid rowconfigure $w 1 -weight 9
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
-    ttk::label $w.info
+    ttk::label $w.info -takefocus 0
     grid $w.info -row 0 -column 0 -sticky w
-    ttk::treeview $w.pkgtree -show tree -selectmode browse
+    ttk::treeview $w.pkgtree -show tree -selectmode browse -takefocus 1
     grid $w.pkgtree -row 1 -column 0 -sticky nwse
     tkbusy_hold
     set pkglist [pkglist_local]
     set llen [llength $pkglist]
     $w.info configure -text "Installed packages: $llen"
     set cur_section {}
+    set focus_item {}
     for {set i 0} {$i < $llen} {incr i} {
         set line [lindex $pkglist $i]
         set origin [lindex [split $line {|}] 0]
         set pkg_section [lindex [split $origin /] 0]
         set pkg_name [lindex [split $line {|}] 1]
-        if {[string compare "$pkg_section" "$cur_section"] != 0} {
+        if {[string equal $cur_section {}]} {
+            set focus_item $pkg_section
+        }
+        if {[string compare $pkg_section $cur_section] != 0} {
             set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
             set cur_section $pkg_section
         }
         $w.pkgtree insert $cur_section end -id $pkg_name -text $pkg_name
     }
     tkbusy_forget
+    $w.pkgtree focus $focus_item
+    focus $w.pkgtree
 }
 
 #
@@ -43,20 +49,24 @@ proc view_pkgremote {w} {
     grid rowconfigure $w 1 -weight 9
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
-    ttk::label $w.info
+    ttk::label $w.info -takefocus 0
     grid $w.info -row 0 -column 0 -sticky w
-    ttk::treeview $w.pkgtree -show tree -selectmode browse
+    ttk::treeview $w.pkgtree -show tree -selectmode browse -takefocus 1
     grid $w.pkgtree -row 1 -column 0 -sticky nwse
     tkbusy_hold
     set pkglist [pkglist_remote]
     set llen [llength $pkglist]
     $w.info configure -text "Available packages: $llen"
     set cur_section {}
+    set focus_item {}
     for {set i 0} {$i < $llen} {incr i} {
         set line [lindex $pkglist $i]
         set origin [lindex [split $line {|}] 0]
         set pkg_section [lindex [split $origin /] 0]
         set pkg_name [lindex [split $line {|}] 1]
+        if {[string equal $cur_section {}]} {
+            set focus_item $pkg_section
+        }
         if {[string compare "$pkg_section" "$cur_section"] != 0} {
             set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
             set cur_section $pkg_section
@@ -64,6 +74,8 @@ proc view_pkgremote {w} {
         $w.pkgtree insert $cur_section end -id $pkg_name -text $pkg_name
     }
     tkbusy_forget
+    $w.pkgtree focus $focus_item
+    focus $w.pkgtree
 }
 
 #
@@ -124,21 +136,6 @@ proc pkglist_remote {} {
 }
 
 #
-# main menu
-#
-proc main_menu {} {
-    menu .menu
-    . configure -menu .menu
-
-    menu .menu.packages
-    .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
-    .menu.packages add command -label "Install" -underline 0 \
-                               -command {dispatch_view view_pkgremote}
-
-    .menu add command -label "Quit" -underline 0 -command {quit 0}
-}
-
-#
 # exit main loop
 #
 proc quit {rc} {
@@ -151,6 +148,23 @@ proc quit {rc} {
 #
 proc sleep {t} {
     after [expr round($t * 1000)]
+}
+
+#
+# main menu
+#
+proc main_menu {} {
+    menu .menu
+    . configure -menu .menu
+
+    menu .menu.packages
+    .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
+    .menu.packages add command -label "Info" -underline 2 \
+                               -command {dispatch_view view_pkglocal}
+    .menu.packages add command -label "Install" -underline 0 \
+                               -command {dispatch_view view_pkgremote}
+
+    .menu add command -label "Quit" -underline 0 -command {quit 0}
 }
 
 #
