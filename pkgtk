@@ -3,6 +3,58 @@
 package require Tk
 
 #
+# global vars
+#
+set pkgbuttons_curstate {disabled}
+
+#
+# installed pkg action buttons
+#
+proc pkglocal_buttons {w} {
+    ttk::button $w.remove -text {Remove} -state {disabled}
+    grid $w.remove -row 0 -column 0 -sticky w
+    ttk::button $w.upgrade -text {Upgrade} -state {disabled}
+    grid $w.upgrade -row 0 -column 1 -sticky w
+}
+
+#
+# available pkg action buttons
+#
+proc pkgremote_buttons {w} {
+}
+
+#
+# change state of pkg action buttons
+#
+proc pkgbuttons_state {w state} {
+    global pkgbuttons_curstate
+    if {[string equal $pkgbuttons_curstate $state]} {
+        return
+    }
+    set children [winfo children $w]
+    set children_len [llength $children]
+    for {set i 0} {$i < $children_len} {incr i} {
+        set b [lindex $children $i]
+        $b configure -state $state
+    }
+    set pkgbuttons_curstate $state
+}
+
+#
+# enable pkg action buttons
+#
+proc pkgbuttons_enable {w} {
+    pkgbuttons_state $w {enabled}
+}
+
+#
+# disable pkg action buttons
+#
+proc pkgbuttons_disable {w} {
+    pkgbuttons_state $w {disabled}
+}
+
+#
 # view packages tree
 #
 proc pkgtree_view {w pkgtype pkglist} {
@@ -14,11 +66,18 @@ proc pkgtree_view {w pkgtype pkglist} {
     grid $w -sticky nwse
     ttk::label $w.stats -takefocus 0
     grid $w.stats -row 0 -column 0 -sticky w
+    ttk::frame $w.pkgbuttons -takefocus 1
+    grid $w.pkgbuttons -row 0 -column 1 -sticky w
     ttk::treeview $w.pkgtree -show tree -selectmode browse -takefocus 1
     grid $w.pkgtree -row 1 -column 0 -sticky nwse
-    ttk::label $w.pkginfo -takefocus 1
+    ttk::label $w.pkginfo -takefocus 0
     grid $w.pkginfo -row 1 -column 1 -sticky nw
     tkbusy_hold
+    if {[string equal "Available" $pkgtype]} {
+        pkgremote_buttons $w.pkgbuttons
+    } else {
+        pkglocal_buttons $w.pkgbuttons
+    }
     set llen [llength $pkglist]
     $w.stats configure -text "$pkgtype packages: $llen"
     set cur_section {}
@@ -79,15 +138,19 @@ proc pkg_show {pkgtree} {
     set w [winfo parent $pkgtree]
     set item [$pkgtree selection]
     set query_format {%n %v (%sh)\n\n%e}
+    set pkgremote 0
     if {[string equal {pkglocal:} [string range $item 0 8]]} {
         set pkg [string replace $item 0 8 {}]
         $w.pkginfo configure -text [exec pkg query $query_format $pkg]
+        pkgbuttons_enable $w.pkgbuttons
     } elseif {[string equal {pkgremote:} [string range $item 0 9]]} {
         set pkg [string replace $item 0 9 {}]
         $w.pkginfo configure -text [exec pkg rquery $query_format $pkg]
+        pkgbuttons_enable $w.pkgbuttons
     } else {
         set slen [llength [$pkgtree children $item]]
         $w.pkginfo configure -text "Category : $item\nPackages : $slen"
+        pkgbuttons_disable $w.pkgbuttons
     }
 }
 
