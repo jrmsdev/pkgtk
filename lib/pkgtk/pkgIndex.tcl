@@ -8,4 +8,4 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded pkgtk 0.0 [list source [file join $dir main.tcl]]
+package ifneeded pkgtk 0.0 [list source [file join $dir init.tcl]]
