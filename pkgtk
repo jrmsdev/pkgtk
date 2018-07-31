@@ -6,25 +6,65 @@ package require Tk
 # global vars
 #
 set pkgbuttons_curstate {disabled}
+set pkgcmd_run 0
+
+#
+# run pkg command
+#
+proc pkgcmd_dorun {w cmd} {
+    tkbusy_hold
+    try {
+        $w.cmdout insert end "pkg $cmd\n\n"
+        $w.cmdout insert end [exec pkg $cmd -y]
+        $w.cmdout configure -state "disabled"
+    } trap CHILDSTATUS {results options} {
+        show_error [dict get $options -errorinfo]
+    }
+    tkbusy_forget
+}
+
+#
+# run pkg command (dry run), whitout applying any changes to the system
+#
+proc pkgcmd_dryrun {w cmd} {
+    global pkgcmd_run
+    tkbusy_hold
+    try {
+        $w.cmdout insert end "pkg $cmd (dry run)\n\n"
+        $w.cmdout insert end [exec pkg $cmd -n]
+        $w.cmdout configure -state "disabled"
+    } trap CHILDSTATUS {results options} {
+        show_error [dict get $options -errorinfo]
+    }
+    tkbusy_forget
+}
 
 #
 # pkg command view
 #
-proc pkgcmd_view {w cmd} {
+proc pkgcmd_view {w cmd {dorun 0}} {
+    global pkgcmd_run
+    set pkgcmd_run 0
+    if {[winfo exists $w]} {
+        destroy $w
+    }
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 9
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
+    ttk::button $w.btnrun -text "Run" -command {set pkgcmd_run 1}
+    grid $w.btnrun -row 0 -column 0 -sticky w
     text $w.cmdout
-    grid $w.cmdout -sticky nwse
-    try {
-        tkbusy_hold
-        $w.cmdout insert end "pkg $cmd\n\n"
-        $w.cmdout insert end [exec pkg $cmd -n]
-        $w.cmdout configure -state "disabled"
-        tkbusy_forget
-    } trap CHILDSTATUS {results options} {
-        show_error [dict get $options -errorinfo]
+    grid $w.cmdout -row 1 -column 0 -sticky nwse
+    if {$dorun} {
+        pkgcmd_dorun $w $cmd
+    } else {
+        pkgcmd_dryrun $w $cmd
+        vwait pkgcmd_run
+        if {$pkgcmd_run} {
+            pkgcmd_view $w $cmd 1
+        }
     }
 }
 
