@@ -103,7 +103,8 @@ proc pkg_show {pkgtree} {
         set pkg [string replace $item 0 3 {}]
         $w.pkginfo configure -text [exec pkg query {%n %v (%sh)\n\n%e} $pkg]
     } else {
-        $w.pkginfo configure -text $item
+        set slen [llength [$pkgtree children $item]]
+        $w.pkginfo configure -text "Category : $item\nPackages : $slen"
     }
 }
 
