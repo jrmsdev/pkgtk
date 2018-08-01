@@ -79,6 +79,7 @@ proc pkgcmd_view {cmd {args {}} {dorun 0}} {
         destroy $top
     }
     toplevel $top
+    wm transient $top .
     set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
