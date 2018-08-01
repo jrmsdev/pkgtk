@@ -8,6 +8,7 @@ package require Tk
 set pkgbuttons_curstate {disabled}
 set pkgtree_selected ""
 set pkgcmd_run 0
+set pkgcmd_top .pkgcmdview
 
 #
 # view pkg install command
@@ -49,15 +50,12 @@ proc pkgcmd_dorun {w cmd args} {
 #
 proc pkgcmd_dryrun {w cmd args} {
     set args_len [string length $args]
-    puts "pkgcmd dryrun args len: $args_len"
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd (dry run)\n\n"
         if {$args_len > 2} {
-            puts "pkgcmd dryrun args: $args"
             $w.cmdout insert end [exec pkg $cmd -n $args]
         } else {
-            puts "pkgcmd dryrun no args"
             $w.cmdout insert end [exec pkg $cmd -n]
         }
     } trap CHILDSTATUS {results options} {
@@ -76,9 +74,9 @@ proc pkgcmd_dryrun {w cmd args} {
 # pkg command view
 #
 proc pkgcmd_view {cmd {args {}} {dorun 0}} {
-    global pkgcmd_run
+    global pkgcmd_run pkgcmd_top
     set pkgcmd_run 0
-    set top .view_pkgcmd
+    set top $pkgcmd_top
     if {[winfo exists $top]} {
         destroy $top
     }
@@ -90,8 +88,12 @@ proc pkgcmd_view {cmd {args {}} {dorun 0}} {
     grid rowconfigure $w 1 -weight 9
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
-    ttk::button $w.btnrun -text "Run" -command {set pkgcmd_run 1}
-    grid $w.btnrun -row 0 -column 0 -sticky w
+    ttk::frame $w.btn
+    grid $w.btn -row 0 -column 0 -sticky nwse
+    ttk::button $w.btn.run -text "Confirm $cmd" -command {set pkgcmd_run 1}
+    grid $w.btn.run -row 0 -column 0 -sticky w
+    ttk::button $w.btn.cancel -text "Cancel" -command {destroy $pkgcmd_top}
+    grid $w.btn.cancel -row 0 -column 1 -sticky w
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     if {$dorun} {
