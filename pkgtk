@@ -6,16 +6,39 @@ package require Tk
 # global vars
 #
 set pkgbuttons_curstate {disabled}
+set pkgtree_selected ""
 set pkgcmd_run 0
+set pkgcmd_install ""
+
+#
+# view pkg install command
+#
+proc view_pkgcmd_install {} {
+    global pkgcmd_install pkgtree_selected
+    set w [winfo parent $pkgcmd_install]
+    set pkg $pkgtree_selected
+    pkgcmd_view $w "install" $pkg
+}
+
+#
+# view pkg autoremove command
+#
+proc view_pkgcmd_autoremove {w} {
+    pkgcmd_view $w "autoremove"
+}
 
 #
 # run pkg command
 #
-proc pkgcmd_dorun {w cmd} {
+proc pkgcmd_dorun {w cmd args} {
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
-        $w.cmdout insert end [exec pkg $cmd -y]
+        if {[string length $args] > 0} {
+            $w.cmdout insert end [exec pkg $cmd -y]
+        } else {
+            $w.cmdout insert end [exec pkg $cmd -y $args]
+        }
         $w.cmdout configure -state "disabled"
     } trap CHILDSTATUS {results options} {
         show_error $results
@@ -26,23 +49,33 @@ proc pkgcmd_dorun {w cmd} {
 #
 # run pkg command (dry run), whitout applying any changes to the system
 #
-proc pkgcmd_dryrun {w cmd} {
-    global pkgcmd_run
+proc pkgcmd_dryrun {w cmd args} {
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd (dry run)\n\n"
-        $w.cmdout insert end [exec pkg $cmd -n]
-        $w.cmdout configure -state "disabled"
+        if {[string length $args] > 0} {
+            puts "dryrun no args"
+            $w.cmdout insert end [exec pkg $cmd -n]
+        } else {
+            puts "dryrun args: $args"
+            $w.cmdout insert end [exec pkg $cmd -n $args]
+        }
     } trap CHILDSTATUS {results options} {
-        show_error $results
+        set rc [lindex [dict get $options -errorcode] 2]
+        if {$rc > 1} {
+            show_error $results
+        } else {
+            $w.cmdout insert end $results
+        }
     }
+    $w.cmdout configure -state "disabled"
     tkbusy_forget
 }
 
 #
 # pkg command view
 #
-proc pkgcmd_view {w cmd {dorun 0}} {
+proc pkgcmd_view {w cmd {args ""} {dorun 0}} {
     global pkgcmd_run
     set pkgcmd_run 0
     if {[winfo exists $w]} {
@@ -58,21 +91,14 @@ proc pkgcmd_view {w cmd {dorun 0}} {
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     if {$dorun} {
-        pkgcmd_dorun $w $cmd
+        pkgcmd_dorun $w $cmd $args
     } else {
-        pkgcmd_dryrun $w $cmd
+        pkgcmd_dryrun $w $cmd $args
         vwait pkgcmd_run
         if {$pkgcmd_run} {
-            pkgcmd_view $w $cmd 1
+            pkgcmd_view $w $cmd $args 1
         }
     }
-}
-
-#
-# view pkg autoremove command
-#
-proc view_pkgcmd_autoremove {w} {
-    pkgcmd_view $w "autoremove"
 }
 
 #
@@ -89,7 +115,10 @@ proc pkglocal_buttons {w} {
 # available pkg action buttons
 #
 proc pkgremote_buttons {w} {
-    ttk::button $w.install -text {Install} -state {disabled}
+    global pkgcmd_install
+    set pkgcmd_install $w
+    ttk::button $w.install -text {Install} -state {disabled} \
+                           -command {view_pkgcmd_install}
     grid $w.install -row 0 -column 0 -sticky w
 }
 
@@ -206,6 +235,8 @@ proc dispatch_view {name} {
 # show pkg info
 #
 proc pkg_show {pkgtree} {
+    global pkgtree_selected
+    set pkgtree_selected ""
     set w [winfo parent $pkgtree]
     set item [$pkgtree selection]
     set query_format {%n %v (%sh)\n\n%e}
@@ -214,10 +245,12 @@ proc pkg_show {pkgtree} {
         set pkg [string replace $item 0 8 {}]
         $w.pkginfo configure -text [exec pkg query $query_format $pkg]
         pkgbuttons_enable $w.pkgbuttons
+        set pkgtree_selected $pkg
     } elseif {[string equal {pkgremote:} [string range $item 0 9]]} {
         set pkg [string replace $item 0 9 {}]
         $w.pkginfo configure -text [exec pkg rquery $query_format $pkg]
         pkgbuttons_enable $w.pkgbuttons
+        set pkgtree_selected $pkg
     } else {
         set slen [llength [$pkgtree children $item]]
         $w.pkginfo configure -text "Category : $item\nPackages : $slen"
