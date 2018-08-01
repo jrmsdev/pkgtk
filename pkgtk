@@ -191,10 +191,10 @@ proc pkgbuttons_disable {w} {
 #
 proc pkgtree_view {w pkgtype pkglist} {
     set paned $w
-    ttk::panedwindow $paned -orient "horizontal"
+    ttk::panedwindow $paned -orient "horizontal" -takefocus 0
     grid $paned -sticky nwse
 
-    ttk::frame $w.left
+    ttk::frame $w.left -takefocus 0
     grid rowconfigure $w.left 0 -weight 1
     grid rowconfigure $w.left 1 -weight 9
     grid columnconfigure $w.left 0 -weight 1
@@ -210,14 +210,14 @@ proc pkgtree_view {w pkgtype pkglist} {
 
     $paned add $w.left -weight 1
 
-    ttk::frame $w.right
+    ttk::frame $w.right -takefocus 0
     grid rowconfigure $w.right 0 -weight 1
     grid rowconfigure $w.right 1 -weight 9
     grid columnconfigure $w.right 0 -weight 1
     grid $w.right -sticky nwse
 
     set pkgbuttons $w.right.pkgbuttons
-    ttk::frame $pkgbuttons -takefocus 1
+    ttk::frame $pkgbuttons -takefocus 0
     grid $pkgbuttons -row 0 -column 0 -sticky n
 
     set pkginfo $w.right.pkginfo
