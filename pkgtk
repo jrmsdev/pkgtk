@@ -60,7 +60,7 @@ proc pkgcmd_dorun {w cmd args} {
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
-        if {[string length $args] > 2} {
+        if {$args != "NONE"} {
             $w.cmdout insert end [exec pkg $cmd -y $args]
         } else {
             $w.cmdout insert end [exec pkg $cmd -y]
@@ -76,11 +76,10 @@ proc pkgcmd_dorun {w cmd args} {
 # run pkg command (dry run), whitout applying any changes to the system
 #
 proc pkgcmd_dryrun {w cmd args} {
-    set args_len [string length $args]
     tkbusy_hold
     try {
-        $w.cmdout insert end "pkg $cmd (dry run)\n\n"
-        if {$args_len > 2} {
+        $w.cmdout insert end "pkg $cmd (dry run) $args\n\n"
+        if {$args != "NONE"} {
             $w.cmdout insert end [exec pkg $cmd -n $args]
         } else {
             $w.cmdout insert end [exec pkg $cmd -n]
@@ -100,7 +99,7 @@ proc pkgcmd_dryrun {w cmd args} {
 #
 # pkg command view
 #
-proc pkgcmd_view {cmd {args {}} {dorun 0}} {
+proc pkgcmd_view {cmd {args "NONE"} {dorun 0}} {
     global pkgcmd_run pkgcmd_top
     set pkgcmd_run 0
     set top $pkgcmd_top
@@ -160,7 +159,7 @@ proc pkgremote_buttons {w} {
 #
 proc pkgbuttons_state {w state} {
     global pkgbuttons_curstate
-    if {[string equal $pkgbuttons_curstate $state]} {
+    if {$pkgbuttons_curstate == $state} {
         return
     }
     set children [winfo children $w]
@@ -191,28 +190,52 @@ proc pkgbuttons_disable {w} {
 # packages tree view
 #
 proc pkgtree_view {w pkgtype pkglist} {
-    ttk::frame $w
-    grid rowconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 9
-    grid columnconfigure $w 0 -weight 1
-    grid columnconfigure $w 1 -weight 3
-    grid $w -sticky nwse
-    ttk::label $w.stats -takefocus 0
-    grid $w.stats -row 0 -column 0 -sticky w
-    ttk::frame $w.pkgbuttons -takefocus 1
-    grid $w.pkgbuttons -row 0 -column 1 -sticky w
-    ttk::treeview $w.pkgtree -show tree -selectmode browse -takefocus 1
-    grid $w.pkgtree -row 1 -column 0 -sticky nwse
-    ttk::label $w.pkginfo -takefocus 0 -padding [list 5 0]
-    grid $w.pkginfo -row 1 -column 1 -sticky nw
+    set paned $w
+    ttk::panedwindow $paned -orient "horizontal"
+    grid $paned -sticky nwse
+
+    ttk::frame $w.left
+    grid rowconfigure $w.left 0 -weight 1
+    grid rowconfigure $w.left 1 -weight 9
+    grid columnconfigure $w.left 0 -weight 1
+    grid $w.left -sticky nwse
+
+    set stats $w.left.stats
+    ttk::label $stats -takefocus 0
+    grid $stats -row 0 -column 0 -sticky w
+
+    set pkgtree $w.left.pkgtree
+    ttk::treeview $pkgtree -show tree -selectmode browse -takefocus 1
+    grid $pkgtree -row 1 -column 0 -sticky nwse
+
+    $paned add $w.left -weight 1
+
+    ttk::frame $w.right
+    grid rowconfigure $w.right 0 -weight 1
+    grid rowconfigure $w.right 1 -weight 9
+    grid columnconfigure $w.right 0 -weight 1
+    grid $w.right -sticky nwse
+
+    set pkgbuttons $w.right.pkgbuttons
+    ttk::frame $pkgbuttons -takefocus 1
+    grid $pkgbuttons -row 0 -column 0 -sticky n
+
+    set pkginfo $w.right.pkginfo
+    ttk::label $pkginfo -takefocus 0
+    grid $pkginfo -row 1 -column 0 -sticky n
+
+    $paned add $w.right -weight 9
+
     tkbusy_hold
     if {[string equal "Available" $pkgtype]} {
-        pkgremote_buttons $w.pkgbuttons
+        pkgremote_buttons $pkgbuttons
     } else {
-        pkglocal_buttons $w.pkgbuttons
+        pkglocal_buttons $pkgbuttons
     }
+
     set llen [llength $pkglist]
-    $w.stats configure -text "$pkgtype packages: $llen"
+    $stats configure -text "$pkgtype packages: $llen"
+
     set cur_section {}
     set focus_item {}
     for {set i 0} {$i < $llen} {incr i} {
@@ -224,19 +247,20 @@ proc pkgtree_view {w pkgtype pkglist} {
             set focus_item $pkg_section
         }
         if {[string compare $pkg_section $cur_section] != 0} {
-            set sid [$w.pkgtree insert {} end -id $pkg_section -text $pkg_section]
+            set sid [$pkgtree insert {} end -id $pkg_section -text $pkg_section]
             set cur_section $pkg_section
         }
         set pkgid "pkglocal:$pkg_name"
         if {[string equal "Available" $pkgtype]} {
             set pkgid "pkgremote:$pkg_name"
         }
-        $w.pkgtree insert $cur_section end -id $pkgid -text $pkg_name
+        $pkgtree insert $cur_section end -id $pkgid -text $pkg_name
     }
     tkbusy_forget
-    $w.pkgtree focus $focus_item
-    focus $w.pkgtree
-    bind $w.pkgtree <<TreeviewSelect>> {pkg_show %W}
+
+    $pkgtree focus $focus_item
+    focus $pkgtree
+    bind $pkgtree <<TreeviewSelect>> "pkg_show $pkgtree $pkginfo $pkgbuttons"
 }
 
 #
@@ -267,27 +291,26 @@ proc dispatch_view {name} {
 #
 # show pkg info
 #
-proc pkg_show {pkgtree} {
+proc pkg_show {pkgtree pkginfo pkgbuttons} {
     global pkgtree_selected
-    set pkgtree_selected ""
-    set w [winfo parent $pkgtree]
+    set pkgtree_selected "NONE"
     set item [$pkgtree selection]
     set query_format {%n %v (%sh)\n\n%e}
     set pkgremote 0
     if {[string equal {pkglocal:} [string range $item 0 8]]} {
         set pkg [string replace $item 0 8 {}]
-        $w.pkginfo configure -text [exec pkg query $query_format $pkg]
-        pkgbuttons_enable $w.pkgbuttons
+        $pkginfo configure -text [exec pkg query $query_format $pkg]
+        pkgbuttons_enable $pkgbuttons
         set pkgtree_selected $pkg
     } elseif {[string equal {pkgremote:} [string range $item 0 9]]} {
         set pkg [string replace $item 0 9 {}]
-        $w.pkginfo configure -text [exec pkg rquery $query_format $pkg]
-        pkgbuttons_enable $w.pkgbuttons
+        $pkginfo configure -text [exec pkg rquery $query_format $pkg]
+        pkgbuttons_enable $pkgbuttons
         set pkgtree_selected $pkg
     } else {
         set slen [llength [$pkgtree children $item]]
-        $w.pkginfo configure -text "Category : $item\nPackages : $slen"
-        pkgbuttons_disable $w.pkgbuttons
+        $pkginfo configure -text "Category : $item\nPackages : $slen"
+        pkgbuttons_disable $pkgbuttons
     }
 }
 
