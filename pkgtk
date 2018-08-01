@@ -32,7 +32,7 @@ proc pkgcmd_dorun {w cmd args} {
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
-        if {[string length $args] > 0} {
+        if {[string length $args] > 2} {
             $w.cmdout insert end [exec pkg $cmd -y $args]
         } else {
             $w.cmdout insert end [exec pkg $cmd -y]
@@ -48,12 +48,16 @@ proc pkgcmd_dorun {w cmd args} {
 # run pkg command (dry run), whitout applying any changes to the system
 #
 proc pkgcmd_dryrun {w cmd args} {
+    set args_len [string length $args]
+    puts "pkgcmd dryrun args len: $args_len"
     tkbusy_hold
     try {
         $w.cmdout insert end "pkg $cmd (dry run)\n\n"
-        if {[string length $args] > 0} {
+        if {$args_len > 2} {
+            puts "pkgcmd dryrun args: $args"
             $w.cmdout insert end [exec pkg $cmd -n $args]
         } else {
+            puts "pkgcmd dryrun no args"
             $w.cmdout insert end [exec pkg $cmd -n]
         }
     } trap CHILDSTATUS {results options} {
