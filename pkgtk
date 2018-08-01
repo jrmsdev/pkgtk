@@ -17,10 +17,14 @@ set pkgcmd_top .pkgcmdview
 #
 # view pkg upgrade command
 #
-proc view_pkgcmd_upgrade {} {
+proc view_pkgcmd_upgrade {{all "NONE"}} {
     global pkgtree_selected
-    set pkg $pkgtree_selected
-    pkgcmd_view "upgrade" $pkg
+    if {$all != "NONE"} {
+        pkgcmd_view "upgrade"
+    } else {
+        set pkg $pkgtree_selected
+        pkgcmd_view "upgrade" $pkg
+    }
 }
 
 #
@@ -81,7 +85,7 @@ proc pkgcmd_dorun {w cmd args} {
 proc pkgcmd_dryrun {w cmd args} {
     tkbusy_hold
     try {
-        $w.cmdout insert end "pkg $cmd (dry run) $args\n\n"
+        $w.cmdout insert end "pkg $cmd (dry run)\n\n"
         if {$args != "NONE"} {
             $w.cmdout insert end [exec pkg $cmd -n $args]
         } else {
@@ -378,7 +382,7 @@ proc main_menu {} {
     .menu.packages add command -label "Installed" -underline 0 \
                                -command {dispatch_view view_pkglocal}
     .menu.packages add command -label "Upgrade" -underline 0 \
-                               -command {quit 128}
+                               -command {view_pkgcmd_upgrade "all"}
     .menu.packages add separator
     .menu.packages add command -label "Available" -underline 0 \
                                -command {dispatch_view view_pkgremote}
