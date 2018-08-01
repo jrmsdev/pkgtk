@@ -12,6 +12,25 @@ set pkgcmd_run 0
 set pkgcmd_top .pkgcmdview
 
 #
+# view pkg upgrade command
+#
+proc view_pkgcmd_upgrade {} {
+    global pkgtree_selected
+    set pkg $pkgtree_selected
+    pkgcmd_view "upgrade" $pkg
+}
+
+#
+# view pkg remove command
+#   TODO: support adding -R arg
+#
+proc view_pkgcmd_remove {} {
+    global pkgtree_selected
+    set pkg $pkgtree_selected
+    pkgcmd_view "remove" $pkg
+}
+
+#
 # view pkg clean cache command
 #
 proc view_pkgcmd_clean_cache {} {
@@ -119,9 +138,11 @@ proc pkgcmd_view {cmd {args {}} {dorun 0}} {
 # installed pkg action buttons
 #
 proc pkglocal_buttons {w} {
-    ttk::button $w.remove -text {Remove} -state {disabled}
+    ttk::button $w.remove -text "Remove" -state "disabled" \
+                          -command {view_pkgcmd_remove}
     grid $w.remove -row 0 -column 0 -sticky w
-    ttk::button $w.upgrade -text {Upgrade} -state {disabled}
+    ttk::button $w.upgrade -text "Upgrade" -state "disabled" \
+                          -command {view_pkgcmd_upgrade}
     grid $w.upgrade -row 0 -column 1 -sticky w
 }
 
