@@ -8,23 +8,21 @@ package require Tk
 set pkgbuttons_curstate {disabled}
 set pkgtree_selected ""
 set pkgcmd_run 0
-set pkgcmd_install ""
 
 #
 # view pkg install command
 #
 proc view_pkgcmd_install {} {
-    global pkgcmd_install pkgtree_selected
-    set w [winfo parent $pkgcmd_install]
+    global pkgtree_selected
     set pkg $pkgtree_selected
-    pkgcmd_view $w "install" $pkg
+    pkgcmd_view "install" $pkg
 }
 
 #
 # view pkg autoremove command
 #
-proc view_pkgcmd_autoremove {w} {
-    pkgcmd_view $w "autoremove"
+proc view_pkgcmd_autoremove {} {
+    pkgcmd_view "autoremove"
 }
 
 #
@@ -35,9 +33,9 @@ proc pkgcmd_dorun {w cmd args} {
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
         if {[string length $args] > 0} {
-            $w.cmdout insert end [exec pkg $cmd -y]
-        } else {
             $w.cmdout insert end [exec pkg $cmd -y $args]
+        } else {
+            $w.cmdout insert end [exec pkg $cmd -y]
         }
         $w.cmdout configure -state "disabled"
     } trap CHILDSTATUS {results options} {
@@ -54,11 +52,9 @@ proc pkgcmd_dryrun {w cmd args} {
     try {
         $w.cmdout insert end "pkg $cmd (dry run)\n\n"
         if {[string length $args] > 0} {
-            puts "dryrun no args"
-            $w.cmdout insert end [exec pkg $cmd -n]
-        } else {
-            puts "dryrun args: $args"
             $w.cmdout insert end [exec pkg $cmd -n $args]
+        } else {
+            $w.cmdout insert end [exec pkg $cmd -n]
         }
     } trap CHILDSTATUS {results options} {
         set rc [lindex [dict get $options -errorcode] 2]
@@ -75,12 +71,15 @@ proc pkgcmd_dryrun {w cmd args} {
 #
 # pkg command view
 #
-proc pkgcmd_view {w cmd {args ""} {dorun 0}} {
+proc pkgcmd_view {cmd {args {}} {dorun 0}} {
     global pkgcmd_run
     set pkgcmd_run 0
-    if {[winfo exists $w]} {
-        destroy $w
+    set top .view_pkgcmd
+    if {[winfo exists $top]} {
+        destroy $top
     }
+    toplevel $top
+    set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 9
@@ -96,7 +95,7 @@ proc pkgcmd_view {w cmd {args ""} {dorun 0}} {
         pkgcmd_dryrun $w $cmd $args
         vwait pkgcmd_run
         if {$pkgcmd_run} {
-            pkgcmd_view $w $cmd $args 1
+            pkgcmd_view $cmd $args 1
         }
     }
 }
@@ -115,8 +114,6 @@ proc pkglocal_buttons {w} {
 # available pkg action buttons
 #
 proc pkgremote_buttons {w} {
-    global pkgcmd_install
-    set pkgcmd_install $w
     ttk::button $w.install -text {Install} -state {disabled} \
                            -command {view_pkgcmd_install}
     grid $w.install -row 0 -column 0 -sticky w
@@ -319,7 +316,7 @@ proc main_menu {} {
     .menu.packages add command -label "Available" -underline 0 \
                                -command {dispatch_view view_pkgremote}
     .menu.packages add command -label "Autoremove" -underline 4 \
-                               -command {dispatch_view view_pkgcmd_autoremove}
+                               -command {view_pkgcmd_autoremove}
     .menu.packages add command -label "Clean cache" -underline 0 \
                                -command {quit 128}
 
