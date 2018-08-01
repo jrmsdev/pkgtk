@@ -370,18 +370,24 @@ proc main_menu {} {
     menu .menu
     . configure -menu .menu
 
-    menu .menu.packages
+    menu .menu.packages -tearoff 0
     .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
     .menu.packages add command -label "Installed" -underline 0 \
                                -command {dispatch_view view_pkglocal}
+    .menu.packages add command -label "Upgrade" -underline 0 \
+                               -command {quit 128}
+    .menu.packages add separator
     .menu.packages add command -label "Available" -underline 0 \
                                -command {dispatch_view view_pkgremote}
+    .menu.packages add command -label "Search" -underline 0 \
+                               -command {quit 128}
+    .menu.packages add separator
     .menu.packages add command -label "Autoremove" -underline 4 \
                                -command {view_pkgcmd_autoremove}
     .menu.packages add command -label "Clean cache" -underline 0 \
                                -command {view_pkgcmd_clean_cache}
-
-    .menu add command -label "Quit" -underline 0 -command {quit 0}
+    .menu.packages add separator
+    .menu.packages add command -label "Quit" -underline 0 -command {quit 0}
 }
 
 #
