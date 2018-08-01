@@ -370,7 +370,7 @@ proc quit {rc} {
 #
 # main
 #
-wm title . pkgtk
+wm title . "FreeBSD package manager"
 wm minsize . 800 600
 grid rowconfigure . 0 -weight 1
 grid columnconfigure . 0 -weight 1
