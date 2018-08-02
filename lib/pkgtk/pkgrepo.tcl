@@ -109,8 +109,8 @@ proc ::pkgrepo::dump_settings {repo_name rdata} {
     return $s
 }
 
-set repos [pkgrepo::get_config]
-foreach repo_name [dict keys $repos] {
-    set rdata [dict get $repos $repo_name]
-    puts [pkgrepo::dump_settings $repo_name $rdata]
-}
+#~ set repos [pkgrepo::get_config]
+#~ foreach repo_name [dict keys $repos] {
+    #~ set rdata [dict get $repos $repo_name]
+    #~ puts [pkgrepo::dump_settings $repo_name $rdata]
+#~ }
