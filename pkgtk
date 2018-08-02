@@ -10,7 +10,7 @@ package require Tk 8.6
 # global vars
 #
 set pkgbuttons_curstate {disabled}
-set pkgtree_selected ""
+set pkg_selected ""
 set pkgcmd_run 0
 set pkgcmd_top .pkgcmdview
 set pkgsearch_run 0
@@ -19,11 +19,11 @@ set pkgsearch_run 0
 # view pkg upgrade command
 #
 proc view_pkgcmd_upgrade {{all "NONE"}} {
-    global pkgtree_selected
+    global pkg_selected
     if {$all != "NONE"} {
         pkgcmd_view "upgrade"
     } else {
-        set pkg $pkgtree_selected
+        set pkg $pkg_selected
         pkgcmd_view "upgrade" $pkg
     }
 }
@@ -33,8 +33,8 @@ proc view_pkgcmd_upgrade {{all "NONE"}} {
 #   TODO: support adding -R arg
 #
 proc view_pkgcmd_remove {} {
-    global pkgtree_selected
-    set pkg $pkgtree_selected
+    global pkg_selected
+    set pkg $pkg_selected
     pkgcmd_view "remove" $pkg
 }
 
@@ -49,8 +49,8 @@ proc view_pkgcmd_clean_cache {} {
 # view pkg install command
 #
 proc view_pkgcmd_install {} {
-    global pkgtree_selected
-    set pkg $pkgtree_selected
+    global pkg_selected
+    set pkg $pkg_selected
     pkgcmd_view "install" $pkg
 }
 
@@ -65,7 +65,7 @@ proc view_pkgcmd_autoremove {} {
 # run pkg command
 #
 proc pkgcmd_dorun {w cmd args} {
-    tkbusy_hold
+    tkbusy_hold $w
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
         if {$args != "NONE"} {
@@ -77,14 +77,14 @@ proc pkgcmd_dorun {w cmd args} {
     } trap CHILDSTATUS {results options} {
         show_error $results
     }
-    tkbusy_forget
+    tkbusy_forget $w
 }
 
 #
 # run pkg command (dry run), whitout applying any changes to the system
 #
 proc pkgcmd_dryrun {w cmd args} {
-    tkbusy_hold
+    tkbusy_hold $w
     try {
         $w.cmdout insert end "pkg $cmd (dry run)\n\n"
         if {$args != "NONE"} {
@@ -101,7 +101,7 @@ proc pkgcmd_dryrun {w cmd args} {
         }
     }
     $w.cmdout configure -state "disabled"
-    tkbusy_forget
+    tkbusy_forget $w
 }
 
 #
@@ -201,28 +201,68 @@ proc pkgbuttons_disable {w} {
 proc view_pkgsearch {w} {
     global pkgsearch_run
     set pkgsearch_run 0
+
     ttk::frame $w
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 0 -weight 0
     grid rowconfigure $w 1 -weight 1
     grid $w -sticky nwse
+
     set search $w.search
     ttk::frame $search
     grid rowconfigure $search 0 -weight 1
     grid columnconfigure $search 0 -weight 0
     grid columnconfigure $search 1 -weight 1
     grid $search -sticky nwse
+
     ttk::label $search.lbl -takefocus 0 -text "Search:"
     grid $search.lbl -row 0 -column 0 -sticky w
+
     set query $search.query
     ttk::entry $query
     grid $query -row 0 -column 1 -sticky we
-    set pkglist $w.pkglist
+
+    set paned $w.paned
+    ttk::panedwindow $w.paned -orient "horizontal" -takefocus 0
+    grid $paned -sticky nwse
+
+    set pkglist $paned.pkglist
     listbox $pkglist
     grid $pkglist -sticky nwse
+
+    $paned add $pkglist -weight 2
+
+    ttk::frame $paned.right
+    grid $paned.right -sticky nwse
+
+    set pkgbuttons $paned.right.pkgbuttons
+    ttk::frame $pkgbuttons -takefocus 0
+    grid $pkgbuttons -row 0 -column 0 -sticky n
+
+    set pkginfo $paned.right.pkginfo
+    ttk::label $pkginfo -takefocus 0
+    grid $pkginfo -row 1 -column 0 -sticky n
+    $pkginfo configure -anchor "center" -justify "left"
+
+    $paned add $paned.right -weight 8
+
     bind $query <Return> {set pkgsearch_run 1}
+    bind $pkglist <<ListboxSelect>> "pkgsearch_show $pkglist $pkginfo $pkgbuttons"
+
     focus $query
+    pkgremote_buttons $pkgbuttons
     pkg_search $pkglist $query
+}
+
+#
+# show package info from search
+#
+proc pkgsearch_show {plist pinfo pbtn} {
+    set pkgidx [$plist curselection]
+    if {$pkgidx >= 0} {
+        set pkg [$plist get $pkgidx]
+        pkg_show $pinfo $pbtn "remote" $pkg
+    }
 }
 
 #
@@ -232,6 +272,7 @@ proc pkg_search {pkglist query} {
     global pkgsearch_run
     vwait pkgsearch_run
     if {$pkgsearch_run} {
+        tkbusy_hold
         $pkglist delete 0 "end"
         set q [$query get]
         if {$q != ""} {
@@ -253,6 +294,7 @@ proc pkg_search {pkglist query} {
                 }
             }
         }
+        tkbusy_forget
         set pkgsearch_run 0
         pkg_search $pkglist $query
     }
@@ -333,33 +375,42 @@ proc pkgtree_view {w pkgtype pkglist} {
 
     $pkgtree focus $focus_item
     focus $pkgtree
-    bind $pkgtree <<TreeviewSelect>> "pkg_show $pkgtree $pkginfo $pkgbuttons"
+    bind $pkgtree <<TreeviewSelect>> "pkgtree_show $pkgtree $pkginfo $pkgbuttons"
 }
 
 #
-# show pkg info
+# show package tree info
 #
-proc pkg_show {pkgtree pkginfo pkgbuttons} {
-    global pkgtree_selected
-    set pkgtree_selected "NONE"
+proc pkgtree_show {pkgtree pkginfo pkgbuttons} {
+    global pkg_selected
+    set pkg_selected "NONE"
     set item [$pkgtree selection]
-    set query_format {%n %v (%sh)\n\n%e}
-    set pkgremote 0
     if {[string equal {pkglocal:} [string range $item 0 8]]} {
         set pkg [string replace $item 0 8 {}]
-        $pkginfo configure -text [exec pkg query $query_format $pkg]
-        pkgbuttons_enable $pkgbuttons
-        set pkgtree_selected $pkg
+        pkg_show $pkginfo $pkgbuttons "local" $pkg
     } elseif {[string equal {pkgremote:} [string range $item 0 9]]} {
         set pkg [string replace $item 0 9 {}]
-        $pkginfo configure -text [exec pkg rquery $query_format $pkg]
-        pkgbuttons_enable $pkgbuttons
-        set pkgtree_selected $pkg
+        pkg_show $pkginfo $pkgbuttons "remote" $pkg
     } else {
         set slen [llength [$pkgtree children $item]]
         $pkginfo configure -text "Category : $item\nPackages : $slen"
         pkgbuttons_disable $pkgbuttons
     }
+}
+
+#
+# show pkg info
+#
+proc pkg_show {pkginfo pkgbuttons pkgtype pkg} {
+    global pkg_selected
+    set query_format {%n %v (%sh)\n\n%e}
+    if {$pkgtype == "remote"} {
+        $pkginfo configure -text [exec pkg rquery $query_format $pkg]
+    } else {
+        $pkginfo configure -text [exec pkg query $query_format $pkg]
+    }
+    set pkg_selected $pkg
+    pkgbuttons_enable $pkgbuttons
 }
 
 #
