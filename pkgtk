@@ -254,7 +254,7 @@ proc view_pkgsearch {w} {
 
     focus $query
     pkgremote_buttons $pkgbuttons
-    pkg_search $pkglist $query
+    pkg_search $pkglist $pkginfo $pkgbuttons $query
 }
 
 #
@@ -271,7 +271,7 @@ proc pkgsearch_show {plist pinfo pbtn} {
 #
 # pkg search
 #
-proc pkg_search {pkglist query} {
+proc pkg_search {pkglist pinfo pbtn query} {
     global pkgsearch_run
     vwait pkgsearch_run
     if {$pkgsearch_run} {
@@ -286,7 +286,8 @@ proc pkg_search {pkglist query} {
                 focus $pkglist
             } trap CHILDSTATUS {results options} {
                 set rc [lindex [dict get $options -errorcode] 2]
-                puts "rc: $rc"
+                pkgbuttons_disable $pbtn
+                $pinfo configure -text ""
                 if {$rc == 70} {
                     $query selection range 0 "end"
                     focus $query
@@ -299,7 +300,7 @@ proc pkg_search {pkglist query} {
         }
         tkbusy_forget
         set pkgsearch_run 0
-        pkg_search $pkglist $query
+        pkg_search $pkglist $pinfo $pbtn $query
     }
 }
 
