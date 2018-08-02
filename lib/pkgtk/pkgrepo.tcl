@@ -1,3 +1,6 @@
+# Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>.
+# See LICENSE file.
+
 package provide pkgrepo 0.0
 
 namespace eval ::pkgrepo {
