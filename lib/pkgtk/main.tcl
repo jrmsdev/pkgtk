@@ -4,7 +4,9 @@
 package provide pkgtk 0.0
 package require Tk 8.6
 package require utils
-package require pkgview
+package require pkglocal
+package require pkgremote
+package require pkgsearch
 package require pkgcmd
 
 namespace eval ::pkgtk {
@@ -53,14 +55,14 @@ proc ::pkgtk::main_menu {} {
     menu .menu.packages -tearoff 0
     .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
     .menu.packages add command -label "Installed" -underline 0 \
-                        -command {utils dispatch_view pkgview::view_pkglocal}
+                               -command {utils dispatch_view pkglocal::view}
     .menu.packages add command -label "Upgrade" -underline 0 \
                                -command {pkgcmd::view_upgrade "all"}
     .menu.packages add separator
     .menu.packages add command -label "Available" -underline 0 \
-                        -command {utils dispatch_view pkgview::view_pkgremote}
+                        -command {utils dispatch_view pkgremote::view}
     .menu.packages add command -label "Search" -underline 0 \
-                        -command {utils dispatch_view pkgview::view_pkgsearch}
+                               -command {utils dispatch_view pkgsearch::view}
     .menu.packages add separator
     .menu.packages add command -label "Autoremove" -underline 4 \
                                -command {pkgcmd::view_autoremove}
@@ -91,5 +93,5 @@ proc ::pkgtk::main {} {
     grid columnconfigure . 0 -weight 1
     . configure -padx 1 -pady 1
     pkgtk::main_menu
-    utils dispatch_view pkgview::view_pkglocal
+    utils dispatch_view pkglocal::view
 }
