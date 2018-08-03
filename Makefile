@@ -6,14 +6,13 @@ INSTALL_EXE := install -v -C -h md5 -m 0755
 INSTALL_FILE := install -v -C -h md5 -m 0644
 
 USER_HOME != echo ~
+RELEASE != echo 'source lib/pkgtk/version.tcl; version::release' | $(TCLSH)
 TCL_PKGPATH != echo 'puts $$tcl_pkgPath' | $(TCLSH)
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
 LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
 
 DESTDIR ?=
 PREFIX ?= $(USER_HOME)
-
-RELEASE := 0.1.0
 
 .PHONY: all
 all: build

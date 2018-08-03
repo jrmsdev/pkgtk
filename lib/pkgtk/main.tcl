@@ -11,13 +11,11 @@ package require pkgview
 package require pkgcmd
 package require pkgrepo
 package require img
+package require version
 
 namespace eval ::pkgtk {
     namespace export main
     namespace ensemble create
-
-    variable VERSION 0.0
-    variable RELEASE 180802
 }
 
 #
@@ -35,10 +33,10 @@ proc ::pkgtk::view_about {} {
     grid $top.info -sticky nwse
     $top.info configure -justify "center" -padding {10 0} \
 -font "monospace 10 bold" -text "
-pkgtk v$pkgtk::VERSION
+pkgtk v$version::VERSION
 
 FreeBSD package manager
-(r$pkgtk::RELEASE)
+(r$version::RELEASE)
 
 https://gitlab.com/jrmsdev/pkgtk
 
