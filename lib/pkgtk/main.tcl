@@ -9,6 +9,7 @@ package require pkgremote
 package require pkgsearch
 package require pkgcmd
 package require pkgrepo
+package require img
 
 namespace eval ::pkgtk {
     namespace export main
@@ -98,6 +99,7 @@ proc ::pkgtk::quit {rc} {
 proc ::pkgtk::main {} {
     wm title . "FreeBSD package manager"
     wm minsize . 800 600
+    img create_icon .
     grid rowconfigure . 0 -weight 1
     grid columnconfigure . 0 -weight 1
     . configure -padx 1 -pady 1

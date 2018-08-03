@@ -8,6 +8,7 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
+package ifneeded img 0.0 [list source [file join $dir img.tcl]]
 package ifneeded pkgcmd 0.0 [list source [file join $dir pkgcmd.tcl]]
 package ifneeded pkglocal 0.0 [list source [file join $dir pkglocal.tcl]]
 package ifneeded pkgremote 0.0 [list source [file join $dir pkgremote.tcl]]
