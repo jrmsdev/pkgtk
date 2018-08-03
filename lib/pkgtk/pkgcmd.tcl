@@ -55,7 +55,6 @@ proc ::pkgcmd::view_autoremove {} {
 # run command in background and insert lines of output
 #
 proc ::pkgcmd::runbg {out cmd} {
-    puts "runbg: $cmd"
     try {
         set chan [open "|$cmd" "r"]
         while {[gets $chan line] >= 0} {
