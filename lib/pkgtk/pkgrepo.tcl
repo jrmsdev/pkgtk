@@ -57,7 +57,6 @@ proc ::pkgrepo::readfile {reposVar fn} {
                     set v [string replace $v 0 0 ""]
                     set v [string replace $v end end ""]
                 }
-                #~ puts "'$k' -> '$v' ($vtype)"
                 dict set repos $repo_name $k [list $vtype $v]
             }
         }
@@ -108,12 +107,6 @@ proc ::pkgrepo::dump_settings {repo_name rdata} {
     return $s
 }
 
-#~ set repos [pkgrepo::get_config]
-#~ foreach repo_name [dict keys $repos] {
-    #~ set rdata [dict get $repos $repo_name]
-    #~ puts [pkgrepo::dump_settings $repo_name $rdata]
-#~ }
-
 #
 # view repos settings
 #
@@ -136,7 +129,6 @@ proc ::pkgrepo::view {w} {
     foreach repo_name [lsort [dict keys $repos_config]] {
         set repo_data [dict get $repos_config $repo_name]
         set rid "r$idx"
-        puts "repo frame: $repos.$rid"
         $repos add [pkgrepo::show $repos.$rid $repo_name $repo_data] \
                    -text $repo_name -sticky nwse
         incr idx
@@ -151,30 +143,23 @@ proc ::pkgrepo::view {w} {
 #   return a ttk frame showing the settings
 #
 proc ::pkgrepo::show {w name data} {
-    puts "pkgrepo show: $w"
     ttk::frame $w -padding {0 5}
     grid columnconfigure $w 0 -weight 0
     grid columnconfigure $w 1 -weight 0
     grid columnconfigure $w 2 -weight 1
-    #~ grid rowconfigure $w 0 -weight 1
     grid $w -sticky nwse
-
-    #~ ttk::label $w.data -text $data
-    #~ grid $w.data -sticky nw
 
     set optidx 0
     foreach opt [lsort [dict keys $data]] {
         set valtype [lindex [dict get $data $opt] 0]
         set val [lindex [dict get $data $opt] 1]
         set ow $w.opt$optidx
-        puts "pkgrepo show: $ow"
         ttk::label $ow -text $opt
         grid $ow -row $optidx -column 0 -sticky nw
         set sep $w.sep$optidx
         ttk::label $sep -text ":"
         grid $sep -row $optidx -column 1 -sticky nw
         set vw $w.val$optidx
-        puts "pkgrepo show: $vw"
         pkgrepo::setting_value $vw $valtype $val
         grid $vw -row $optidx -column 2 -sticky nwse
         incr optidx
@@ -198,14 +183,18 @@ proc ::pkgrepo::setting_value {w vtype val} {
 # create a widget for a setting string value
 #
 proc ::pkgrepo::valtype_str {w val} {
-    ttk::entry $w
+    ttk::entry $w -takefocus 0
     $w insert end $val
+    $w configure -state "read"
 }
 
 #
 # create a widget for a setting bool value
 #
 proc ::pkgrepo::valtype_bool {w val} {
-    ttk::combobox $w -values "yes no" -state "read"
-    $w set $val
+    #~ ttk::combobox $w -values "yes no" -state "read"
+    #~ $w set $val
+    ttk::entry $w -takefocus 0
+    $w insert end $val
+    $w configure -state "read"
 }
