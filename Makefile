@@ -68,6 +68,7 @@ install: build
 .PHONY: uninstall
 uninstall:
 	@rm -vf $(DESTDIR)$(PREFIX)/bin/pkgtk
+	@rm -vrf $(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/lib/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
