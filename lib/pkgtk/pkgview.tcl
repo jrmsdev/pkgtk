@@ -10,6 +10,7 @@ namespace eval ::pkgview {
     # global vars
     variable pkgbuttons_curstate {disabled}
     variable pkg_selected ""
+    variable toplevel_child .topchild
 }
 
 #

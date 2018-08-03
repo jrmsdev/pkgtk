@@ -3,11 +3,9 @@
 
 package provide pkgcmd 0.0
 package require utils
+package require pkgview
 
 namespace eval ::pkgcmd {
-    # global vars
-    variable pkgcmd_run 0
-    variable pkgcmd_top .pkgcmdview
 }
 
 #
@@ -112,8 +110,7 @@ proc ::pkgcmd::dryrun {w cmd args} {
 # pkg command view
 #
 proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
-    set pkgcmd::pkgcmd_run 0
-    set top $pkgcmd::pkgcmd_top
+    set top $pkgview::toplevel_child
     if {[winfo exists $top]} {
         destroy $top
     }
@@ -130,14 +127,14 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     grid $w.btn -row 0 -column 0 -sticky nwse
     if {$dorun} {
         ttk::button $w.btn.close -text "Close" \
-                                 -command {destroy $pkgcmd::pkgcmd_top}
+                                 -command {destroy $pkgview::toplevel_child}
         grid $w.btn.close -row 0 -column 0 -sticky w
     } else {
         ttk::button $w.btn.run -text "Confirm $cmd" \
-                               -command {set pkgcmd::pkgcmd_run 1}
+                               -command "pkgcmd::view $cmd $args 1"
         grid $w.btn.run -row 0 -column 0 -sticky w
         ttk::button $w.btn.cancel -text "Cancel" \
-                                  -command {destroy $pkgcmd::pkgcmd_top}
+                                  -command {destroy $pkgview::toplevel_child}
         grid $w.btn.cancel -row 0 -column 1 -sticky w
     }
     text $w.cmdout
@@ -146,11 +143,8 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
         pkgcmd::dorun $w $cmd $args
     } else {
         pkgcmd::dryrun $w $cmd $args
-        vwait pkgcmd::pkgcmd_run
-        if {$pkgcmd::pkgcmd_run} {
-            pkgcmd::view $cmd $args 1
-        }
     }
+    tkwait window $top
 }
 
 #

@@ -7,6 +7,7 @@ package require utils
 package require pkglocal
 package require pkgremote
 package require pkgsearch
+package require pkgview
 package require pkgcmd
 package require pkgrepo
 package require img
@@ -23,8 +24,7 @@ namespace eval ::pkgtk {
 # view about info
 #
 proc ::pkgtk::view_about {} {
-    #~ global VERSION RELEASE
-    set top .about
+    set top $pkgview::toplevel_child
     if {[winfo exists $top]} {
         destroy $top
     }
@@ -45,6 +45,7 @@ https://gitlab.com/jrmsdev/pkgtk
 Released under BSD license (see LICENSE file)
 Copyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
 "
+    tkwait window $top
 }
 
 #
@@ -89,6 +90,9 @@ proc ::pkgtk::main_menu {} {
 # exit main loop
 #
 proc ::pkgtk::quit {rc} {
+    if {[winfo exists $pkgview::toplevel_child]} {
+        destroy $pkgview::toplevel_child
+    }
     destroy .
     exit $rc
 }
