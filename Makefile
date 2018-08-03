@@ -1,17 +1,18 @@
 SH ?= /bin/sh
 TCLSH ?= tclsh8.6
-
-BUILDDIR := build
-INSTALL_EXE := install -v -C -h md5 -m 0755
-INSTALL_FILE := install -v -C -h md5 -m 0644
+DESTDIR ?=
 
 USER_HOME != echo ~
 RELEASE != echo 'source lib/pkgtk/version.tcl; version::release' | $(TCLSH)
+
+PREFIX ?= $(USER_HOME)
+RELNAME := pkgtk-$(RELEASE)
+BUILDDIR := build/$(RELNAME)
+INSTALL_EXE := install -v -C -h md5 -m 0755
+INSTALL_FILE := install -v -C -h md5 -m 0644
+
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
 LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
-
-DESTDIR ?=
-PREFIX ?= $(USER_HOME)
 
 .PHONY: all
 all: build
@@ -45,23 +46,24 @@ $(LIB_FILES): $(LIB_SOURCES)
 
 .PHONY: dist
 dist: build
-	@rm -rf dist/pkgtk-$(RELEASE)*
-	@mkdir -vp dist/pkgtk-$(RELEASE)
-	@cp -vr $(BUILDDIR)/* dist/pkgtk-$(RELEASE)
-	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist \
-			pkgtk-$(RELEASE)/bin/pkgtk \
-			pkgtk-$(RELEASE)/lib/pkgtk \
-			pkgtk-$(RELEASE)/libexec/pkgtk \
-			pkgtk-$(RELEASE)/share/doc/pkgtk
-	touch dist/pkgtk-$(RELEASE).txz
+	@mkdir -vp dist
+	@tar -cJf dist/$(RELNAME).txz -C build $(RELNAME)/bin/pkgtk \
+					       $(RELNAME)/lib/pkgtk \
+					       $(RELNAME)/libexec/pkgtk \
+					       $(RELNAME)/share/doc/pkgtk
+	touch dist/$(RELNAME).txz
 
 .PHONY: install
 install: build
-	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/pkgtk
+	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/pkgtk \
+		   $(DESTDIR)$(PREFIX)/libexec/pkgtk \
+		   $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk $(DESTDIR)$(PREFIX)/bin/pkgtk
+	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/gui.tcl \
+			$(DESTDIR)$(PREFIX)/libexec/pkgtk/gui.tcl
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl $(DESTDIR)$(PREFIX)/lib/pkgtk
-	@mkdir -vp $(DESTDIR)$(PREFIX)/share/doc/pkgtk
-	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* $(DESTDIR)$(PREFIX)/share/doc/pkgtk
+	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
+			 $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
 .PHONY: uninstall
 uninstall:
@@ -71,4 +73,4 @@ uninstall:
 
 .PHONY: clean
 clean:
-	@rm -rvf dist $(BUILDDIR)
+	@rm -rvf dist build
