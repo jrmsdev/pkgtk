@@ -54,25 +54,42 @@ proc ::pkgcmd::view_autoremove {} {
 }
 
 #
+# run command in background and insert lines of output
+#
+proc ::pkgcmd::runbg {out cmd} {
+    puts "runbg: $cmd"
+    try {
+        set chan [open "|$cmd" "r"]
+        while {[gets $chan line] >= 0} {
+            $out insert end "$line\n"
+            update
+        }
+        close $chan
+    } trap CHILDSTATUS {results options} {
+        set rc [lindex [dict get $options -errorcode] 2]
+        utils show_error "ERROR: $cmd ($rc)"
+        $out insert end "*** ERROR: returncode $rc\n"
+        $out insert end $results
+        update
+    }
+}
+
+#
 # run pkg command
 #
 proc ::pkgcmd::dorun {w cmd args} {
     utils tkbusy_hold $w
-    try {
-        $w.cmdout insert end "pkg $cmd\n\n"
-        if {$cmd == "update"} {
-            $w.cmdout insert end [exec pkg $cmd]
+    $w.cmdout insert end "pkg $cmd\n\n"
+    if {$cmd == "update"} {
+        pkgcmd::runbg $w.cmdout "pkg $cmd"
+    } else {
+        if {$args != "NONE"} {
+            pkgcmd::runbg $w.cmdout "pkg $cmd -y $args"
         } else {
-            if {$args != "NONE"} {
-                $w.cmdout insert end [exec pkg $cmd -y $args]
-            } else {
-                $w.cmdout insert end [exec pkg $cmd -y]
-            }
+            pkgcmd::runbg $w.cmdout "pkg $cmd -y"
         }
-        $w.cmdout configure -state "disabled"
-    } trap CHILDSTATUS {results options} {
-        utils show_error $results
     }
+    $w.cmdout configure -state "disabled"
     utils tkbusy_forget $w
 }
 
