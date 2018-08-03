@@ -183,9 +183,10 @@ proc ::pkgrepo::setting_value {w vtype val} {
 # create a widget for a setting string value
 #
 proc ::pkgrepo::valtype_str {w val} {
-    ttk::entry $w -takefocus 0
-    $w insert end $val
-    $w configure -state "read"
+    #~ ttk::entry $w -takefocus 0
+    #~ $w insert end $val
+    #~ $w configure -state "read"
+    ttk::label $w -text $val
 }
 
 #
@@ -194,7 +195,5 @@ proc ::pkgrepo::valtype_str {w val} {
 proc ::pkgrepo::valtype_bool {w val} {
     #~ ttk::combobox $w -values "yes no" -state "read"
     #~ $w set $val
-    ttk::entry $w -takefocus 0
-    $w insert end $val
-    $w configure -state "read"
+    ttk::label $w -text $val
 }
