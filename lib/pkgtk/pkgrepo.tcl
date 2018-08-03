@@ -12,10 +12,7 @@ namespace eval ::pkgrepo {
 # return a list of available configuration files
 #
 proc ::pkgrepo::lsconf {} {
-    set conf_files {}
-    lappend conf_files [glob "/etc/pkg/*.conf"]
-    lappend conf_files [glob "/usr/local/etc/pkg/repos/*.conf"]
-    return $conf_files
+    return [glob "/etc/pkg/*.conf" "/usr/local/etc/pkg/repos/*.conf"]
 }
 
 #
@@ -122,5 +119,93 @@ proc ::pkgrepo::dump_settings {repo_name rdata} {
 #
 proc ::pkgrepo::view {w} {
     ttk::frame $w
+    grid columnconfigure $w 0 -weight 1
+    grid rowconfigure $w 0 -weight 0
+    grid rowconfigure $w 1 -weight 1
     grid $w -sticky nwse
+
+    ttk::label $w.dbstats -takefocus 0 -text [exec pkg stats -r]
+    grid $w.dbstats -row 0 -column 0 -sticky nw
+
+    set repos $w.repos
+    ttk::notebook $repos
+    grid $repos -row 1 -column 0 -sticky nwse
+
+    set repos_config [pkgrepo::get_config]
+    set idx 0
+    foreach repo_name [lsort [dict keys $repos_config]] {
+        set repo_data [dict get $repos_config $repo_name]
+        set rid "r$idx"
+        puts "repo frame: $repos.$rid"
+        $repos add [pkgrepo::show $repos.$rid $repo_name $repo_data] \
+                   -text $repo_name -sticky nwse
+        incr idx
+    }
+
+    $repos select $repos.r0
+    ttk::notebook::enableTraversal $repos
+}
+
+#
+# show repo settings
+#   return a ttk frame showing the settings
+#
+proc ::pkgrepo::show {w name data} {
+    puts "pkgrepo show: $w"
+    ttk::frame $w -padding {0 5}
+    grid columnconfigure $w 0 -weight 0
+    grid columnconfigure $w 1 -weight 0
+    grid columnconfigure $w 2 -weight 1
+    #~ grid rowconfigure $w 0 -weight 1
+    grid $w -sticky nwse
+
+    #~ ttk::label $w.data -text $data
+    #~ grid $w.data -sticky nw
+
+    set optidx 0
+    foreach opt [lsort [dict keys $data]] {
+        set valtype [lindex [dict get $data $opt] 0]
+        set val [lindex [dict get $data $opt] 1]
+        set ow $w.opt$optidx
+        puts "pkgrepo show: $ow"
+        ttk::label $ow -text $opt
+        grid $ow -row $optidx -column 0 -sticky nw
+        set sep $w.sep$optidx
+        ttk::label $sep -text ":"
+        grid $sep -row $optidx -column 1 -sticky nw
+        set vw $w.val$optidx
+        puts "pkgrepo show: $vw"
+        pkgrepo::setting_value $vw $valtype $val
+        grid $vw -row $optidx -column 2 -sticky nwse
+        incr optidx
+    }
+
+    return $w
+}
+
+#
+# create a widget representing a config setting value
+#
+proc ::pkgrepo::setting_value {w vtype val} {
+    if {$vtype == "bool"} {
+        pkgrepo::valtype_bool $w $val
+    } else {
+        pkgrepo::valtype_str $w $val
+    }
+}
+
+#
+# create a widget for a setting string value
+#
+proc ::pkgrepo::valtype_str {w val} {
+    ttk::entry $w
+    $w insert end $val
+}
+
+#
+# create a widget for a setting bool value
+#
+proc ::pkgrepo::valtype_bool {w val} {
+    ttk::combobox $w -values "yes no" -state "read"
+    $w set $val
 }
