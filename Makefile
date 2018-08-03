@@ -13,6 +13,8 @@ LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
 DESTDIR ?=
 PREFIX ?= $(USER_HOME)
 
+RELEASE := 0.1.0
+
 .PHONY: all
 all: build
 
@@ -25,6 +27,8 @@ lib/pkgtk/pkgIndex.tcl: $(LIB_SOURCES)
 
 .PHONY: build
 build: pkgindex $(BUILDDIR)/bin/pkgtk $(LIB_FILES)
+	@mkdir -vp $(BUILDDIR)/share/doc/pkgtk
+	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@mkdir -vp $(BUILDDIR)/bin
@@ -37,11 +41,27 @@ $(LIB_FILES): $(LIB_SOURCES)
 	@mkdir -vp $(BUILDDIR)/lib/pkgtk
 	@$(INSTALL_FILE) lib/pkgtk/*.tcl $(BUILDDIR)/lib/pkgtk
 
+.PHONY: dist
+dist: build
+	@rm -rf dist/pkgtk-$(RELEASE)*
+	@mkdir -vp dist/pkgtk-$(RELEASE)
+	@cp -vr $(BUILDDIR)/* dist/pkgtk-$(RELEASE)
+	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist pkgtk-$(RELEASE)
+	touch dist/pkgtk-$(RELEASE).txz
+
 .PHONY: install
 install: build
 	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk $(DESTDIR)$(PREFIX)/bin/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl $(DESTDIR)$(PREFIX)/lib/pkgtk
+	@mkdir -vp $(DESTDIR)$(PREFIX)/share/doc/pkgtk
+	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* $(DESTDIR)$(PREFIX)/share/doc/pkgtk
+
+.PHONY: uninstall
+uninstall:
+	@rm -vf $(DESTDIR)$(PREFIX)/bin/pkgtk
+	@rm -vrf $(DESTDIR)$(PREFIX)/lib/pkgtk
+	@rm -vrf $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
 .PHONY: clean
 clean:
