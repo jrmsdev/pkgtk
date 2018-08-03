@@ -7,7 +7,6 @@ INSTALL_FILE := install -v -C -h md5 -m 0644
 
 USER_HOME != echo ~
 RELEASE != echo 'source lib/pkgtk/version.tcl; version::release' | $(TCLSH)
-TCL_PKGPATH != echo 'puts $$tcl_pkgPath' | $(TCLSH)
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
 LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
 
@@ -25,16 +24,20 @@ lib/pkgtk/pkgIndex.tcl: $(LIB_SOURCES)
 	touch lib/pkgtk/pkgIndex.tcl
 
 .PHONY: build
-build: pkgindex $(BUILDDIR)/bin/pkgtk $(LIB_FILES)
+build: pkgindex $(BUILDDIR)/bin/pkgtk $(BUILDDIR)/libexec/pkgtk/gui.tcl $(LIB_FILES)
 	@mkdir -vp $(BUILDDIR)/share/doc/pkgtk
 	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@mkdir -vp $(BUILDDIR)/bin
-	@echo '#!/usr/bin/env $(TCLSH)' >$(BUILDDIR)/bin/pkgtk
-	@tail -n +2 bin/pkgtk >>$(BUILDDIR)/bin/pkgtk
-	@chmod 0750 $(BUILDDIR)/bin/pkgtk
-	touch $(BUILDDIR)/bin/pkgtk
+	@$(INSTALL_EXE) bin/pkgtk $(BUILDDIR)/bin/pkgtk
+
+$(BUILDDIR)/libexec/pkgtk/gui.tcl: libexec/pkgtk/gui.tcl
+	@mkdir -vp $(BUILDDIR)/libexec/pkgtk
+	@echo '#!/usr/bin/env $(TCLSH)' >$(BUILDDIR)/libexec/pkgtk/gui.tcl
+	@tail -n +2 libexec/pkgtk/gui.tcl >>$(BUILDDIR)/libexec/pkgtk/gui.tcl
+	@chmod 0755 $(BUILDDIR)/libexec/pkgtk/gui.tcl
+	touch $(BUILDDIR)/libexec/pkgtk/gui.tcl
 
 $(LIB_FILES): $(LIB_SOURCES)
 	@mkdir -vp $(BUILDDIR)/lib/pkgtk
@@ -45,7 +48,11 @@ dist: build
 	@rm -rf dist/pkgtk-$(RELEASE)*
 	@mkdir -vp dist/pkgtk-$(RELEASE)
 	@cp -vr $(BUILDDIR)/* dist/pkgtk-$(RELEASE)
-	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist pkgtk-$(RELEASE)/bin/pkgtk pkgtk-$(RELEASE)/lib/pkgtk pkgtk-$(RELEASE)/share/doc/pkgtk
+	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist \
+			pkgtk-$(RELEASE)/bin/pkgtk \
+			pkgtk-$(RELEASE)/lib/pkgtk \
+			pkgtk-$(RELEASE)/libexec/pkgtk \
+			pkgtk-$(RELEASE)/share/doc/pkgtk
 	touch dist/pkgtk-$(RELEASE).txz
 
 .PHONY: install

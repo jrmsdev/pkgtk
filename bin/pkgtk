@@ -1,9 +1,11 @@
-#!/usr/bin/env tclsh8.6
+#!/bin/sh -e
 
 # Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>.
 # See LICENSE file.
 
-package require Tcl 8.6
-package require pkgtk
+PREFIX=`realpath $(dirname $0)/..`
+TCLLIBPATH=${PREFIX}/lib
+LIBEXEC=${PREFIX}/libexec/pkgtk
 
-pkgtk main
+export TCLLIBPATH
+exec ${LIBEXEC}/gui.tcl
