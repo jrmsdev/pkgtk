@@ -4,6 +4,8 @@
 package provide pkgrepo 0.0
 
 namespace eval ::pkgrepo {
+    namespace export view
+    namespace ensemble create
 }
 
 #
@@ -20,7 +22,7 @@ proc ::pkgrepo::lsconf {} {
 # read configuration file
 #   returns a dict with repo settings
 #
-proc ::pkgrepo::readconf {reposVar fn} {
+proc ::pkgrepo::readfile {reposVar fn} {
     upvar 1 $reposVar repos
 
     set fh [open $fn "r"]
@@ -72,7 +74,7 @@ proc ::pkgrepo::readconf {reposVar fn} {
 proc ::pkgrepo::get_config {} {
     set repos {}
     foreach fn [pkgrepo::lsconf] {
-        pkgrepo::readconf repos $fn
+        pkgrepo::readfile repos $fn
     }
     return $repos
 }
@@ -114,3 +116,11 @@ proc ::pkgrepo::dump_settings {repo_name rdata} {
     #~ set rdata [dict get $repos $repo_name]
     #~ puts [pkgrepo::dump_settings $repo_name $rdata]
 #~ }
+
+#
+# view repos settings
+#
+proc ::pkgrepo::view {w} {
+    ttk::frame $w
+    grid $w -sticky nwse
+}

@@ -60,10 +60,14 @@ proc ::pkgcmd::dorun {w cmd args} {
     utils tkbusy_hold $w
     try {
         $w.cmdout insert end "pkg $cmd\n\n"
-        if {$args != "NONE"} {
-            $w.cmdout insert end [exec pkg $cmd -y $args]
+        if {$cmd == "update"} {
+            $w.cmdout insert end [exec pkg $cmd]
         } else {
-            $w.cmdout insert end [exec pkg $cmd -y]
+            if {$args != "NONE"} {
+                $w.cmdout insert end [exec pkg $cmd -y $args]
+            } else {
+                $w.cmdout insert end [exec pkg $cmd -y]
+            }
         }
         $w.cmdout configure -state "disabled"
     } trap CHILDSTATUS {results options} {
@@ -116,12 +120,18 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     grid $w -sticky nwse
     ttk::frame $w.btn
     grid $w.btn -row 0 -column 0 -sticky nwse
-    ttk::button $w.btn.run -text "Confirm $cmd" \
-                           -command {set pkgcmd::pkgcmd_run 1}
-    grid $w.btn.run -row 0 -column 0 -sticky w
-    ttk::button $w.btn.cancel -text "Cancel" \
-                              -command {destroy $pkgcmd::pkgcmd_top}
-    grid $w.btn.cancel -row 0 -column 1 -sticky w
+    if {$dorun} {
+        ttk::button $w.btn.close -text "Close" \
+                                 -command {destroy $pkgcmd::pkgcmd_top}
+        grid $w.btn.close -row 0 -column 0 -sticky w
+    } else {
+        ttk::button $w.btn.run -text "Confirm $cmd" \
+                               -command {set pkgcmd::pkgcmd_run 1}
+        grid $w.btn.run -row 0 -column 0 -sticky w
+        ttk::button $w.btn.cancel -text "Cancel" \
+                                  -command {destroy $pkgcmd::pkgcmd_top}
+        grid $w.btn.cancel -row 0 -column 1 -sticky w
+    }
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     if {$dorun} {
@@ -133,4 +143,11 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
             pkgcmd::view $cmd $args 1
         }
     }
+}
+
+#
+# view pkg update command
+#
+proc ::pkgcmd::view_update {} {
+    pkgcmd::view "update" "" 1
 }

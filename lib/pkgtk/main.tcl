@@ -8,6 +8,7 @@ package require pkglocal
 package require pkgremote
 package require pkgsearch
 package require pkgcmd
+package require pkgrepo
 
 namespace eval ::pkgtk {
     namespace export main
@@ -54,6 +55,7 @@ proc ::pkgtk::main_menu {} {
 
     menu .menu.packages -tearoff 0
     .menu add cascade -label "Packages" -underline 0 -menu .menu.packages
+
     .menu.packages add command -label "Installed" -underline 0 \
                                -command {utils dispatch_view pkglocal::view}
     .menu.packages add command -label "Upgrade" -underline 0 \
@@ -71,6 +73,13 @@ proc ::pkgtk::main_menu {} {
     .menu.packages add separator
     .menu.packages add command -label "Quit" -underline 0 \
                                -command {pkgtk::quit 0}
+
+    menu .menu.repos -tearoff 0
+    .menu add cascade -label "Repositories" -underline 0 -menu .menu.repos
+    .menu.repos add command -label "Configuration" -underline 0 \
+                            -command {utils dispatch_view pkgrepo::view}
+    .menu.repos add command -label "Update" -underline 0 \
+                            -command {pkgcmd::view_update}
 
     .menu add command -label "About" -underline 0 -command {pkgtk::view_about}
 }
