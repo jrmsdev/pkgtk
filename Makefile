@@ -46,7 +46,7 @@ dist: build
 	@rm -rf dist/pkgtk-$(RELEASE)*
 	@mkdir -vp dist/pkgtk-$(RELEASE)
 	@cp -vr $(BUILDDIR)/* dist/pkgtk-$(RELEASE)
-	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist pkgtk-$(RELEASE)
+	@tar -cJf dist/pkgtk-$(RELEASE).txz -C dist pkgtk-$(RELEASE)/bin/pkgtk pkgtk-$(RELEASE)/lib/pkgtk pkgtk-$(RELEASE)/share/doc/pkgtk
 	touch dist/pkgtk-$(RELEASE).txz
 
 .PHONY: install
@@ -65,4 +65,4 @@ uninstall:
 
 .PHONY: clean
 clean:
-	@rm -rvf $(BUILDDIR)
+	@rm -rvf dist $(BUILDDIR)
