@@ -54,20 +54,24 @@ proc ::pkgcmd::view_autoremove {} {
 #
 # run command in background and insert lines of output
 #
-proc ::pkgcmd::runbg {out cmd} {
+proc ::pkgcmd::runbg {out cmd {dryrun 0}} {
+    set chan [open "|$cmd" "r"]
+    while {[gets $chan line] >= 0} {
+        $out insert end "$line\n"
+        update
+    }
     try {
-        set chan [open "|$cmd" "r"]
-        while {[gets $chan line] >= 0} {
-            $out insert end "$line\n"
-            update
-        }
         close $chan
     } trap CHILDSTATUS {results options} {
         set rc [lindex [dict get $options -errorcode] 2]
-        utils show_error "ERROR: $cmd ($rc)"
-        $out insert end "*** ERROR: returncode $rc\n"
-        $out insert end $results
-        update
+        if {$dryrun && $rc == 1} {
+            return
+        } else {
+            utils show_error "ERROR: $cmd ($rc)\n$results"
+            $out insert end "*** ERROR: return code $rc\n"
+            $out insert end $results
+            update
+        }
     }
 }
 
@@ -97,9 +101,9 @@ proc ::pkgcmd::dryrun {w cmd args} {
     utils tkbusy_hold $w
     $w.cmdout insert end "pkg $cmd (dry run)\n\n"
     if {$args != "NONE"} {
-        pkgcmd::runbg $w.cmdout "pkg $cmd -n $args"
+        pkgcmd::runbg $w.cmdout "pkg $cmd -n $args" 1
     } else {
-        pkgcmd::runbg $w.cmdout "pkg $cmd -n"
+        pkgcmd::runbg $w.cmdout "pkg $cmd -n" 1
     }
     $w.cmdout configure -state "disabled"
     utils tkbusy_forget $w
@@ -116,10 +120,12 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     toplevel $top
     wm transient $top .
     wm title $top "pkg $cmd"
+    grid rowconfigure $top 0 -weight 1
+    grid columnconfigure $top 0 -weight 1
     set w $top.view
     ttk::frame $w
-    grid rowconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 9
+    grid rowconfigure $w 0 -weight 0
+    grid rowconfigure $w 1 -weight 1
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
     ttk::frame $w.btn
