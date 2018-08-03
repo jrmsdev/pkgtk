@@ -98,20 +98,11 @@ proc ::pkgcmd::dorun {w cmd args} {
 #
 proc ::pkgcmd::dryrun {w cmd args} {
     utils tkbusy_hold $w
-    try {
-        $w.cmdout insert end "pkg $cmd (dry run)\n\n"
-        if {$args != "NONE"} {
-            $w.cmdout insert end [exec pkg $cmd -n $args]
-        } else {
-            $w.cmdout insert end [exec pkg $cmd -n]
-        }
-    } trap CHILDSTATUS {results options} {
-        set rc [lindex [dict get $options -errorcode] 2]
-        if {$rc > 1} {
-            utils show_error $results
-        } else {
-            $w.cmdout insert end $results
-        }
+    $w.cmdout insert end "pkg $cmd (dry run)\n\n"
+    if {$args != "NONE"} {
+        pkgcmd::runbg $w.cmdout "pkg $cmd -n $args"
+    } else {
+        pkgcmd::runbg $w.cmdout "pkg $cmd -n"
     }
     $w.cmdout configure -state "disabled"
     utils tkbusy_forget $w
