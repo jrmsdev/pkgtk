@@ -7,15 +7,12 @@ package require pkgremote
 package require pkgview
 
 namespace eval ::pkgsearch {
-    variable pkgsearch_run 0
 }
 
 #
 # view search packages
 #
 proc ::pkgsearch::view {w} {
-    set pkgsearch::pkgsearch_run 0
-
     ttk::frame $w
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 0 -weight 0
@@ -60,7 +57,7 @@ proc ::pkgsearch::view {w} {
 
     $paned add $paned.right -weight 8
 
-    bind $query <Return> {set pkgsearch::pkgsearch_run 1}
+    bind $query <Return> "pkgsearch::run $pkglist $pkginfo $pkgbuttons $query"
     bind $pkglist <<ListboxSelect>> "pkgsearch::show $pkglist $pkginfo $pkgbuttons"
 
     focus $query
@@ -83,34 +80,29 @@ proc ::pkgsearch::show {plist pinfo pbtn} {
 # pkg search
 #
 proc ::pkgsearch::run {pkglist pinfo pbtn query} {
-    vwait pkgsearch::pkgsearch_run
-    if {$pkgsearch::pkgsearch_run} {
-        utils tkbusy_hold
-        $pkglist delete 0 "end"
-        set q [$query get]
-        if {$q != ""} {
-            try {
-                foreach line [split [exec pkg search -q $q] "\n"] {
-                    $pkglist insert "end" "$line"
-                }
-                focus $pkglist
-            } trap CHILDSTATUS {results options} {
-                set rc [lindex [dict get $options -errorcode] 2]
-                pkgview::pkgbuttons_disable $pbtn
-                $pinfo configure -text ""
-                if {$rc == 70} {
-                    # rc 70 means no results matched
-                    $pkglist delete 0 "end"
-                    $query selection range 0 "end"
-                    focus $query
-                } else {
-                    # so anything else is an error
-                    utils show_error $results
-                }
+    utils tkbusy_hold
+    $pkglist delete 0 "end"
+    set q [$query get]
+    if {$q != ""} {
+        try {
+            foreach line [split [exec pkg search -q $q] "\n"] {
+                $pkglist insert "end" "$line"
+            }
+            focus $pkglist
+        } trap CHILDSTATUS {results options} {
+            set rc [lindex [dict get $options -errorcode] 2]
+            pkgview::pkgbuttons_disable $pbtn
+            $pinfo configure -text ""
+            if {$rc == 70} {
+                # rc 70 means no results matched
+                $pkglist delete 0 "end"
+                $query selection range 0 "end"
+                focus $query
+            } else {
+                # so anything else is an error
+                utils show_error $results
             }
         }
-        utils tkbusy_forget
-        set pkgsearch::pkgsearch_run 0
-        pkgsearch::run $pkglist $pinfo $pbtn $query
     }
+    utils tkbusy_forget
 }
