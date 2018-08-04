@@ -48,13 +48,24 @@ Copyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
 }
 
 #
+# return the underline index for a menu entry and the name properly formatted
+#
+proc ::pkgtk::menu_underline_name {orig} {
+    set u [string first "_" $orig]
+    set n [string replace $orig $u $u ""]
+    puts "menu underline name: $u $n"
+    return [list $u $n]
+}
+
+#
 # create a cascade menu
 #
 proc ::pkgtk::menu_cascade {parent name desc items} {
     set w $parent.$name
     menu $w -tearoff 0
     pkgtk::menu_additems $w $items
-    $parent add cascade -label $desc -underline 0 -menu $w
+    set p [pkgtk::menu_underline_name $desc]
+    $parent add cascade -label [lindex $p 1] -underline [lindex $p 0] -menu $w
 }
 
 #
@@ -71,7 +82,8 @@ proc ::pkgtk::menu_additems {w items} {
                 continue
             }
             "command" {
-                lappend params -label $name
+                set p [pkgtk::menu_underline_name $name]
+                lappend params -label [lindex $p 1] -underline [lindex $p 0]
                 lappend params -command [lindex $child 3]
             }
         }

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 05:12-0300\n"
-"PO-Revision-Date: 2018-08-04 00:13-0300\n"
+"POT-Creation-Date: 2018-08-04 18:44-0300\n"
+"PO-Revision-Date: 2018-08-04 18:45-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -21,55 +21,55 @@ msgstr ""
 msgid "About pkgtk"
 msgstr "Información sobre pkgtk"
 
-#: lib/pkgtk/main.tcl:89
+#: lib/pkgtk/main.tcl:101
 msgid "_Packages"
 msgstr "_Paquetes"
 
-#: lib/pkgtk/main.tcl:90
+#: lib/pkgtk/main.tcl:102
 msgid "_Installed"
 msgstr "_Instalados"
 
-#: lib/pkgtk/main.tcl:91
+#: lib/pkgtk/main.tcl:103
 msgid "_Upgrade"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:93
+#: lib/pkgtk/main.tcl:105
 msgid "_Available"
 msgstr "_Disponibles"
 
-#: lib/pkgtk/main.tcl:94
+#: lib/pkgtk/main.tcl:106
 msgid "_Search"
 msgstr "_Buscar"
 
-#: lib/pkgtk/main.tcl:96
+#: lib/pkgtk/main.tcl:108
 msgid "Auto_remove"
 msgstr "Pu_rgar"
 
-#: lib/pkgtk/main.tcl:97
+#: lib/pkgtk/main.tcl:109
 msgid "_Clean cache"
 msgstr "_Limpiar cache"
 
-#: lib/pkgtk/main.tcl:99
+#: lib/pkgtk/main.tcl:111
 msgid "_Quit"
 msgstr "_Salir"
 
-#: lib/pkgtk/main.tcl:102
+#: lib/pkgtk/main.tcl:114
 msgid "_Repositories"
 msgstr "_Repositorios"
 
-#: lib/pkgtk/main.tcl:103
+#: lib/pkgtk/main.tcl:115
 msgid "_Configuration"
 msgstr "_Configuración"
 
-#: lib/pkgtk/main.tcl:104
+#: lib/pkgtk/main.tcl:116
 msgid "_Update"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:108
+#: lib/pkgtk/main.tcl:120
 msgid "_About"
 msgstr "_Info"
 
-#: lib/pkgtk/main.tcl:127
+#: lib/pkgtk/main.tcl:139
 msgid "FreeBSD package manager"
 msgstr "Manejador de paquetes FreeBSD"
 
