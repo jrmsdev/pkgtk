@@ -5,7 +5,25 @@
 
 PREFIX=`realpath $(dirname $0)/..`
 TCLLIBPATH=${PREFIX}/lib
+LIBDIR=${PREFIX}/lib/pkgtk
 LIBEXEC=${PREFIX}/libexec/pkgtk
 
+PKGTK_MSGSDIR=${LIBDIR}/lib/msgs
+if ! test -d ${PKGTK_MSGSDIR}; then
+    PKGTK_MSGSDIR=${PREFIX}/po
+fi
+
+if test -n "${LANG}"; then
+    export LANG
+fi
+if test -n "${LC_ALL}"; then
+    export LC_ALL
+fi
+if test -n "${LC_MESSAGES}"; then
+    export LC_MESSAGES
+fi
+
+export PKGTK_MSGSDIR
 export TCLLIBPATH
+
 exec ${LIBEXEC}/gui.tcl

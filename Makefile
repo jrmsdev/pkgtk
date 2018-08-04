@@ -13,6 +13,12 @@ INSTALL_FILE := install -v -C -h md5 -m 0644
 
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
 LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
+BUILD_DEPS := $(BUILDDIR)/bin/pkgtk $(BUILDDIR)/libexec/pkgtk/gui.tcl $(LIB_FILES)
+
+PO_TEMPLATE := po/pkgtk.pot
+PO_SOURCES := libexec/pkgtk/gui.tcl $(LIB_SOURCES)
+PO_FILES != ls po/*.po 2>/dev/null || true
+MSG_RELNAMES != for pofile in $(PO_FILES); do echo po/`basename $$pofile .po`; done
 
 .PHONY: all
 all: build
@@ -25,9 +31,11 @@ lib/pkgtk/pkgIndex.tcl: $(LIB_SOURCES)
 	touch lib/pkgtk/pkgIndex.tcl
 
 .PHONY: build
-build: pkgindex $(BUILDDIR)/bin/pkgtk $(BUILDDIR)/libexec/pkgtk/gui.tcl $(LIB_FILES)
+build: pkgindex po-msgfmt $(BUILD_DEPS)
 	@mkdir -vp $(BUILDDIR)/share/doc/pkgtk
 	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
+	@mkdir -vp $(BUILDDIR)/lib/pkgtk/msgs
+	@$(INSTALL_FILE) po/*.msg $(BUILDDIR)/lib/pkgtk/msgs
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@mkdir -vp $(BUILDDIR)/bin
@@ -55,15 +63,19 @@ dist: build
 
 .PHONY: install
 install: build
-	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/pkgtk \
-		   $(DESTDIR)$(PREFIX)/libexec/pkgtk \
-		   $(DESTDIR)$(PREFIX)/share/doc/pkgtk
+	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
+						$(DESTDIR)$(PREFIX)/lib/pkgtk \
+						$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
+						$(DESTDIR)$(PREFIX)/share/doc/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk $(DESTDIR)$(PREFIX)/bin/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/gui.tcl \
-			$(DESTDIR)$(PREFIX)/libexec/pkgtk/gui.tcl
-	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl $(DESTDIR)$(PREFIX)/lib/pkgtk
+						$(DESTDIR)$(PREFIX)/libexec/pkgtk/gui.tcl
+	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
+						$(DESTDIR)$(PREFIX)/lib/pkgtk
+	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/msgs/*.msg \
+						$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
-			 $(DESTDIR)$(PREFIX)/share/doc/pkgtk
+						$(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
 .PHONY: uninstall
 uninstall:
@@ -72,6 +84,27 @@ uninstall:
 	@rm -vrf $(DESTDIR)$(PREFIX)/lib/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
+$(PO_TEMPLATE): $(PO_SOURCES)
+	xgettext -d pkgtk -o $(PO_TEMPLATE) -LTcl -kmc -F $(PO_SOURCES)
+
+.PHONY: po-update
+po-update: $(PO_TEMPLATE)
+	@for pofile in $(PO_FILES); do echo -n "msgmerge $$pofile.."; \
+			msgmerge --backup off -U $$pofile $(PO_TEMPLATE); done
+
+.PHONY: po-msgfmt
+po-msgfmt:
+	@for reln in $(MSG_RELNAMES); do \
+		rm -f $${reln}.msg; \
+		touch $${reln}.msg; \
+		echo -n "msgfmt $${reln}.po... "; \
+		msgfmt --statistics --tcl $${reln}.msg -l $$(basename $$reln) -d po $${reln}.po; \
+	done
+
+.PHONY: po-all
+po-all: po-update po-msgfmt
+
 .PHONY: clean
 clean:
 	@rm -rvf dist build
+	@rm -vf $(PO_TEMPLATE) po/*.msg

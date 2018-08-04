@@ -6,6 +6,8 @@ package require utils
 package require pkglocal
 package require pkgremote
 
+package require msgcat
+
 namespace eval ::pkgview {
     # global vars
     variable pkgbuttons_curstate {disabled}
@@ -93,7 +95,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
     }
 
     set llen [llength $pkglist]
-    $stats configure -text "$pkgtype packages: $llen"
+    $stats configure -text [format [msgcat::mc "%s packages: %d"] $pkgtype $llen]
 
     set cur_section {}
     set focus_item {}

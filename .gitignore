@@ -1,2 +1,4 @@
 build/
 dist/
+po/*.msg
+po/pkgtk.pot
