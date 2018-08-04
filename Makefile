@@ -90,7 +90,7 @@ $(PO_TEMPLATE): $(PO_SOURCES)
 
 .PHONY: po-update
 po-update: $(PO_TEMPLATE)
-	@for pofile in $(PO_FILES); do echo -n "msgmerge $$pofile.."; \
+	@for pofile in $(PO_FILES); do echo -n "msgmerge $$pofile"; \
 			msgmerge --backup off -U $$pofile $(PO_TEMPLATE); done
 
 .PHONY: po-msgfmt

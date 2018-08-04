@@ -8,10 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 03:03-0300\n"
+"POT-Creation-Date: 2018-08-04 05:03-0300\n"
 "PO-Revision-Date: 2018-08-04 00:13-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
-"Language-Team: Español <jrmsdev@gmail.com>\n"
+"Language-Team: Spanish\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,55 +21,55 @@ msgstr ""
 msgid "About pkgtk"
 msgstr "Información sobre pkgtk"
 
-#: lib/pkgtk/main.tcl:58
-msgid "Packages"
-msgstr "Paquetes"
+#: lib/pkgtk/main.tcl:89
+msgid "_Packages"
+msgstr "_Paquetes"
 
-#: lib/pkgtk/main.tcl:60
-msgid "Installed"
-msgstr "Instalados"
+#: lib/pkgtk/main.tcl:90
+msgid "_Installed"
+msgstr "_Instalados"
 
-#: lib/pkgtk/main.tcl:62
-msgid "Upgrade"
-msgstr "Actualizar"
+#: lib/pkgtk/main.tcl:91
+msgid "_Upgrade"
+msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:65
-msgid "Available"
-msgstr "Disponibles"
+#: lib/pkgtk/main.tcl:93
+msgid "_Available"
+msgstr "_Disponibles"
 
-#: lib/pkgtk/main.tcl:67
-msgid "Search"
-msgstr "Buscar"
+#: lib/pkgtk/main.tcl:94
+msgid "_Search"
+msgstr "_Buscar"
 
-#: lib/pkgtk/main.tcl:70
-msgid "Autoremove"
-msgstr "Purgar"
+#: lib/pkgtk/main.tcl:96
+msgid "Auto_remove"
+msgstr "Pu_rgar"
 
-#: lib/pkgtk/main.tcl:72
-msgid "Clean cache"
-msgstr "Limpiar cache"
+#: lib/pkgtk/main.tcl:97
+msgid "_Clean cache"
+msgstr "_Limpiar cache"
 
-#: lib/pkgtk/main.tcl:75
-msgid "Quit"
-msgstr "Salir"
+#: lib/pkgtk/main.tcl:99
+msgid "_Quit"
+msgstr "_Salir"
 
-#: lib/pkgtk/main.tcl:79
-msgid "Repositories"
-msgstr "Repositorios"
-
-#: lib/pkgtk/main.tcl:80
-msgid "Configuration"
-msgstr "Configuración"
-
-#: lib/pkgtk/main.tcl:82
-msgid "Update"
-msgstr "Actualizar"
-
-#: lib/pkgtk/main.tcl:85
-msgid "About"
-msgstr "Info"
+#: lib/pkgtk/main.tcl:102
+msgid "_Repositories"
+msgstr "_Repositorios"
 
 #: lib/pkgtk/main.tcl:103
+msgid "_Configuration"
+msgstr "_Configuración"
+
+#: lib/pkgtk/main.tcl:104
+msgid "_Update"
+msgstr "_Actualizar"
+
+#: lib/pkgtk/main.tcl:108
+msgid "_About"
+msgstr "_Info"
+
+#: lib/pkgtk/main.tcl:127
 msgid "FreeBSD package manager"
 msgstr "Manejador de paquetes FreeBSD"
 

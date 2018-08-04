@@ -48,41 +48,65 @@ Copyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
 }
 
 #
+# create a cascade menu
+#
+proc ::pkgtk::menu_cascade {parent name desc items} {
+    set w $parent.$name
+    menu $w -tearoff 0
+    pkgtk::menu_additems $w $items
+    $parent add cascade -label $desc -underline 0 -menu $w
+}
+
+#
+# add menu items
+#
+proc ::pkgtk::menu_additems {w items} {
+    foreach {child} $items {
+        set name [mc [lindex $child 1]]
+        set type [lindex $child 2]
+        set params $type
+        switch -- $type {
+            "separator" {
+                $w add separator
+                continue
+            }
+            "command" {
+                lappend params -label $name
+                lappend params -command [lindex $child 3]
+            }
+        }
+        eval $w add $params
+    }
+}
+
+#
 # main menu
 #
 proc ::pkgtk::main_menu {} {
     menu .menu
     . configure -menu .menu
 
-    menu .menu.packages -tearoff 0
-    .menu add cascade -label [mc "Packages"] -underline 0 -menu .menu.packages
+    pkgtk::menu_cascade .menu "packages" [mc "_Packages"] {
+        {mc "_Installed" command {utils dispatch_view pkglocal::view}}
+        {mc "_Upgrade" command {pkgcmd::view_upgrade "all"}}
+        {s0 "" separator {}}
+        {mc "_Available" command {utils dispatch_view pkgremote::view}}
+        {mc "_Search" command {utils dispatch_view pkgsearch::view}}
+        {s1 "" separator {}}
+        {mc "Auto_remove" command {pkgcmd::view_autoremove}}
+        {mc "_Clean cache" command {pkgcmd::view_clean_cache}}
+        {s2 "" separator {}}
+        {mc "_Quit" command {pkgtk::quit 0}}
+    }
 
-    .menu.packages add command -label [mc "Installed"] -underline 0 \
-                               -command {utils dispatch_view pkglocal::view}
-    .menu.packages add command -label [mc "Upgrade"] -underline 0 \
-                               -command {pkgcmd::view_upgrade "all"}
-    .menu.packages add separator
-    .menu.packages add command -label [mc "Available"] -underline 0 \
-                        -command {utils dispatch_view pkgremote::view}
-    .menu.packages add command -label [mc "Search"] -underline 0 \
-                               -command {utils dispatch_view pkgsearch::view}
-    .menu.packages add separator
-    .menu.packages add command -label [mc "Autoremove"] -underline 4 \
-                               -command {pkgcmd::view_autoremove}
-    .menu.packages add command -label [mc "Clean cache"] -underline 0 \
-                               -command {pkgcmd::view_clean_cache}
-    .menu.packages add separator
-    .menu.packages add command -label [mc "Quit"] -underline 0 \
-                               -command {pkgtk::quit 0}
+    pkgtk::menu_cascade .menu "repos" [mc "_Repositories"] {
+        {mc "_Configuration" command {utils dispatch_view pkgrepo::view}}
+        {mc "_Update" command {pkgcmd::view_update}}
+    }
 
-    menu .menu.repos -tearoff 0
-    .menu add cascade -label [mc "Repositories"] -underline 0 -menu .menu.repos
-    .menu.repos add command -label [mc "Configuration"] -underline 0 \
-                            -command {utils dispatch_view pkgrepo::view}
-    .menu.repos add command -label [mc "Update"] -underline 0 \
-                            -command {pkgcmd::view_update}
-
-    .menu add command -label [mc "About"] -underline 0 -command {pkgtk::view_about}
+    pkgtk::menu_additems .menu {
+        {mc "_About" command {pkgtk::view_about}}
+    }
 }
 
 #
