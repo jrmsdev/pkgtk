@@ -131,14 +131,14 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     ttk::frame $w.btn
     grid $w.btn -row 0 -column 0 -sticky nwse
     if {$dorun} {
-        ttk::button $w.btn.close -text "Close" \
+        ttk::button $w.btn.close -text [mc "Close"] \
                                  -command {destroy $pkgview::toplevel_child}
         grid $w.btn.close -row 0 -column 0 -sticky w
     } else {
-        ttk::button $w.btn.run -text "Confirm $cmd" \
+        ttk::button $w.btn.run -text [format [mc "Confirm %s"] $cmd] \
                                -command "pkgcmd::view $cmd $args 1"
         grid $w.btn.run -row 0 -column 0 -sticky w
-        ttk::button $w.btn.cancel -text "Cancel" \
+        ttk::button $w.btn.cancel -text [mc "Cancel"] \
                                   -command {destroy $pkgview::toplevel_child}
         grid $w.btn.cancel -row 0 -column 1 -sticky w
     }

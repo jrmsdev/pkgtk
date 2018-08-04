@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 18:44-0300\n"
-"PO-Revision-Date: 2018-08-04 18:45-0300\n"
+"POT-Creation-Date: 2018-08-04 19:02-0300\n"
+"PO-Revision-Date: 2018-08-04 19:05-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -21,57 +21,74 @@ msgstr ""
 msgid "About pkgtk"
 msgstr "Información sobre pkgtk"
 
-#: lib/pkgtk/main.tcl:101
+#: lib/pkgtk/main.tcl:36 lib/pkgtk/main.tcl:134
+msgid "FreeBSD package manager"
+msgstr "Manejador de paquetes FreeBSD"
+
+#: lib/pkgtk/main.tcl:39
+msgid "Released under BSD license (see LICENSE file)"
+msgstr "Liberado bajo licencia BSD (ver archivo LICENSE)"
+
+#: lib/pkgtk/main.tcl:96
 msgid "_Packages"
 msgstr "_Paquetes"
 
-#: lib/pkgtk/main.tcl:102
+#: lib/pkgtk/main.tcl:97
 msgid "_Installed"
 msgstr "_Instalados"
 
-#: lib/pkgtk/main.tcl:103
+#: lib/pkgtk/main.tcl:98
 msgid "_Upgrade"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:105
+#: lib/pkgtk/main.tcl:100
 msgid "_Available"
 msgstr "_Disponibles"
 
-#: lib/pkgtk/main.tcl:106
+#: lib/pkgtk/main.tcl:101
 msgid "_Search"
 msgstr "_Buscar"
 
-#: lib/pkgtk/main.tcl:108
+#: lib/pkgtk/main.tcl:103
 msgid "Auto_remove"
 msgstr "Pu_rgar"
 
-#: lib/pkgtk/main.tcl:109
+#: lib/pkgtk/main.tcl:104
 msgid "_Clean cache"
 msgstr "_Limpiar cache"
 
-#: lib/pkgtk/main.tcl:111
+#: lib/pkgtk/main.tcl:106
 msgid "_Quit"
 msgstr "_Salir"
 
-#: lib/pkgtk/main.tcl:114
+#: lib/pkgtk/main.tcl:109
 msgid "_Repositories"
 msgstr "_Repositorios"
 
-#: lib/pkgtk/main.tcl:115
+#: lib/pkgtk/main.tcl:110
 msgid "_Configuration"
 msgstr "_Configuración"
 
-#: lib/pkgtk/main.tcl:116
+#: lib/pkgtk/main.tcl:111
 msgid "_Update"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:120
+#: lib/pkgtk/main.tcl:115
 msgid "_About"
 msgstr "_Info"
 
-#: lib/pkgtk/main.tcl:139
-msgid "FreeBSD package manager"
-msgstr "Manejador de paquetes FreeBSD"
+#: lib/pkgtk/pkgcmd.tcl:134
+msgid "Close"
+msgstr "Cerrar"
+
+#: lib/pkgtk/pkgcmd.tcl:138
+#, tcl-format
+msgid "Confirm %s"
+msgstr "Confirmar %s"
+
+#: lib/pkgtk/pkgcmd.tcl:141
+msgid "Cancel"
+msgstr "Cancelar"
 
 #: lib/pkgtk/pkglocal.tcl:16
 msgid "Remove"
@@ -84,6 +101,10 @@ msgstr "Actualizar"
 #: lib/pkgtk/pkgremote.tcl:16
 msgid "Install"
 msgstr "Instalar"
+
+#: lib/pkgtk/pkgsearch.tcl:29
+msgid "Search:"
+msgstr "Buscar:"
 
 #: lib/pkgtk/pkgview.tcl:98
 #, tcl-format

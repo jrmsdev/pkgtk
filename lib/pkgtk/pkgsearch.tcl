@@ -26,7 +26,7 @@ proc ::pkgsearch::view {w} {
     grid columnconfigure $search 1 -weight 1
     grid $search -sticky nwse
 
-    ttk::label $search.lbl -takefocus 0 -text "Search:"
+    ttk::label $search.lbl -takefocus 0 -text [mc "Search:"]
     grid $search.lbl -row 0 -column 0 -sticky w
 
     set query $search.query

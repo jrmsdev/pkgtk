@@ -32,18 +32,14 @@ proc ::pkgtk::view_about {} {
     wm title $top [mc "About pkgtk"]
     ttk::label $top.info
     grid $top.info -sticky nwse
-    $top.info configure -justify "center" -padding {10 0} \
--font "monospace 10 bold" -text "
-pkgtk v$version::VERSION
-
-FreeBSD package manager
-(r$version::RELEASE)
-
-https://gitlab.com/jrmsdev/pkgtk
-
-Released under BSD license (see LICENSE file)
-Copyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
-"
+    set txt [format "pkgtk v%s\n\n" $version::VERSION]
+    set txt [format "%s%s\n" $txt [mc "FreeBSD package manager"]]
+    set txt [format "%s(r%s)\n\n" $txt $version::RELEASE]
+    set txt [format "%shttps://gitlab.com/jrmsdev/pkgtk\n\n" $txt]
+    set txt [format "%s%s\n" $txt [mc "Released under BSD license (see LICENSE file)"]]
+    set txt [format "%sCopyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>" $txt]
+    $top.info configure -justify "center" -padding {10} \
+                        -font "monospace 10 bold" -text $txt
     tkwait window $top
 }
 
@@ -53,7 +49,6 @@ Copyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
 proc ::pkgtk::menu_underline_name {orig} {
     set u [string first "_" $orig]
     set n [string replace $orig $u $u ""]
-    puts "menu underline name: $u $n"
     return [list $u $n]
 }
 
