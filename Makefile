@@ -3,7 +3,7 @@ TCLSH ?= tclsh8.6
 DESTDIR ?=
 
 USER_HOME != echo ~
-RELEASE != echo 'source lib/pkgtk/version.tcl; version::release' | $(TCLSH)
+RELEASE != $(SH) -e mk/get-release.sh $(TCLSH)
 
 PREFIX ?= $(USER_HOME)
 RELNAME := pkgtk-$(RELEASE)
