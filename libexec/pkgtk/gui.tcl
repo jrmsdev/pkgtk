@@ -4,6 +4,12 @@
 # See LICENSE file.
 
 package require Tcl 8.6
-package require pkgtk
+package require msgcat
 
+namespace import msgcat::mc
+if {[info exists ::env(PKGTK_MSGSDIR)]} {
+    msgcat::mcload $::env(PKGTK_MSGSDIR)
+}
+
+package require pkgtk
 pkgtk main

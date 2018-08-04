@@ -64,18 +64,19 @@ dist: build
 .PHONY: install
 install: build
 	@mkdir -vp $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
-						$(DESTDIR)$(PREFIX)/lib/pkgtk \
-						$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
-						$(DESTDIR)$(PREFIX)/share/doc/pkgtk
-	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk $(DESTDIR)$(PREFIX)/bin/pkgtk
+			$(DESTDIR)$(PREFIX)/lib/pkgtk \
+			$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
+			$(DESTDIR)$(PREFIX)/share/doc/pkgtk
+	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk \
+				$(DESTDIR)$(PREFIX)/bin/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/gui.tcl \
-						$(DESTDIR)$(PREFIX)/libexec/pkgtk/gui.tcl
+				$(DESTDIR)$(PREFIX)/libexec/pkgtk/gui.tcl
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
-						$(DESTDIR)$(PREFIX)/lib/pkgtk
+				$(DESTDIR)$(PREFIX)/lib/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/msgs/*.msg \
-						$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
+				$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
-						$(DESTDIR)$(PREFIX)/share/doc/pkgtk
+				$(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
 .PHONY: uninstall
 uninstall:

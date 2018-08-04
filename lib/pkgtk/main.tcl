@@ -97,18 +97,10 @@ proc ::pkgtk::quit {rc} {
 }
 
 #
-# msgcat init
-#
-package require msgcat
-if {[info exists ::env(PKGTK_MSGSDIR)]} {
-    msgcat::mcload $::env(PKGTK_MSGSDIR)
-}
-
-#
 # main
 #
 proc ::pkgtk::main {} {
-    wm title . [msgcat::mc "FreeBSD package manager"]
+    wm title . [mc "FreeBSD package manager"]
     wm minsize . 800 600
     grid rowconfigure . 0 -weight 1
     grid columnconfigure . 0 -weight 1

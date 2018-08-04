@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 01:57-0300\n"
+"POT-Creation-Date: 2018-08-04 02:44-0300\n"
 "PO-Revision-Date: 2018-08-04 00:13-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Español <jrmsdev@gmail.com>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/pkgtk/main.tcl:111
+#: lib/pkgtk/main.tcl:103
 msgid "FreeBSD package manager"
 msgstr "Manejador de paquetes FreeBSD"
 
-#: lib/pkgtk/pkgview.tcl:98
+#: lib/pkgtk/pkgview.tcl:97
 #, tcl-format
 msgid "%s packages: %d"
 msgstr "%s paquetes: %d"

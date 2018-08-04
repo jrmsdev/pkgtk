@@ -2,11 +2,10 @@
 # See LICENSE file.
 
 package provide pkgview 0.0
+
 package require utils
 package require pkglocal
 package require pkgremote
-
-package require msgcat
 
 namespace eval ::pkgview {
     # global vars
@@ -95,7 +94,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
     }
 
     set llen [llength $pkglist]
-    $stats configure -text [format [msgcat::mc "%s packages: %d"] $pkgtype $llen]
+    $stats configure -text [format [mc "%s packages: %d"] $pkgtype $llen]
 
     set cur_section {}
     set focus_item {}
