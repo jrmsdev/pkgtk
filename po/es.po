@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 02:44-0300\n"
+"POT-Creation-Date: 2018-08-04 03:03-0300\n"
 "PO-Revision-Date: 2018-08-04 00:13-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Español <jrmsdev@gmail.com>\n"
@@ -17,11 +17,77 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: lib/pkgtk/main.tcl:32
+msgid "About pkgtk"
+msgstr "Información sobre pkgtk"
+
+#: lib/pkgtk/main.tcl:58
+msgid "Packages"
+msgstr "Paquetes"
+
+#: lib/pkgtk/main.tcl:60
+msgid "Installed"
+msgstr "Instalados"
+
+#: lib/pkgtk/main.tcl:62
+msgid "Upgrade"
+msgstr "Actualizar"
+
+#: lib/pkgtk/main.tcl:65
+msgid "Available"
+msgstr "Disponibles"
+
+#: lib/pkgtk/main.tcl:67
+msgid "Search"
+msgstr "Buscar"
+
+#: lib/pkgtk/main.tcl:70
+msgid "Autoremove"
+msgstr "Purgar"
+
+#: lib/pkgtk/main.tcl:72
+msgid "Clean cache"
+msgstr "Limpiar cache"
+
+#: lib/pkgtk/main.tcl:75
+msgid "Quit"
+msgstr "Salir"
+
+#: lib/pkgtk/main.tcl:79
+msgid "Repositories"
+msgstr "Repositorios"
+
+#: lib/pkgtk/main.tcl:80
+msgid "Configuration"
+msgstr "Configuración"
+
+#: lib/pkgtk/main.tcl:82
+msgid "Update"
+msgstr "Actualizar"
+
+#: lib/pkgtk/main.tcl:85
+msgid "About"
+msgstr "Info"
+
 #: lib/pkgtk/main.tcl:103
 msgid "FreeBSD package manager"
 msgstr "Manejador de paquetes FreeBSD"
 
-#: lib/pkgtk/pkgview.tcl:97
+#: lib/pkgtk/pkgview.tcl:98
 #, tcl-format
-msgid "%s packages: %d"
-msgstr "%s paquetes: %d"
+msgid "Available packages: %d"
+msgstr "Paquetes disponibles: %d"
+
+#: lib/pkgtk/pkgview.tcl:100
+#, tcl-format
+msgid "Installed packages: %d"
+msgstr "Paquetes instalados: %d"
+
+#: lib/pkgtk/pkgview.tcl:145
+#, tcl-format
+msgid ""
+"Category : %s\n"
+"Packages : %d"
+msgstr ""
+"Categoría : %s\n"
+"Paquetes : %d"

@@ -87,14 +87,18 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
     $paned add $w.right -weight 9
 
     utils tkbusy_hold
-    if {[string equal "Available" $pkgtype]} {
+    if {[string equal "remote" $pkgtype]} {
         pkgremote::buttons $pkgbuttons
     } else {
         pkglocal::buttons $pkgbuttons
     }
 
     set llen [llength $pkglist]
-    $stats configure -text [format [mc "%s packages: %d"] $pkgtype $llen]
+    if {$pkgtype == "remote"} {
+        $stats configure -text [format [mc "Available packages: %d"] $llen]
+    } else {
+        $stats configure -text [format [mc "Installed packages: %d"] $llen]
+    }
 
     set cur_section {}
     set focus_item {}
@@ -111,7 +115,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
             set cur_section $pkg_section
         }
         set pkgid "pkglocal:$pkg_name"
-        if {[string equal "Available" $pkgtype]} {
+        if {[string equal "remote" $pkgtype]} {
             set pkgid "pkgremote:$pkg_name"
         }
         $pkgtree insert $cur_section end -id $pkgid -text $pkg_name
@@ -137,7 +141,8 @@ proc ::pkgview::pkgtree_show {pkgtree pkginfo pkgbuttons} {
         pkgview::pkg_show $pkginfo $pkgbuttons "remote" $pkg
     } else {
         set slen [llength [$pkgtree children $item]]
-        $pkginfo configure -text "Category : $item\nPackages : $slen"
+        $pkginfo configure \
+                 -text [format [mc "Category : %s\nPackages : %d"] $item $slen]
         pkgview::pkgbuttons_disable $pkgbuttons
     }
 }

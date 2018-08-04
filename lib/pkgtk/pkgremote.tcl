@@ -22,7 +22,7 @@ proc ::pkgremote::buttons {w} {
 # view remote (available) packages
 #
 proc ::pkgremote::view {w} {
-    pkgview::pkgtree_view $w "Available" [pkgremote::list]
+    pkgview::pkgtree_view $w "remote" [pkgremote::list]
 }
 
 #

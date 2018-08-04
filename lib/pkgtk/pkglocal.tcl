@@ -25,7 +25,7 @@ proc ::pkglocal::buttons {w} {
 # view local (installed) packages
 #
 proc ::pkglocal::view {w} {
-    pkgview::pkgtree_view $w "Installed" [pkglocal::list]
+    pkgview::pkgtree_view $w "local" [pkglocal::list]
 }
 
 #
