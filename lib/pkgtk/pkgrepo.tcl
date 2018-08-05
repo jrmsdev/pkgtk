@@ -2,6 +2,7 @@
 # See LICENSE file.
 
 package provide pkgrepo 0.0
+package require utils
 
 namespace eval ::pkgrepo {
     namespace export view
@@ -67,6 +68,23 @@ proc ::pkgrepo::readfile {reposVar fn} {
                 dict set repos $repo_name $k [list $vtype $v]
             }
         }
+    }
+}
+
+#
+# write repo config file
+#
+proc ::pkgrepo::writefile {repo cfg} {
+    # TODO: check dir exists first...
+    set fn [format "/usr/local/etc/pkg/repos/%s.conf" $repo]
+    if {[catch {set fh [open $fn "w"]} err]} {
+        utils show_error $err
+        return
+    } else {
+        puts $fh [pkgrepo::dump_settings $repo $cfg]
+    }
+    if {[catch {close $fh} err]} {
+        utils show_error $err
     }
 }
 
@@ -364,10 +382,10 @@ proc ::pkgrepo::changes_save {} {
     set repo [pkgrepo::curtab_reponame]
     set newcfg [dict get $pkgrepo::dirty $repo]
     set newdata [pkgrepo::config_update $repo $newcfg]
+    pkgrepo::writefile $repo $newdata
     foreach {opt} [dict keys $newcfg] {
         pkgrepo::dirty_unset $repo $opt
     }
-    puts "newdata: $newdata"
     set w [dict get $pkgrepo::w_ids $repo]
     pkgrepo::show $w $repo $newdata
 }
@@ -376,10 +394,7 @@ proc ::pkgrepo::changes_save {} {
 # update repo config
 #
 proc ::pkgrepo::config_update {repo newcfg} {
-    puts "config: $pkgrepo::config"
     set cfg [dict get $pkgrepo::config $repo]
-    puts "cfg: $cfg"
-    puts "newcfg: $newcfg"
     foreach {opt val} $newcfg {
         set curval [dict get $cfg $opt]
         set type [lindex $curval 0]
