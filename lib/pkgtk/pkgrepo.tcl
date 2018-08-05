@@ -6,6 +6,11 @@ package provide pkgrepo 0.0
 namespace eval ::pkgrepo {
     namespace export view
     namespace ensemble create
+
+    variable config
+    variable dirty
+    variable repos_w
+    variable w_ids
 }
 
 #
@@ -123,14 +128,16 @@ proc ::pkgrepo::view {w} {
     set repos $w.repos
     ttk::notebook $repos
     grid $repos -row 1 -column 0 -sticky nwse
+    set pkgrepo::repos_w $repos
 
-    set repos_config [pkgrepo::get_config]
+    set pkgrepo::config [pkgrepo::get_config]
     set idx 0
-    foreach repo_name [lsort [dict keys $repos_config]] {
-        set repo_data [dict get $repos_config $repo_name]
+    foreach repo_name [lsort [dict keys $pkgrepo::config]] {
+        set repo_data [dict get $pkgrepo::config $repo_name]
         set rid "r$idx"
         $repos add [pkgrepo::show $repos.$rid $repo_name $repo_data] \
                    -text $repo_name -sticky nwse
+        dict set pkgrepo::w_ids $repo_name $repos.$rid
         incr idx
     }
 
@@ -160,7 +167,7 @@ proc ::pkgrepo::show {w name data} {
         ttk::label $sep -text ":"
         grid $sep -row $optidx -column 1 -sticky nw
         set vw $w.val$optidx
-        pkgrepo::setting_value $vw $valtype $val
+        pkgrepo::setting_value $vw $name $opt $valtype $val
         grid $vw -row $optidx -column 2 -sticky nwse
         incr optidx
     }
@@ -171,29 +178,68 @@ proc ::pkgrepo::show {w name data} {
 #
 # create a widget representing a config setting value
 #
-proc ::pkgrepo::setting_value {w vtype val} {
+proc ::pkgrepo::setting_value {w repo opt vtype val} {
     if {$vtype == "bool"} {
-        pkgrepo::valtype_bool $w $val
+        pkgrepo::valtype_bool $w $repo $opt $val
     } else {
-        pkgrepo::valtype_str $w $val
+        pkgrepo::valtype_str $w $repo $opt $val
     }
 }
 
 #
 # create a widget for a setting string value
 #
-proc ::pkgrepo::valtype_str {w val} {
-    #~ ttk::entry $w -takefocus 0
-    #~ $w insert end $val
-    #~ $w configure -state "read"
-    ttk::label $w -text $val
+proc ::pkgrepo::valtype_str {w repo opt val} {
+    ttk::entry $w -takefocus 0
+    $w insert end $val
+    $w configure -validate "all" \
+                 -validatecommand "pkgrepo::str_check $w $repo $opt %V %s"
+}
+
+#
+# manage an str setting
+#
+proc ::pkgrepo::str_check {w repo opt cond val} {
+    if {$cond == "focusout"} {
+        pkgrepo::config_set $repo $opt $val
+    }
+    return 1
 }
 
 #
 # create a widget for a setting bool value
 #
-proc ::pkgrepo::valtype_bool {w val} {
-    #~ ttk::combobox $w -values "yes no" -state "read"
-    #~ $w set $val
-    ttk::label $w -text $val
+proc ::pkgrepo::valtype_bool {w repo opt val} {
+    ttk::combobox $w -values "yes no" -state "readonly"
+    $w set $val
+    bind $w <<ComboboxSelected>> "pkgrepo::bool_selected $w $repo $opt"
+}
+
+#
+# manage a bool setting
+#
+proc ::pkgrepo::bool_selected {w repo opt} {
+    $w selection clear
+    set newval [$w get]
+    pkgrepo::config_set $repo $opt $newval
+}
+
+#
+# set a new config value
+#
+proc ::pkgrepo::config_set {repo opt val} {
+    puts "config set: $repo $opt $val"
+    pkgrepo::dirty_set $repo
+    dict set pkgrepo::dirty $repo $opt $val
+}
+
+#
+# set a repo config as dirty (changed/updated)
+#
+proc ::pkgrepo::dirty_set {repo} {
+    if {[info exists pkgrepo::dirty] && [dict exists $pkgrepo::dirty $repo]} {
+        return
+    }
+    set w [dict get $pkgrepo::w_ids $repo]
+    $pkgrepo::repos_w tab $w -text "$repo *"
 }
