@@ -306,7 +306,6 @@ proc ::pkgrepo::dirty_unset {repo opt} {
     if {[info exists pkgrepo::dirty] && [dict exists $pkgrepo::dirty $repo]} {
         dict unset pkgrepo::dirty $repo $opt
         set repolen [dict size [dict get $pkgrepo::dirty $repo]]
-        puts "dirty unset: $repo len $repolen"
         if {[dict size [dict get $pkgrepo::dirty $repo]] == 0} {
             set w [dict get $pkgrepo::w_ids $repo]
             $pkgrepo::repos_w tab $w -text "$repo"
@@ -334,12 +333,22 @@ proc ::pkgrepo::buttons_disable {} {
 }
 
 #
+# get the repo name from current tab
+#
+proc ::pkgrepo::curtab_reponame {} {
+    set repo [$pkgrepo::repos_w tab current -text]
+    set staridx [string first "*" $repo]
+    if {$staridx} {
+        return [string trim [string replace $repo $staridx $staridx ""]]
+    }
+    return $repo
+}
+
+#
 # discard changes
 #
 proc ::pkgrepo::changes_discard {} {
-    set repo [$pkgrepo::repos_w tab current -text]
-    set staridx [string first "*" $repo]
-    set repo [string trim [string replace $repo $staridx $staridx ""]]
+    set repo [pkgrepo::curtab_reponame]
     foreach {opt} [dict keys [dict get $pkgrepo::dirty $repo]] {
         pkgrepo::dirty_unset $repo $opt
     }
@@ -352,4 +361,30 @@ proc ::pkgrepo::changes_discard {} {
 # save changes
 #
 proc ::pkgrepo::changes_save {} {
+    set repo [pkgrepo::curtab_reponame]
+    set newcfg [dict get $pkgrepo::dirty $repo]
+    set newdata [pkgrepo::config_update $repo $newcfg]
+    foreach {opt} [dict keys $newcfg] {
+        pkgrepo::dirty_unset $repo $opt
+    }
+    puts "newdata: $newdata"
+    set w [dict get $pkgrepo::w_ids $repo]
+    pkgrepo::show $w $repo $newdata
+}
+
+#
+# update repo config
+#
+proc ::pkgrepo::config_update {repo newcfg} {
+    puts "config: $pkgrepo::config"
+    set cfg [dict get $pkgrepo::config $repo]
+    puts "cfg: $cfg"
+    puts "newcfg: $newcfg"
+    foreach {opt val} $newcfg {
+        set curval [dict get $cfg $opt]
+        set type [lindex $curval 0]
+        dict unset pkgrepo::config $repo $opt
+        dict set pkgrepo::config $repo $opt [list $type $val]
+    }
+    return [dict get $pkgrepo::config $repo]
 }
