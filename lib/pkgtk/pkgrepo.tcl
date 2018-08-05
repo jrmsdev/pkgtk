@@ -75,8 +75,11 @@ proc ::pkgrepo::readfile {reposVar fn} {
 # write repo config file
 #
 proc ::pkgrepo::writefile {repo cfg} {
-    # TODO: check dir exists first...
-    set fn [format "/usr/local/etc/pkg/repos/%s.conf" $repo]
+    set cfgdir "/usr/local/etc/pkg/repos"
+    if {! [file exists $cfgdir]} {
+        file mkdir $cfgdir
+    }
+    set fn [format "%s/%s.conf" $cfgdir $repo]
     if {[catch {set fh [open $fn "w"]} err]} {
         utils show_error $err
         return

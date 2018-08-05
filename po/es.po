@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-05 02:14-0300\n"
-"PO-Revision-Date: 2018-08-05 02:17-0300\n"
+"POT-Creation-Date: 2018-08-05 02:26-0300\n"
+"PO-Revision-Date: 2018-08-05 02:30-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -102,15 +102,15 @@ msgstr "Actualizar"
 msgid "Install"
 msgstr "Instalar"
 
-#: lib/pkgtk/pkgrepo.tcl:84
+#: lib/pkgtk/pkgrepo.tcl:87
 msgid "# created by pkgtk"
 msgstr "# creado por pkgtk"
 
-#: lib/pkgtk/pkgrepo.tcl:164
+#: lib/pkgtk/pkgrepo.tcl:167
 msgid "Save"
 msgstr "Guardar"
 
-#: lib/pkgtk/pkgrepo.tcl:168
+#: lib/pkgtk/pkgrepo.tcl:171
 msgid "Discard"
 msgstr "Descartar"
 
