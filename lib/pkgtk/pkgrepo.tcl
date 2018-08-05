@@ -11,6 +11,8 @@ namespace eval ::pkgrepo {
     variable dirty
     variable repos_w
     variable w_ids
+    variable buttons
+    variable strcheck_cur "__NOSET__"
 }
 
 #
@@ -120,15 +122,31 @@ proc ::pkgrepo::view {w} {
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 0 -weight 0
     grid rowconfigure $w 1 -weight 1
+    grid rowconfigure $w 2 -weight 0
     grid $w -sticky nwse
 
     ttk::label $w.dbstats -takefocus 0 -text [exec pkg stats -r]
     grid $w.dbstats -row 0 -column 0 -sticky nw
+    $w.dbstats configure -padding {0 0 0 5}
 
     set repos $w.repos
     ttk::notebook $repos
     grid $repos -row 1 -column 0 -sticky nwse
     set pkgrepo::repos_w $repos
+
+    bind $repos <<NotebookTabChanged>> "pkgrepo::tab_changed $repos"
+
+    set buttons $w.btn
+    set pkgrepo::buttons $buttons
+
+    ttk::frame $buttons
+    grid $buttons -row 2 -column 0 -sticky nwse
+
+    ttk::button $buttons.save -text [mc "Save"] -state "disabled"
+    grid $buttons.save -row 0 -column 0
+
+    ttk::button $buttons.discard -text [mc "Discard"] -state "disabled"
+    grid $buttons.discard -row 0 -column 1
 
     set pkgrepo::config [pkgrepo::get_config]
     set idx 0
@@ -143,6 +161,19 @@ proc ::pkgrepo::view {w} {
 
     $repos select $repos.r0
     ttk::notebook::enableTraversal $repos
+}
+
+#
+# manage a tab changed event
+#
+proc ::pkgrepo::tab_changed {repos} {
+    set t [$repos tab current -text]
+    set dirty [expr [string last "*" $t] > 1]
+    if {$dirty} {
+        pkgrepo::buttons_enable
+    } else {
+        pkgrepo::buttons_disable
+    }
 }
 
 #
@@ -200,8 +231,11 @@ proc ::pkgrepo::valtype_str {w repo opt val} {
 # manage an str setting
 #
 proc ::pkgrepo::str_check {w repo opt cond val} {
-    if {$cond == "focusout"} {
+    if {$cond == "focusin"} {
+        set pkgrepo::strcheck_cur $val
+    } elseif {$cond == "focusout" && $val != $pkgrepo::strcheck_cur} {
         pkgrepo::config_set $repo $opt $val
+        set pkgrepo::strcheck_cur "__UNSET__"
     }
     return 1
 }
@@ -228,18 +262,54 @@ proc ::pkgrepo::bool_selected {w repo opt} {
 # set a new config value
 #
 proc ::pkgrepo::config_set {repo opt val} {
-    puts "config set: $repo $opt $val"
-    pkgrepo::dirty_set $repo
-    dict set pkgrepo::dirty $repo $opt $val
+    set origval [lindex [dict get [dict get $pkgrepo::config $repo] $opt] 1]
+    if {$val == $origval} {
+        pkgrepo::dirty_unset $repo $opt
+    } else {
+        pkgrepo::dirty_set $repo $opt $val
+    }
 }
 
 #
 # set a repo config as dirty (changed/updated)
 #
-proc ::pkgrepo::dirty_set {repo} {
-    if {[info exists pkgrepo::dirty] && [dict exists $pkgrepo::dirty $repo]} {
-        return
-    }
+proc ::pkgrepo::dirty_set {repo opt val} {
+    dict set pkgrepo::dirty $repo $opt $val
     set w [dict get $pkgrepo::w_ids $repo]
     $pkgrepo::repos_w tab $w -text "$repo *"
+    pkgrepo::buttons_enable
+}
+
+#
+# unset a repo config as dirty (restored to orig value)
+#
+proc ::pkgrepo::dirty_unset {repo opt} {
+    if {[info exists pkgrepo::dirty] && [dict exists $pkgrepo::dirty $repo]} {
+        dict unset pkgrepo::dirty $repo $opt
+        set repolen [dict size [dict get $pkgrepo::dirty $repo]]
+        puts "dirty unset: $repo len $repolen"
+        if {[dict size [dict get $pkgrepo::dirty $repo]] == 0} {
+            set w [dict get $pkgrepo::w_ids $repo]
+            $pkgrepo::repos_w tab $w -text "$repo"
+            pkgrepo::buttons_disable
+        }
+    }
+}
+
+#
+# enable edit buttons
+#
+proc ::pkgrepo::buttons_enable {} {
+    foreach {btn} [winfo children $pkgrepo::buttons] {
+        $btn configure -state "enabled"
+    }
+}
+
+#
+# disable edit buttons
+#
+proc ::pkgrepo::buttons_disable {} {
+    foreach {btn} [winfo children $pkgrepo::buttons] {
+        $btn configure -state "disabled"
+    }
 }
