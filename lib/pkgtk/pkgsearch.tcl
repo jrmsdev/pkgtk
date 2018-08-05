@@ -64,7 +64,6 @@ proc ::pkgsearch::view {w} {
 
     focus $query
     pkgremote::buttons $pkgbuttons
-    pkgsearch::run $pkglist $pkginfo $pkgbuttons $query
 }
 
 #
@@ -85,7 +84,10 @@ proc ::pkgsearch::run {pkglist pinfo pbtn query} {
     utils tkbusy_hold
     $pkglist delete 0 "end"
     set q [$query get]
-    if {$q != ""} {
+    if {$q == ""} {
+        pkgview::pkgbuttons_disable $pbtn
+        $pinfo configure -text ""
+    } else {
         try {
             foreach line [split [cmdexec search $q] "\n"] {
                 $pkglist insert "end" "$line"
