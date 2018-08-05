@@ -83,11 +83,10 @@ proc ::pkgsearch::show {plist pinfo pbtn} {
 proc ::pkgsearch::run {pkglist pinfo pbtn query} {
     utils tkbusy_hold
     $pkglist delete 0 "end"
+    pkgview::pkgbuttons_disable $pbtn
+    $pinfo configure -text ""
     set q [$query get]
-    if {$q == ""} {
-        pkgview::pkgbuttons_disable $pbtn
-        $pinfo configure -text ""
-    } else {
+    if {$q != ""} {
         try {
             foreach line [split [cmdexec search $q] "\n"] {
                 $pkglist insert "end" "$line"
