@@ -6,6 +6,7 @@ package provide pkgview 0.0
 package require utils
 package require pkglocal
 package require pkgremote
+package require cmdexec
 
 namespace eval ::pkgview {
     # global vars
@@ -151,11 +152,10 @@ proc ::pkgview::pkgtree_show {pkgtree pkginfo pkgbuttons} {
 # show pkg info
 #
 proc ::pkgview::pkg_show {pkginfo pkgbuttons pkgtype pkg} {
-    set query_format {%n %v (%sh)\n\n%e}
     if {$pkgtype == "remote"} {
-        $pkginfo configure -text [exec pkg rquery $query_format $pkg]
+        $pkginfo configure -text [cmdexec rquery $pkg]
     } else {
-        $pkginfo configure -text [exec pkg query $query_format $pkg]
+        $pkginfo configure -text [cmdexec query $pkg]
     }
     set pkgview::pkg_selected $pkg
     pkgview::pkgbuttons_enable $pkgbuttons

@@ -2,9 +2,11 @@
 # See LICENSE file.
 
 package provide pkgremote 0.0
+
 package require utils
 package require pkgview
 package require pkgcmd
+package require cmdexec
 
 namespace eval ::pkgremote {
 }
@@ -30,7 +32,7 @@ proc ::pkgremote::view {w} {
 #
 proc ::pkgremote::list {} {
     try {
-        return [split [exec pkg rquery -a {%o|%n-%v} | sort]]
+        return [lsort [split [cmdexec lsremote]]]
     } trap CHILDSTATUS {results options} {
         utils show_error $results
     }

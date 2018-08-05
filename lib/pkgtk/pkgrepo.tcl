@@ -2,7 +2,9 @@
 # See LICENSE file.
 
 package provide pkgrepo 0.0
+
 package require utils
+package require cmdexec
 
 namespace eval ::pkgrepo {
     namespace export view
@@ -147,7 +149,7 @@ proc ::pkgrepo::view {w} {
     grid rowconfigure $w 2 -weight 0
     grid $w -sticky nwse
 
-    ttk::label $w.dbstats -takefocus 0 -text [exec pkg stats -r]
+    ttk::label $w.dbstats -takefocus 0 -text [cmdexec stats -r]
     grid $w.dbstats -row 0 -column 0 -sticky nw
     $w.dbstats configure -padding {0 0 0 5}
 

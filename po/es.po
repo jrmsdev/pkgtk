@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-05 02:26-0300\n"
+"POT-Creation-Date: 2018-08-05 03:59-0300\n"
 "PO-Revision-Date: 2018-08-05 02:30-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
@@ -90,45 +90,45 @@ msgstr "Confirmar %s"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: lib/pkgtk/pkglocal.tcl:16
+#: lib/pkgtk/pkglocal.tcl:18
 msgid "Remove"
 msgstr "Eliminar"
 
-#: lib/pkgtk/pkglocal.tcl:19
+#: lib/pkgtk/pkglocal.tcl:21
 msgid "Upgrade"
 msgstr "Actualizar"
 
-#: lib/pkgtk/pkgremote.tcl:16
+#: lib/pkgtk/pkgremote.tcl:18
 msgid "Install"
 msgstr "Instalar"
 
-#: lib/pkgtk/pkgrepo.tcl:87
+#: lib/pkgtk/pkgrepo.tcl:89
 msgid "# created by pkgtk"
 msgstr "# creado por pkgtk"
 
-#: lib/pkgtk/pkgrepo.tcl:167
+#: lib/pkgtk/pkgrepo.tcl:169
 msgid "Save"
 msgstr "Guardar"
 
-#: lib/pkgtk/pkgrepo.tcl:171
+#: lib/pkgtk/pkgrepo.tcl:173
 msgid "Discard"
 msgstr "Descartar"
 
-#: lib/pkgtk/pkgsearch.tcl:29
+#: lib/pkgtk/pkgsearch.tcl:31
 msgid "Search:"
 msgstr "Buscar:"
 
-#: lib/pkgtk/pkgview.tcl:98
+#: lib/pkgtk/pkgview.tcl:99
 #, tcl-format
 msgid "Available packages: %d"
 msgstr "Paquetes disponibles: %d"
 
-#: lib/pkgtk/pkgview.tcl:100
+#: lib/pkgtk/pkgview.tcl:101
 #, tcl-format
 msgid "Installed packages: %d"
 msgstr "Paquetes instalados: %d"
 
-#: lib/pkgtk/pkgview.tcl:145
+#: lib/pkgtk/pkgview.tcl:146
 #, tcl-format
 msgid ""
 "Category : %s\n"

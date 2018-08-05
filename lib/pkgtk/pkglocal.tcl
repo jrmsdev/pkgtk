@@ -2,9 +2,11 @@
 # See LICENSE file.
 
 package provide pkglocal 0.0
+
 package require utils
 package require pkgview
 package require pkgcmd
+package require cmdexec
 
 namespace eval ::pkglocal {
 }
@@ -33,7 +35,7 @@ proc ::pkglocal::view {w} {
 #
 proc ::pkglocal::list {} {
     try {
-        return [split [exec pkg query -e {%a == 0} {%o|%n-%v} | sort -u]]
+        return [lsort [split [cmdexec lslocal]]]
     } trap CHILDSTATUS {results options} {
         utils show_error $results
     }

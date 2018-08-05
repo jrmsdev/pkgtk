@@ -2,9 +2,11 @@
 # See LICENSE file.
 
 package provide pkgsearch 0.0
+
 package require utils
 package require pkgremote
 package require pkgview
+package require cmdexec
 
 namespace eval ::pkgsearch {
 }
@@ -85,7 +87,7 @@ proc ::pkgsearch::run {pkglist pinfo pbtn query} {
     set q [$query get]
     if {$q != ""} {
         try {
-            foreach line [split [exec pkg search -q $q] "\n"] {
+            foreach line [split [cmdexec search $q] "\n"] {
                 $pkglist insert "end" "$line"
             }
             focus $pkglist
