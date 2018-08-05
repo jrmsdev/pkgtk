@@ -142,10 +142,12 @@ proc ::pkgrepo::view {w} {
     ttk::frame $buttons
     grid $buttons -row 2 -column 0 -sticky nwse
 
-    ttk::button $buttons.save -text [mc "Save"] -state "disabled"
+    ttk::button $buttons.save -text [mc "Save"] -state "disabled" \
+                              -command {pkgrepo::changes_save}
     grid $buttons.save -row 0 -column 0
 
-    ttk::button $buttons.discard -text [mc "Discard"] -state "disabled"
+    ttk::button $buttons.discard -text [mc "Discard"] -state "disabled" \
+                                 -command {pkgrepo::changes_discard}
     grid $buttons.discard -row 0 -column 1
 
     set pkgrepo::config [pkgrepo::get_config]
@@ -181,11 +183,21 @@ proc ::pkgrepo::tab_changed {repos} {
 #   return a ttk frame showing the settings
 #
 proc ::pkgrepo::show {w name data} {
-    ttk::frame $w -padding {0 5}
-    grid columnconfigure $w 0 -weight 0
-    grid columnconfigure $w 1 -weight 0
-    grid columnconfigure $w 2 -weight 1
-    grid $w -sticky nwse
+    set reload 0
+    if {[winfo exists $w]} {
+        set reload 1
+    }
+    if {$reload} {
+        foreach {child} [winfo children $w] {
+            destroy $child
+        }
+    } else {
+        ttk::frame $w -padding {0 5}
+        grid columnconfigure $w 0 -weight 0
+        grid columnconfigure $w 1 -weight 0
+        grid columnconfigure $w 2 -weight 1
+        grid $w -sticky nwse
+    }
 
     set optidx 0
     foreach opt [lsort [dict keys $data]] {
@@ -259,10 +271,17 @@ proc ::pkgrepo::bool_selected {w repo opt} {
 }
 
 #
+# get a repo config original (read from file) value
+#
+proc ::pkgrepo::config_origval {repo opt} {
+    return [lindex [dict get [dict get $pkgrepo::config $repo] $opt] 1]
+}
+
+#
 # set a new config value
 #
 proc ::pkgrepo::config_set {repo opt val} {
-    set origval [lindex [dict get [dict get $pkgrepo::config $repo] $opt] 1]
+    set origval [pkgrepo::config_origval $repo $opt]
     if {$val == $origval} {
         pkgrepo::dirty_unset $repo $opt
     } else {
@@ -312,4 +331,25 @@ proc ::pkgrepo::buttons_disable {} {
     foreach {btn} [winfo children $pkgrepo::buttons] {
         $btn configure -state "disabled"
     }
+}
+
+#
+# discard changes
+#
+proc ::pkgrepo::changes_discard {} {
+    set repo [$pkgrepo::repos_w tab current -text]
+    set staridx [string first "*" $repo]
+    set repo [string trim [string replace $repo $staridx $staridx ""]]
+    foreach {opt} [dict keys [dict get $pkgrepo::dirty $repo]] {
+        pkgrepo::dirty_unset $repo $opt
+    }
+    set w [dict get $pkgrepo::w_ids $repo]
+    set data [dict get $pkgrepo::config $repo]
+    pkgrepo::show $w $repo $data
+}
+
+#
+# save changes
+#
+proc ::pkgrepo::changes_save {} {
 }
