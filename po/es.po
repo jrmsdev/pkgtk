@@ -1,15 +1,15 @@
 # Translation for pkgtk.
 # Copyright (C) 2018 Jeremías Casteglione <jrmsdev@gmail.com>
 # This file is distributed under the same license as the pkgtk package.
-# Jeremías Casteglione <jrmsde@gmail.com>, 2018.
+# Jeremías Casteglione <jrmsdev@gmail.com>, 2018.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-04 19:02-0300\n"
-"PO-Revision-Date: 2018-08-04 19:05-0300\n"
+"POT-Creation-Date: 2018-08-05 02:14-0300\n"
+"PO-Revision-Date: 2018-08-05 02:17-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -101,6 +101,18 @@ msgstr "Actualizar"
 #: lib/pkgtk/pkgremote.tcl:16
 msgid "Install"
 msgstr "Instalar"
+
+#: lib/pkgtk/pkgrepo.tcl:84
+msgid "# created by pkgtk"
+msgstr "# creado por pkgtk"
+
+#: lib/pkgtk/pkgrepo.tcl:164
+msgid "Save"
+msgstr "Guardar"
+
+#: lib/pkgtk/pkgrepo.tcl:168
+msgid "Discard"
+msgstr "Descartar"
 
 #: lib/pkgtk/pkgsearch.tcl:29
 msgid "Search:"

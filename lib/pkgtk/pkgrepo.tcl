@@ -81,6 +81,7 @@ proc ::pkgrepo::writefile {repo cfg} {
         utils show_error $err
         return
     } else {
+        puts $fh [mc "# created by pkgtk"]
         puts $fh [pkgrepo::dump_settings $repo $cfg]
     }
     if {[catch {close $fh} err]} {
