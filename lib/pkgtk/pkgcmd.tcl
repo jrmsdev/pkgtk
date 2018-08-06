@@ -52,42 +52,18 @@ proc ::pkgcmd::view_autoremove {} {
 }
 
 #
-# run command in background and insert lines of output
-#
-proc ::pkgcmd::runbg {out cmd {dryrun 0}} {
-    set chan [open "|$cmd" "r"]
-    while {[gets $chan line] >= 0} {
-        $out insert end "$line\n"
-        update
-    }
-    try {
-        close $chan
-    } trap CHILDSTATUS {results options} {
-        set rc [lindex [dict get $options -errorcode] 2]
-        if {$dryrun && $rc == 1} {
-            return
-        } else {
-            utils show_error "ERROR: $cmd ($rc)\n$results"
-            $out insert end "*** ERROR: return code $rc\n"
-            $out insert end $results
-            update
-        }
-    }
-}
-
-#
 # run pkg command
 #
 proc ::pkgcmd::dorun {w cmd args} {
     utils tkbusy_hold $w
     $w.cmdout insert end "pkg $cmd\n\n"
     if {$cmd == "update"} {
-        pkgcmd::runbg $w.cmdout "pkg $cmd"
+        cmdexec::runbg $w.cmdout "$cmd"
     } else {
         if {$args != "NONE"} {
-            pkgcmd::runbg $w.cmdout "pkg $cmd -y $args"
+            cmdexec::runbg $w.cmdout "$cmd -y $args"
         } else {
-            pkgcmd::runbg $w.cmdout "pkg $cmd -y"
+            cmdexec::runbg $w.cmdout "$cmd -y"
         }
     }
     $w.cmdout configure -state "disabled"
@@ -101,9 +77,9 @@ proc ::pkgcmd::dryrun {w cmd args} {
     utils tkbusy_hold $w
     $w.cmdout insert end "pkg $cmd (dry run)\n\n"
     if {$args != "NONE"} {
-        pkgcmd::runbg $w.cmdout "pkg $cmd -n $args" 1
+        cmdexec::runbg $w.cmdout "$cmd -n $args" 1
     } else {
-        pkgcmd::runbg $w.cmdout "pkg $cmd -n" 1
+        cmdexec::runbg $w.cmdout "$cmd -n" 1
     }
     $w.cmdout configure -state "disabled"
     utils tkbusy_forget $w

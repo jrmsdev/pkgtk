@@ -2,13 +2,39 @@
 # See LICENSE file.
 
 package provide cmdexec 0.0
+package require utils
 
 namespace eval ::cmdexec {
-    namespace export rquery query stats lslocal lsremote search
+    namespace export runbg rquery query stats lslocal lsremote search
     namespace ensemble create
 
     variable query_format {%n %v (%sh)\n\n%e}
     variable list_format {%o|%n-%v}
+}
+
+#
+# run command in background and insert lines of output
+#
+proc ::cmdexec::runbg {out args {dryrun 0}} {
+    set cmd "pkg $args"
+    set chan [open "|$cmd" "r"]
+    while {[gets $chan line] >= 0} {
+        $out insert end "$line\n"
+        update
+    }
+    try {
+        close $chan
+    } trap CHILDSTATUS {results options} {
+        set rc [lindex [dict get $options -errorcode] 2]
+        if {$dryrun && $rc == 1} {
+            return
+        } else {
+            utils show_error "ERROR: $cmd ($rc)\n$results"
+            $out insert end "*** ERROR: return code $rc\n"
+            $out insert end $results
+            update
+        }
+    }
 }
 
 #
