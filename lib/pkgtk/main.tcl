@@ -45,56 +45,13 @@ proc ::pkgtk::view_about {} {
 }
 
 #
-# return the underline index for a menu entry and the name properly formatted
-#
-proc ::pkgtk::menu_underline_name {orig} {
-    set u [string first "_" $orig]
-    set n [string replace $orig $u $u ""]
-    return [list $u $n]
-}
-
-#
-# create a cascade menu
-#
-proc ::pkgtk::menu_cascade {parent name desc items} {
-    set w $parent.$name
-    menu $w -tearoff 0
-    pkgtk::menu_additems $w $items
-    set p [pkgtk::menu_underline_name $desc]
-    $parent add cascade -label [lindex $p 1] -underline [lindex $p 0] -menu $w
-}
-
-#
-# add menu items
-#
-proc ::pkgtk::menu_additems {w items} {
-    foreach {child} $items {
-        set name [mc [lindex $child 1]]
-        set type [lindex $child 2]
-        set params $type
-        switch -- $type {
-            "separator" {
-                $w add separator
-                continue
-            }
-            "command" {
-                set p [pkgtk::menu_underline_name $name]
-                lappend params -label [lindex $p 1] -underline [lindex $p 0]
-                lappend params -command [lindex $child 3]
-            }
-        }
-        eval $w add $params
-    }
-}
-
-#
 # main menu
 #
 proc ::pkgtk::main_menu {} {
     menu .menu
     . configure -menu .menu
 
-    pkgtk::menu_cascade .menu "packages" [mc "_Packages"] {
+    utils menu_cascade .menu "packages" [mc "_Packages"] {
         {mc "_Installed" command {utils dispatch_view pkglocal::view}}
         {mc "_Upgrade" command {pkgcmd::view_upgrade "all"}}
         {s0 "" separator {}}
@@ -107,18 +64,18 @@ proc ::pkgtk::main_menu {} {
         {mc "_Quit" command {pkgtk::quit 0}}
     }
 
-    pkgtk::menu_cascade .menu "repos" [mc "_Repositories"] {
+    utils menu_cascade .menu "repos" [mc "_Repositories"] {
         {mc "_Configuration" command {utils dispatch_view pkgrepo::view}}
         {mc "_Update" command {pkgcmd::view_update}}
     }
 
     if {[fbsdupd can_run]} {
-        pkgtk::menu_additems .menu {
+        utils menu_additems .menu {
             {mc "_System" command {fbsdupd::view}}
         }
     }
 
-    pkgtk::menu_additems .menu {
+    utils menu_additems .menu {
         {mc "_About" command {pkgtk::view_about}}
     }
 }
@@ -129,6 +86,9 @@ proc ::pkgtk::main_menu {} {
 proc ::pkgtk::quit {rc} {
     if {[winfo exists $pkgview::toplevel_child]} {
         destroy $pkgview::toplevel_child
+    }
+    if {[winfo exists .fbsdupd]} {
+        destroy .fbsdupd
     }
     destroy .
     exit $rc

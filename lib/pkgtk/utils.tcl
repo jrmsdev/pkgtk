@@ -5,6 +5,7 @@ package provide utils 0.0
 
 namespace eval ::utils {
     namespace export dispatch_view show_error tkbusy_hold tkbusy_forget
+    namespace export menu_underline_name menu_cascade menu_additems
     namespace ensemble create
 }
 
@@ -42,4 +43,47 @@ proc ::utils::tkbusy_hold {{w .}} {
 proc ::utils::tkbusy_forget {{w .}} {
     tk busy forget $w
     update
+}
+
+#
+# return the underline index for a menu entry and the name properly formatted
+#
+proc ::utils::menu_underline_name {orig} {
+    set u [string first "_" $orig]
+    set n [string replace $orig $u $u ""]
+    return [list $u $n]
+}
+
+#
+# create a cascade menu
+#
+proc ::utils::menu_cascade {parent name desc items} {
+    set w $parent.$name
+    menu $w -tearoff 0
+    utils::menu_additems $w $items
+    set p [utils::menu_underline_name $desc]
+    $parent add cascade -label [lindex $p 1] -underline [lindex $p 0] -menu $w
+}
+
+#
+# add menu items
+#
+proc ::utils::menu_additems {w items} {
+    foreach {child} $items {
+        set name [mc [lindex $child 1]]
+        set type [lindex $child 2]
+        set params $type
+        switch -- $type {
+            "separator" {
+                $w add separator
+                continue
+            }
+            "command" {
+                set p [utils::menu_underline_name $name]
+                lappend params -label [lindex $p 1] -underline [lindex $p 0]
+                lappend params -command [lindex $child 3]
+            }
+        }
+        eval $w add $params
+    }
 }
