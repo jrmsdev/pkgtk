@@ -8,15 +8,35 @@ namespace eval ::cmdexec {
     namespace export runbg rquery query stats lslocal lsremote search
     namespace ensemble create
 
+    variable pkg_rootdir ""
     variable query_format {%n %v (%sh)\n\n%e}
     variable list_format {%o|%n-%v}
+
+    if {[info exists ::env(PKGTK_ROOTDIR)]} {
+        set pkg_rootdir $::env(PKGTK_ROOTDIR)
+    }
+}
+
+#
+# generate the proper command line to call pkg
+#   return a list
+#
+proc ::cmdexec::getcmd {args} {
+    set cmd [list pkg]
+    if {$cmdexec::pkg_rootdir != ""} {
+        lappend cmd "-r" $cmdexec::pkg_rootdir
+    }
+    foreach {a} $args {
+        lappend cmd $a
+    }
+    return $cmd
 }
 
 #
 # run command in background and insert lines of output
 #
 proc ::cmdexec::runbg {out args {dryrun 0}} {
-    set cmd "pkg $args"
+    set cmd [join [cmdexec::getcmd $args] " "]
     set chan [open "|$cmd" "r"]
     while {[gets $chan line] >= 0} {
         $out insert end "$line\n"
@@ -41,21 +61,24 @@ proc ::cmdexec::runbg {out args {dryrun 0}} {
 # exec pkg rquery
 #
 proc ::cmdexec::rquery {args} {
-    return [exec pkg rquery $cmdexec::query_format $args]
+    set cmd [cmdexec::getcmd rquery $cmdexec::query_format $args]
+    return [exec {*}$cmd]
 }
 
 #
 # exec pkg query
 #
 proc ::cmdexec::query {args} {
-    return [exec pkg query $cmdexec::query_format $args]
+    set cmd [cmdexec::getcmd query $cmdexec::query_format $args]
+    return [exec {*}$cmd]
 }
 
 #
 # exec pkg stats
 #
 proc ::cmdexec::stats {args} {
-    return [exec pkg stats $args]
+    set cmd [cmdexec::getcmd stats $args]
+    return [exec {*}$cmd]
 }
 
 #
@@ -64,21 +87,25 @@ proc ::cmdexec::stats {args} {
 #
 proc ::cmdexec::lslocal {{inc "noauto"}} {
     if {$inc == "all"} {
-        return [exec pkg query -a $cmdexec::list_format]
+        set cmd [cmdexec::getcmd query -a $cmdexec::list_format]
+    } else {
+        set cmd [cmdexec::getcmd query -e {%a == 0} $cmdexec::list_format]
     }
-    return [exec pkg query -e {%a == 0} $cmdexec::list_format]
+    return [exec {*}$cmd]
 }
 
 #
 # exec pkg to list remote (available) packages
 #
 proc ::cmdexec::lsremote {} {
-    return [exec pkg rquery -a $cmdexec::list_format]
+    set cmd [cmdexec::getcmd rquery -a $cmdexec::list_format]
+    return [exec {*}$cmd]
 }
 
 #
 # exec pkg search
 #
 proc ::cmdexec::search {args} {
-    return [exec pkg search -q $args]
+    set cmd [cmdexec::getcmd search -q $args]
+    return [exec {*}$cmd]
 }

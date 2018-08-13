@@ -4,13 +4,20 @@
 # See LICENSE file.
 
 PREFIX=`realpath $(dirname $0)/..`
-TCLLIBPATH=${PREFIX}/lib
 LIBDIR=${PREFIX}/lib/pkgtk
 LIBEXEC=${PREFIX}/libexec/pkgtk
 
-PKGTK_MSGSDIR=${LIBDIR}/lib/msgs
+TCLLIBPATH=${LIBDIR}
+export TCLLIBPATH
+
+PKGTK_MSGSDIR=${LIBDIR}/msgs
 if ! test -d ${PKGTK_MSGSDIR}; then
     PKGTK_MSGSDIR=${PREFIX}/po
+fi
+export PKGTK_MSGSDIR
+
+if test -n "${PKGTK_ROOTDIR}"; then
+    export PKGTK_ROOTDIR
 fi
 
 if test -n "${LANG}"; then
@@ -22,8 +29,5 @@ fi
 if test -n "${LC_MESSAGES}"; then
     export LC_MESSAGES
 fi
-
-export PKGTK_MSGSDIR
-export TCLLIBPATH
 
 exec ${LIBEXEC}/gui.tcl
