@@ -37,14 +37,13 @@ proc ::cmdexec::getcmd {args} {
 # read a line of output from running background command/process
 #
 proc ::cmdexec::bgread {out cmd dryrun chan} {
-    if {[gets $chan line] >= 0} {
+    if {[chan gets $chan line] >= 0} {
         $out insert end "$line\n"
-        update
     }
-    if {[eof $chan]} {
+    if {[chan eof $chan]} {
         try {
-            fconfigure $chan -blocking 1
-            close $chan
+            chan configure $chan -blocking 1
+            chan close $chan
         } trap CHILDSTATUS {results options} {
             set rc [lindex [dict get $options -errorcode] 2]
             set fatalerror [expr !$dryrun && $rc != 1]
@@ -52,7 +51,6 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
                 utils show_error "ERROR: $cmd ($rc)\n$results"
                 $out insert end "*** ERROR: return code $rc\n"
                 $out insert end $results
-                update
             }
         } finally {
             set cmdexec::bgdone 1
@@ -67,7 +65,7 @@ proc ::cmdexec::runbg {out args {dryrun 0}} {
     set cmdexec::bgdone 0
     set cmd [join [cmdexec::getcmd $args] " "]
     set chan [open "|$cmd" "r"]
-    fconfigure $chan -blocking 0 -buffering line
+    chan configure $chan -blocking 0 -buffering line
     fileevent $chan readable [list cmdexec::bgread $out $cmd $dryrun $chan]
     tkwait variable cmdexec::bgdone
 }
