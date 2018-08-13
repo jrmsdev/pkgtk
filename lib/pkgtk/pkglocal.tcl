@@ -17,10 +17,10 @@ namespace eval ::pkglocal {
 proc ::pkglocal::buttons {w} {
     ttk::button $w.remove -text [mc "Remove"] -state "disabled" \
                           -command {pkgcmd::view_remove}
-    grid $w.remove -row 0 -column 0 -sticky w
+    grid $w.remove -row 0 -column 0
     ttk::button $w.upgrade -text [mc "Upgrade"] -state "disabled" \
                           -command {pkgcmd::view_upgrade}
-    grid $w.upgrade -row 0 -column 1 -sticky w
+    grid $w.upgrade -row 0 -column 1
 }
 
 #

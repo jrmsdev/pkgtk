@@ -72,17 +72,17 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
 
     ttk::frame $w.right -takefocus 0
     grid rowconfigure $w.right 0 -weight 1
-    grid rowconfigure $w.right 1 -weight 9
+    grid rowconfigure $w.right 1 -weight 0
     grid columnconfigure $w.right 0 -weight 1
     grid $w.right -sticky nwse
 
     set pkgbuttons $w.right.pkgbuttons
     ttk::frame $pkgbuttons -takefocus 0
-    grid $pkgbuttons -row 0 -column 0 -sticky n
+    grid $pkgbuttons -row 1 -column 0
 
     set pkginfo $w.right.pkginfo
     ttk::label $pkginfo -takefocus 0
-    grid $pkginfo -row 1 -column 0 -sticky n
+    grid $pkginfo -row 0 -column 0
     $pkginfo configure -anchor "center" -justify "left"
 
     $paned add $w.right -weight 9

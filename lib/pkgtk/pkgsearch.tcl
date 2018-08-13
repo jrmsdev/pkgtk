@@ -46,15 +46,18 @@ proc ::pkgsearch::view {w} {
     $paned add $pkglist -weight 2
 
     ttk::frame $paned.right
+    grid columnconfigure $paned.right 0 -weight 1
+    grid rowconfigure $paned.right 0 -weight 1
+    grid rowconfigure $paned.right 1 -weight 0
     grid $paned.right -sticky nwse
 
     set pkgbuttons $paned.right.pkgbuttons
     ttk::frame $pkgbuttons -takefocus 0
-    grid $pkgbuttons -row 0 -column 0 -sticky n
+    grid $pkgbuttons -row 1 -column 0
 
     set pkginfo $paned.right.pkginfo
     ttk::label $pkginfo -takefocus 0
-    grid $pkginfo -row 1 -column 0 -sticky n
+    grid $pkginfo -row 0 -column 0
     $pkginfo configure -anchor "center" -justify "left"
 
     $paned add $paned.right -weight 8
