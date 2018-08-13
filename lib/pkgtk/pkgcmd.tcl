@@ -2,53 +2,11 @@
 # See LICENSE file.
 
 package provide pkgcmd 0.0
+
 package require utils
 package require pkgview
 
 namespace eval ::pkgcmd {
-}
-
-#
-# view pkg upgrade command
-#
-proc ::pkgcmd::view_upgrade {{all "NONE"}} {
-    if {$all != "NONE"} {
-        pkgcmd::view "upgrade"
-    } else {
-        set pkg $pkgview::pkg_selected
-        pkgcmd::view "upgrade" $pkg
-    }
-}
-
-#
-# view pkg remove command
-#   TODO: support adding -R arg
-#
-proc ::pkgcmd::view_remove {} {
-    set pkg $pkgview::pkg_selected
-    pkgcmd::view "remove" $pkg
-}
-
-#
-# view pkg clean cache command
-#
-proc ::pkgcmd::view_clean_cache {} {
-    pkgcmd::view "clean" "-a"
-}
-
-#
-# view pkg install command
-#
-proc ::pkgcmd::view_install {} {
-    set pkg $pkgview::pkg_selected
-    pkgcmd::view "install" $pkg
-}
-
-#
-# view pkg autoremove command
-#
-proc ::pkgcmd::view_autoremove {} {
-    pkgcmd::view "autoremove"
 }
 
 #
@@ -93,39 +51,85 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     if {[winfo exists $top]} {
         destroy $top
     }
+
     toplevel $top
     wm transient $top .
     wm title $top "pkg $cmd"
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
+
+    menu $top.menu
+    $top configure -menu $top.menu
+    if {$dorun} {
+        $top.menu add command -label [mc "Close"] -underline 0 \
+                              -command {destroy $pkgview::toplevel_child}
+    } else {
+        $top.menu add command -label [format [mc "Confirm %s"] $cmd] \
+                              -underline 0 \
+                              -command "pkgcmd::view $cmd $args 1"
+        $top.menu add command -label [mc "Cancel"] -underline 2 \
+                              -command {destroy $pkgview::toplevel_child}
+    }
+
     set w $top.view
     ttk::frame $w
-    grid rowconfigure $w 0 -weight 0
-    grid rowconfigure $w 1 -weight 1
+    grid rowconfigure $w 0 -weight 1
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
-    ttk::frame $w.btn
-    grid $w.btn -row 0 -column 0 -sticky nwse
-    if {$dorun} {
-        ttk::button $w.btn.close -text [mc "Close"] \
-                                 -command {destroy $pkgview::toplevel_child}
-        grid $w.btn.close -row 0 -column 0 -sticky w
-    } else {
-        ttk::button $w.btn.run -text [format [mc "Confirm %s"] $cmd] \
-                               -command "pkgcmd::view $cmd $args 1"
-        grid $w.btn.run -row 0 -column 0 -sticky w
-        ttk::button $w.btn.cancel -text [mc "Cancel"] \
-                                  -command {destroy $pkgview::toplevel_child}
-        grid $w.btn.cancel -row 0 -column 1 -sticky w
-    }
+
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
+
     if {$dorun} {
         pkgcmd::dorun $w $cmd $args
     } else {
         pkgcmd::dryrun $w $cmd $args
     }
+
     tkwait window $top
+}
+
+#
+# view pkg upgrade command
+#
+proc ::pkgcmd::view_upgrade {{all "NONE"}} {
+    if {$all != "NONE"} {
+        pkgcmd::view "upgrade"
+    } else {
+        set pkg $pkgview::pkg_selected
+        pkgcmd::view "upgrade" $pkg
+    }
+}
+
+#
+# view pkg remove command
+#   TODO: support adding -R arg
+#
+proc ::pkgcmd::view_remove {} {
+    set pkg $pkgview::pkg_selected
+    pkgcmd::view "remove" $pkg
+}
+
+#
+# view pkg clean cache command
+#
+proc ::pkgcmd::view_clean_cache {} {
+    pkgcmd::view "clean" "-a"
+}
+
+#
+# view pkg install command
+#
+proc ::pkgcmd::view_install {} {
+    set pkg $pkgview::pkg_selected
+    pkgcmd::view "install" $pkg
+}
+
+#
+# view pkg autoremove command
+#
+proc ::pkgcmd::view_autoremove {} {
+    pkgcmd::view "autoremove"
 }
 
 #

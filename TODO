@@ -2,6 +2,4 @@
 
 * pkgrepo: check at least one repo remains enabled
 
-* pkgcmd: use a menu for toplevel view instead of buttons in a frame
-
 * pkgsearch: add options... like search in pkg comment/description, etc...
