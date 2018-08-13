@@ -13,6 +13,7 @@ package require pkgcmd
 package require pkgrepo
 package require img
 package require version
+package require fbsdupd
 
 namespace eval ::pkgtk {
     namespace export main
@@ -109,6 +110,12 @@ proc ::pkgtk::main_menu {} {
     pkgtk::menu_cascade .menu "repos" [mc "_Repositories"] {
         {mc "_Configuration" command {utils dispatch_view pkgrepo::view}}
         {mc "_Update" command {pkgcmd::view_update}}
+    }
+
+    if {[fbsdupd can_run]} {
+        pkgtk::menu_additems .menu {
+            {mc "_System" command {fbsdupd::view}}
+        }
     }
 
     pkgtk::menu_additems .menu {
