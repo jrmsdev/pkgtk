@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-13 21:34-0300\n"
-"PO-Revision-Date: 2018-08-13 21:37-0300\n"
+"POT-Creation-Date: 2018-08-14 00:55-0300\n"
+"PO-Revision-Date: 2018-08-14 01:01-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -17,18 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/pkgtk/fbsdupd.tcl:58
-msgid "Chec_k"
-msgstr "Che_quear"
+#: lib/pkgtk/fbsdupd.tcl:52
+msgid "FreeBSD update"
+msgstr "Actualizar FreeBSD"
 
-#: lib/pkgtk/fbsdupd.tcl:59
+#: lib/pkgtk/fbsdupd.tcl:60
+msgid "_Fetch"
+msgstr "_Obtener"
+
+#: lib/pkgtk/fbsdupd.tcl:61 lib/pkgtk/main.tcl:56
+msgid "_Upgrade"
+msgstr "_Actualizar"
+
+#: lib/pkgtk/fbsdupd.tcl:62
 msgid "_Close"
 msgstr "_Cerrar"
 
-#: lib/pkgtk/fbsdupd.tcl:115
+#: lib/pkgtk/fbsdupd.tcl:74
 #, tcl-format
 msgid "Current version: %s"
 msgstr "Versión actual: %s"
+
+#: lib/pkgtk/fbsdupd.tcl:82 lib/pkgtk/pkgremote.tcl:18
+msgid "Install"
+msgstr "Instalar"
+
+#: lib/pkgtk/fbsdupd.tcl:178
+msgid "FreeBSD release target"
+msgstr "Nueva versión FreeBSD"
+
+#: lib/pkgtk/fbsdupd.tcl:191
+msgid "Release target:"
+msgstr "Nueva versión:"
+
+#: lib/pkgtk/fbsdupd.tcl:197
+msgid "Example"
+msgstr "Ejemplo"
 
 #: lib/pkgtk/main.tcl:33
 msgid "About pkgtk"
@@ -49,10 +73,6 @@ msgstr "_Paquetes"
 #: lib/pkgtk/main.tcl:55
 msgid "_Installed"
 msgstr "_Instalados"
-
-#: lib/pkgtk/main.tcl:56
-msgid "_Upgrade"
-msgstr "_Actualizar"
 
 #: lib/pkgtk/main.tcl:58
 msgid "_Available"
@@ -114,10 +134,6 @@ msgstr "Eliminar"
 #: lib/pkgtk/pkglocal.tcl:21
 msgid "Upgrade"
 msgstr "Actualizar"
-
-#: lib/pkgtk/pkgremote.tcl:18
-msgid "Install"
-msgstr "Instalar"
 
 #: lib/pkgtk/pkgrepo.tcl:89
 msgid "# created by pkgtk"
