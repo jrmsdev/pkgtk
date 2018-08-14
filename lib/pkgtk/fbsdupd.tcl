@@ -190,9 +190,9 @@ proc ::fbsdupd::upgrade {} {
 #   return generated filename
 #
 proc ::fbsdupd::config {} {
-    set fn /tmp/.pkgtk.freebsd-update.conf
+    set fn "NONE"
 
-    set fh [open $fn "w"]
+    set fh [file tempfile fn ".pkgtk.freebsd-update.conf"]
     set src [open /etc/freebsd-update.conf "r"]
 
     while {[gets $src line] >= 0} {
@@ -206,10 +206,8 @@ proc ::fbsdupd::config {} {
             if {[string tolower $opt] == {strictcomponents}} {
                 # will override StrictComponents setting
                 # to avoid blocking on confirmation
-                puts "config: $opt override"
                 continue
             } else {
-                puts "config: $line"
                 puts $fh $line
             }
         }
