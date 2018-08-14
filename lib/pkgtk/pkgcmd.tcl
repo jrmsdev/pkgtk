@@ -74,11 +74,15 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
 
     text $w.cmdout
-    grid $w.cmdout -row 1 -column 0 -sticky nwse
+    grid $w.cmdout -row 0 -column 0 -sticky nwse
+
+    ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0
+    grid $w.pgb -row 1 -column 0 -sticky we
 
     if {$dorun} {
         pkgcmd::dorun $w $cmd $args

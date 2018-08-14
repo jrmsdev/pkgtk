@@ -66,12 +66,17 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
 # run command in background and insert lines of output
 #
 proc ::cmdexec::runbg {out args {dryrun 0}} {
+    set parent [winfo parent $out]
+    $parent.pgb configure -mode "indeterminate"
+    $parent.pgb start
     set cmdexec::bgdone 0
     set cmd [join [cmdexec::getcmd [expr !$dryrun] $args] " "]
     set chan [open "|$cmd" "r"]
     chan configure $chan -blocking 0 -buffering line
     fileevent $chan readable [list cmdexec::bgread $out $cmd $dryrun $chan]
     tkwait variable cmdexec::bgdone
+    $parent.pgb stop
+    $parent.pgb configure -mode "determinate"
 }
 
 #
