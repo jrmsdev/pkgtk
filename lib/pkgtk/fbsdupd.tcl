@@ -49,7 +49,7 @@ proc ::fbsdupd::view {} {
     toplevel $top
     wm minsize $top 600 400
     wm transient $top .
-    wm title $top "freebsd-update"
+    wm title $top [mc "FreeBSD update"]
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
@@ -58,7 +58,7 @@ proc ::fbsdupd::view {} {
 
     utils menu_additems $top.menu {
         {mc "_Fetch" command {fbsdupd::fetch}}
-        {mc "_Upgrade" command {fbsdupd::upgrade}}
+        {mc "_Upgrade" command {fbsdupd::release_upgrade}}
         {mc "_Close" command {destroy .fbsdupd}}
     }
 
@@ -88,6 +88,7 @@ proc ::fbsdupd::view {} {
 # run freebsd-update tool and read lines of output
 #
 proc ::fbsdupd::run {out cmdname args} {
+    utils tkbusy_hold .fbsdupd
     set fbsdupd::cmd_done 0
     set fbsdupd::cmd_error 0
     set cmd [join [list /usr/sbin/freebsd-update $cmdname $args] " "]
@@ -98,6 +99,7 @@ proc ::fbsdupd::run {out cmdname args} {
     fileevent $chan readable [list fbsdupd::readlines $chan $out $cmdname]
     tkwait variable fbsdupd::cmd_done
     $out configure -state "disabled"
+    utils tkbusy_forget .fbsdupd
 }
 
 #
@@ -160,9 +162,62 @@ proc ::fbsdupd::install {} {
 }
 
 #
+# ask for the new release version and run upgrade
+#
+proc ::fbsdupd::release_upgrade {} {
+    set ::fbsdupd_new_release ""
+
+    set top .fbsdupd.release_target
+    if {[winfo exists $top]} {
+        destroy $top
+    }
+
+    toplevel $top
+    #~ wm minsize $top 300 200
+    wm transient $top .fbsdupd
+    wm title $top [mc "FreeBSD release target"]
+    grid rowconfigure $top 0 -weight 1
+    grid columnconfigure $top 0 -weight 1
+
+    set w $top.view
+    ttk::frame $w
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 1
+    grid columnconfigure $w 0 -weight 0
+    grid columnconfigure $w 1 -weight 1
+    grid $w -row 0 -column 0 -sticky nwse
+    $w configure -padding 1
+
+    ttk::label $w.lbl -text [mc "Release target:"]
+    grid $w.lbl -row 0 -column 0 -sticky w
+
+    ttk::entry $w.new_release -textvariable ::fbsdupd_new_release
+    grid $w.new_release -row 0 -column 1 -sticky w
+
+    ttk::label $w.exrel -text [format "%s: 11.3-RELEASE" [mc "Example"]]
+    grid $w.exrel -row 1 -column 1 -sticky w
+
+    bind $w.new_release <Return> "fbsdupd::newrel_check $top"
+    focus $w.new_release
+
+    tkwait window $top
+    fbsdupd::upgrade $::fbsdupd_new_release
+}
+
+#
+# check new release target from user input
+#
+proc ::fbsdupd::newrel_check {top} {
+    set ::fbsdupd_new_release [string trim $::fbsdupd_new_release]
+    if {$::fbsdupd_new_release != ""} {
+        destroy $top
+    }
+}
+
+#
 # freebsd-update upgrade
 #
-proc ::fbsdupd::upgrade {} {
+proc ::fbsdupd::upgrade {new_release} {
     set w .fbsdupd.view
 
     if {[winfo exists $w.cmdout]} {
@@ -174,7 +229,6 @@ proc ::fbsdupd::upgrade {} {
     $w.cmdout configure -state "disabled"
 
     set cfgfile [fbsdupd::config]
-    set new_release {__LALALA__}
 
     $w.install configure -state "disabled"
     fbsdupd::run $w.cmdout "upgrade" "-f" $cfgfile "-r" $new_release
