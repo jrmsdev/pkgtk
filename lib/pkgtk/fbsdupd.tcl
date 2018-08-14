@@ -13,6 +13,7 @@ namespace eval ::fbsdupd {
 
     variable version_cur ""
     variable cmd_done 0
+    variable cmd_error 0
 }
 
 #
@@ -68,6 +69,7 @@ proc ::fbsdupd::view {} {
 #
 proc ::fbsdupd::run {out cmdname args} {
     set fbsdupd::cmd_done 0
+    set fbsdupd::cmd_error 0
     set cmd [join [list /usr/sbin/freebsd-update $cmdname $args] " "]
     $out configure -state "normal"
     $out insert end "freebsd-update $cmdname\n\n"
@@ -91,6 +93,7 @@ proc ::fbsdupd::readlines {src out cmd} {
             chan close $src
         } trap CHILDSTATUS {results options} {
             set rc [lindex [dict get $options -errorcode] 2]
+            set fbsdupd::cmd_error $rc
             utils show_error "ERROR: freebsd-update $cmd ($rc)\n$results"
             $out insert end "*** ERROR: return code $rc\n"
             $out insert end $results
@@ -122,6 +125,7 @@ proc ::fbsdupd::fetch {{check 1}} {
 
         ttk::button $w.install -text [mc "Install"] -command {fbsdupd::install}
         grid $w.install -row 2 -column 0 -sticky w
+        $w.install configure -state "disabled"
     }
 
     text $w.cmdout
@@ -130,5 +134,23 @@ proc ::fbsdupd::fetch {{check 1}} {
 
     if {$check} {
         fbsdupd::run $w.cmdout "fetch"
+        if {$fbsdupd::cmd_error == 0} {
+            $w.install configure -state "enabled"
+        }
     }
+}
+
+#
+# freebsd-update install
+#
+proc ::fbsdupd::install {} {
+    set w .fbsdupd.view
+    $w.install configure -state "disabled"
+
+    destroy $w.cmdout
+    text $w.cmdout
+    grid $w.cmdout -row 1 -column 0 -sticky nwse
+    $w.cmdout configure -state "disabled"
+
+    fbsdupd::run $w.cmdout "install"
 }
