@@ -5,7 +5,6 @@
 
 PREFIX=`realpath $(dirname $0)/..`
 LIBDIR=${PREFIX}/lib/pkgtk
-LIBEXEC=${PREFIX}/libexec/pkgtk
 
 TCLLIBPATH=${LIBDIR}
 export TCLLIBPATH
@@ -30,4 +29,7 @@ if test -n "${LC_MESSAGES}"; then
     export LC_MESSAGES
 fi
 
-exec ${LIBEXEC}/gui.tcl
+PKGTK_LIBEXEC=${PREFIX}/libexec/pkgtk
+export PKGTK_LIBEXEC
+
+exec ${PKGTK_LIBEXEC}/gui.tcl

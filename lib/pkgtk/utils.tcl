@@ -4,9 +4,11 @@
 package provide utils 0.0
 
 namespace eval ::utils {
-    namespace export dispatch_view show_error tkbusy_hold tkbusy_forget
+    namespace export dispatch_view show_error tkbusy_hold tkbusy_forget sudo
     namespace export menu_underline_name menu_cascade menu_additems
     namespace ensemble create
+
+    variable libexec_dir $::env(PKGTK_LIBEXEC)
 }
 
 #
@@ -86,4 +88,15 @@ proc ::utils::menu_additems {w items} {
         }
         eval $w add $params
     }
+}
+
+#
+# run helper from libexec directory via sudo
+#
+proc ::utils::sudo {name args} {
+    set cmd [list /usr/local/bin/sudo -n [file join $utils::libexec_dir $name]]
+    foreach {a} $args {
+        lappend cmd $a
+    }
+    return [exec {*}$cmd]
 }

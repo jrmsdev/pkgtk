@@ -1,0 +1,16 @@
+#!/bin/sh -eu
+# Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>.
+# See LICENSE file.
+
+srcfile=${1}
+reponame=${2}
+
+dstdir=/usr/local/etc/pkg/repos
+dstfile=${dstdir}/${reponame}.conf
+
+/bin/mkdir -p ${dstdir}
+/bin/cp -f ${srcfile} ${dstfile}
+/bin/rm -f ${srcfile}
+/bin/chmod 0444 ${dstfile}
+
+exit 0

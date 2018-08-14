@@ -77,12 +77,8 @@ proc ::pkgrepo::readfile {reposVar fn} {
 # write repo config file
 #
 proc ::pkgrepo::writefile {repo cfg} {
-    set cfgdir "/usr/local/etc/pkg/repos"
-    if {! [file exists $cfgdir]} {
-        file mkdir $cfgdir
-    }
-    set fn [format "%s/%s.conf" $cfgdir $repo]
-    if {[catch {set fh [open $fn "w"]} err]} {
+    set fn "NONE"
+    if {[catch {set fh [file tempfile fn ".pkgtk-repo.conf"]} err]} {
         utils show_error $err
         return
     } else {
@@ -92,6 +88,7 @@ proc ::pkgrepo::writefile {repo cfg} {
     if {[catch {close $fh} err]} {
         utils show_error $err
     }
+    utils sudo repocfg-save $fn $repo
 }
 
 #
@@ -134,7 +131,7 @@ proc ::pkgrepo::dump_settings {repo_name rdata} {
     } else {
         set s "$s  enabled: no\n"
     }
-    set s "$s\}\n"
+    set s "$s\}"
     return $s
 }
 
