@@ -22,8 +22,12 @@ namespace eval ::cmdexec {
 # generate the proper command line to call pkg
 #   return a list
 #
-proc ::cmdexec::getcmd {args} {
-    set cmd [list pkg]
+proc ::cmdexec::getcmd {use_sudo args} {
+    if {$use_sudo} {
+        set cmd [list /usr/local/bin/sudo -n /usr/local/sbin/pkg]
+    } else {
+        set cmd [list /usr/local/sbin/pkg]
+    }
     if {$cmdexec::pkg_rootdir != ""} {
         lappend cmd "-r" $cmdexec::pkg_rootdir
     }
@@ -63,7 +67,7 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
 #
 proc ::cmdexec::runbg {out args {dryrun 0}} {
     set cmdexec::bgdone 0
-    set cmd [join [cmdexec::getcmd $args] " "]
+    set cmd [join [cmdexec::getcmd [expr !$dryrun] $args] " "]
     set chan [open "|$cmd" "r"]
     chan configure $chan -blocking 0 -buffering line
     fileevent $chan readable [list cmdexec::bgread $out $cmd $dryrun $chan]
@@ -74,7 +78,7 @@ proc ::cmdexec::runbg {out args {dryrun 0}} {
 # exec pkg rquery
 #
 proc ::cmdexec::rquery {args} {
-    set cmd [cmdexec::getcmd rquery $cmdexec::query_format $args]
+    set cmd [cmdexec::getcmd 0 rquery $cmdexec::query_format $args]
     return [exec {*}$cmd]
 }
 
@@ -82,7 +86,7 @@ proc ::cmdexec::rquery {args} {
 # exec pkg query
 #
 proc ::cmdexec::query {args} {
-    set cmd [cmdexec::getcmd query $cmdexec::query_format $args]
+    set cmd [cmdexec::getcmd 0 query $cmdexec::query_format $args]
     return [exec {*}$cmd]
 }
 
@@ -90,7 +94,7 @@ proc ::cmdexec::query {args} {
 # exec pkg stats
 #
 proc ::cmdexec::stats {args} {
-    set cmd [cmdexec::getcmd stats $args]
+    set cmd [cmdexec::getcmd 0 stats $args]
     return [exec {*}$cmd]
 }
 
@@ -100,9 +104,9 @@ proc ::cmdexec::stats {args} {
 #
 proc ::cmdexec::lslocal {{inc "noauto"}} {
     if {$inc == "all"} {
-        set cmd [cmdexec::getcmd query -a $cmdexec::list_format]
+        set cmd [cmdexec::getcmd 0 query -a $cmdexec::list_format]
     } else {
-        set cmd [cmdexec::getcmd query -e {%a == 0} $cmdexec::list_format]
+        set cmd [cmdexec::getcmd 0 query -e {%a == 0} $cmdexec::list_format]
     }
     return [exec {*}$cmd]
 }
@@ -111,7 +115,7 @@ proc ::cmdexec::lslocal {{inc "noauto"}} {
 # exec pkg to list remote (available) packages
 #
 proc ::cmdexec::lsremote {} {
-    set cmd [cmdexec::getcmd rquery -a $cmdexec::list_format]
+    set cmd [cmdexec::getcmd 0 rquery -a $cmdexec::list_format]
     return [exec {*}$cmd]
 }
 
@@ -119,6 +123,6 @@ proc ::cmdexec::lsremote {} {
 # exec pkg search
 #
 proc ::cmdexec::search {args} {
-    set cmd [cmdexec::getcmd search -q $args]
+    set cmd [cmdexec::getcmd 0 search -q $args]
     return [exec {*}$cmd]
 }
