@@ -173,11 +173,52 @@ proc ::fbsdupd::upgrade {} {
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     $w.cmdout configure -state "disabled"
 
+    set cfgfile [fbsdupd::config]
     set new_release {__LALALA__}
 
     $w.install configure -state "disabled"
-    fbsdupd::run $w.cmdout "upgrade" "-r" $new_release
+    fbsdupd::run $w.cmdout "upgrade" "-f" $cfgfile "-r" $new_release
     if {$fbsdupd::cmd_error == 0} {
         $w.install configure -state "enabled"
     }
+
+    file delete -force -- $cfgfile
+}
+
+#
+# generate a custom freebsd-update.conf file
+#   return generated filename
+#
+proc ::fbsdupd::config {} {
+    set fn /tmp/.pkgtk.freebsd-update.conf
+
+    set fh [open $fn "w"]
+    set src [open /etc/freebsd-update.conf "r"]
+
+    while {[gets $src line] >= 0} {
+        set line [string trim $line]
+        if {$line == ""} {
+            continue
+        } elseif {[string match {\#*} $line]} {
+            continue
+        } else {
+            set opt [lindex [split $line " "] 0]
+            if {[string tolower $opt] == {strictcomponents}} {
+                # will override StrictComponents setting
+                # to avoid blocking on confirmation
+                puts "config: $opt override"
+                continue
+            } else {
+                puts "config: $line"
+                puts $fh $line
+            }
+        }
+    }
+    close $src
+
+    # override settings
+    puts $fh "StrictComponents yes"
+
+    close $fh
+    return $fn
 }
