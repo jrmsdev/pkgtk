@@ -88,7 +88,13 @@ proc ::pkgrepo::writefile {repo cfg} {
     if {[catch {close $fh} err]} {
         utils show_error $err
     }
-    utils sudo repocfg-save $fn $repo
+    set err [utils sudo repocfg-save $fn $repo]
+    if {$err} {
+        if {[file exists $fn]} {
+            file delete -force -- $fn
+        }
+    }
+    return $err
 }
 
 #
@@ -384,13 +390,18 @@ proc ::pkgrepo::changes_discard {} {
 proc ::pkgrepo::changes_save {} {
     set repo [pkgrepo::curtab_reponame]
     set newcfg [dict get $pkgrepo::dirty $repo]
+    set bupdata [dict get $pkgrepo::config $repo]
     set newdata [pkgrepo::config_update $repo $newcfg]
-    pkgrepo::writefile $repo $newdata
+    set err [pkgrepo::writefile $repo $newdata]
+    set w [dict get $pkgrepo::w_ids $repo]
     foreach {opt} [dict keys $newcfg] {
         pkgrepo::dirty_unset $repo $opt
     }
-    set w [dict get $pkgrepo::w_ids $repo]
-    pkgrepo::show $w $repo $newdata
+    if {$err} {
+        pkgrepo::show $w $repo $bupdata
+    } else {
+        pkgrepo::show $w $repo $newdata
+    }
 }
 
 #

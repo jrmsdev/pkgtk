@@ -98,5 +98,9 @@ proc ::utils::sudo {name args} {
     foreach {a} $args {
         lappend cmd $a
     }
-    return [exec {*}$cmd]
+    if {[catch {exec {*}$cmd} err]} {
+        utils::show_error $err
+        return 1
+    }
+    return 0
 }
