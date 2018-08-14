@@ -52,6 +52,7 @@ proc ::fbsdupd::view {} {
     wm title $top [mc "FreeBSD system update"]
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
+    grid columnconfigure $top 1 -weight 0
 
     menu $top.menu
     $top configure -menu $top.menu
@@ -63,6 +64,9 @@ proc ::fbsdupd::view {} {
     }
 
     set w .fbsdupd.view
+
+    ttk::scrollbar $top.vsb -orient "vertical" -command [list $w.cmdout yview]
+    grid $top.vsb -row 0 -column 1 -sticky nwse
 
     ttk::frame $w
     grid columnconfigure $w 0 -weight 1
@@ -86,7 +90,7 @@ proc ::fbsdupd::view {} {
     grid $w.info.install -row 0 -column 1 -sticky e
     $w.info.install configure -state "disabled"
 
-    text $w.cmdout
+    text $w.cmdout -yscrollcommand [list $top.vsb set]
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     $w.cmdout configure -state "disabled"
 

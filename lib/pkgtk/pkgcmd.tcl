@@ -57,6 +57,7 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     wm title $top "pkg $cmd"
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
+    grid columnconfigure $top 1 -weight 0
 
     menu $top.menu
     $top configure -menu $top.menu
@@ -78,7 +79,10 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
 
-    text $w.cmdout
+    ttk::scrollbar $top.vsb -orient "vertical" -command [list $w.cmdout yview]
+    grid $top.vsb -row 0 -column 1 -sticky nwse
+
+    text $w.cmdout -yscrollcommand [list $top.vsb set]
     grid $w.cmdout -row 0 -column 0 -sticky nwse
 
     ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0

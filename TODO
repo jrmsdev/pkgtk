@@ -1,13 +1,8 @@
-* scrollable cmdout
-
-* cmdout buffer by char or "less than a full line", so we can show the . (dots)
-  progress
-
 * reload installed packages tree after remove/upgrade (autoremove too?)
 
 * reload available packages tree afer install
 
-* show "all" installed packages instead of noauto only
+* show "all" installed packages too, instead of noauto only
 
 * exclude already installed packages from available list (?)
 
