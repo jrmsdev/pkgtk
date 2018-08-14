@@ -29,7 +29,8 @@ proc ::fbsdupd::can_run {} {
     }
     if {[string match {*-RELEASE*} $version_cur]} {
         set fbsdupd::version_cur $version_cur
-        puts "freebsd-version: $fbsdupd::version_cur"
+        # set PAGER env var as /bin/cat to avoid blocking freebsd-update output
+        set ::env(PAGER) /bin/cat
         return 1
     }
     return 0
@@ -68,11 +69,13 @@ proc ::fbsdupd::view {} {
 proc ::fbsdupd::run {out cmdname args} {
     set fbsdupd::cmd_done 0
     set cmd [join [list /usr/sbin/freebsd-update $cmdname $args] " "]
+    $out configure -state "normal"
     $out insert end "freebsd-update $cmdname\n\n"
     set chan [open "|$cmd" "r"]
     chan configure $chan -blocking 0 -buffering line
     fileevent $chan readable [list fbsdupd::readlines $chan $out $cmdname]
     tkwait variable fbsdupd::cmd_done
+    $out configure -state "disabled"
 }
 
 #
@@ -110,15 +113,20 @@ proc ::fbsdupd::fetch {{check 1}} {
         grid columnconfigure $w 0 -weight 1
         grid rowconfigure $w 0 -weight 0
         grid rowconfigure $w 1 -weight 1
+        grid rowconfigure $w 2 -weight 0
         grid $w -row 0 -column 0 -sticky nwse
 
         ttk::label $w.info -text [format [mc "Current version: %s"] $fbsdupd::version_cur]
         grid $w.info -row 0 -column 0 -sticky nwse
         $w.info configure -padding {1 5}
+
+        ttk::button $w.install -text [mc "Install"] -command {fbsdupd::install}
+        grid $w.install -row 2 -column 0 -sticky w
     }
 
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
+    $w.cmdout configure -state "disabled"
 
     if {$check} {
         fbsdupd::run $w.cmdout "fetch"
