@@ -1,2 +1,0 @@
-# pkgtk sudoers file
-%wheel ALL=(ALL) NOPASSWD: /usr/local/sbin/pkg, /usr/sbin/freebsd-update

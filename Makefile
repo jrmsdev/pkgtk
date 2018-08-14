@@ -9,9 +9,9 @@ SUDOERS_GROUP ?= wheel
 RELEASE != $(SH) -e mk/get-release.sh $(TCLSH)
 RELNAME := pkgtk-$(RELEASE)
 BUILDDIR := build/$(RELNAME)
-INSTALL_EXE := install -v -C -h md5 -m 0755
-INSTALL_FILE := install -v -C -h md5 -m 0644
-INSTALL_ROFILE := install -v -C -h md5 -m 0440
+INSTALL := install -v -C -h md5
+INSTALL_EXE := $(INSTALL) -m 0755
+INSTALL_FILE := $(INSTALL) -m 0644
 
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
 LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
@@ -54,10 +54,11 @@ $(LIB_FILES): $(LIB_SOURCES)
 	@mkdir -vp $(BUILDDIR)/lib/pkgtk
 	@$(INSTALL_FILE) lib/pkgtk/*.tcl $(BUILDDIR)/lib/pkgtk
 
-$(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk
+$(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk.in
 	@mkdir -vp $(BUILDDIR)/etc/sudoers.d
-	@cat etc/sudoers.d/pkgtk | \
-		sed 's/%wheel/%$(SUDOERS_GROUP)/' >$(BUILDDIR)/etc/sudoers.d/pkgtk
+	@cat etc/sudoers.d/pkgtk.in | \
+		sed 's#%LIBEXEC%#$(PREFIX)/libexec/pkgtk#' | \
+		sed 's/%SUDOERS_GROUP%/$(SUDOERS_GROUP)/' >$(BUILDDIR)/etc/sudoers.d/pkgtk
 	@touch $(BUILDDIR)/etc/sudoers.d/pkgtk
 
 .PHONY: dist
@@ -87,7 +88,7 @@ install: build
 				$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
 				$(DESTDIR)$(PREFIX)/share/doc/pkgtk
-	@$(INSTALL_ROFILE) $(BUILDDIR)/etc/sudoers.d/pkgtk \
+	@$(INSTALL) -m 0440 $(BUILDDIR)/etc/sudoers.d/pkgtk \
 				$(DESTDIR)$(PREFIX)/etc/sudoers.d/pkgtk
 
 .PHONY: uninstall

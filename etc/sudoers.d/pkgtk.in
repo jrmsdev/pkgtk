@@ -1,0 +1,3 @@
+# pkgtk sudoers file
+%%SUDOERS_GROUP% ALL=(ALL) NOPASSWD: /usr/local/sbin/pkg, /usr/sbin/freebsd-update, \
+                        %LIBEXEC%/repocfg-save
