@@ -1,7 +1,25 @@
+* scrollable cmdout
+
+* cmdout buffer by char or "less than a full line", so we can show the . (dots)
+  progress
+
+* reload installed packages tree after remove/upgrade (autoremove too?)
+
+* reload available packages tree afer install
+
+* show "all" installed packages instead of noauto only
+
+* exclude already installed packages from available list (?)
+
 * pkgrepo: check at least one repo remains enabled
+
+* pkgrepo: validate configs by running pkg stats -r or similar... (?)
 
 * pkgsearch: add options... like search in pkg comment/description, etc...
 
 * run pkg update at startup but ignore errors if the user has not enough
   privileges... (?) as the user may just want to take a look to current state of
   packages info... (?)
+
+* (xdg/)desktop integration: icons, menu entry and such...
+  maybe systray support too?
