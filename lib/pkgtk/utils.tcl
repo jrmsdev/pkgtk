@@ -7,8 +7,6 @@ namespace eval ::utils {
     namespace export dispatch_view show_error tkbusy_hold tkbusy_forget sudo
     namespace export menu_underline_name menu_cascade menu_additems
     namespace ensemble create
-
-    variable libexec_dir $::env(PKGTK_LIBEXEC)
 }
 
 #
@@ -94,7 +92,7 @@ proc ::utils::menu_additems {w items} {
 # run helper from libexec directory via sudo
 #
 proc ::utils::sudo {name args} {
-    set cmd [list /usr/local/bin/sudo -n [file join $utils::libexec_dir $name]]
+    set cmd [list /usr/local/bin/sudo -n [file join $::env(PKGTK_LIBEXEC) $name]]
     foreach {a} $args {
         lappend cmd $a
     }
