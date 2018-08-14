@@ -91,7 +91,7 @@ proc ::fbsdupd::run {out cmdname args} {
     utils tkbusy_hold .fbsdupd
     set fbsdupd::cmd_done 0
     set fbsdupd::cmd_error 0
-    set cmd [join [list /usr/sbin/freebsd-update $cmdname $args] " "]
+    set cmd [join [list /usr/local/bin/sudo -n /usr/sbin/freebsd-update $cmdname $args] " "]
     $out configure -state "normal"
     $out insert end "freebsd-update $cmdname\n\n"
     set chan [open "|$cmd" "r"]
@@ -192,16 +192,20 @@ proc ::fbsdupd::release_upgrade {} {
     grid $w.lbl -row 0 -column 0 -sticky w
 
     ttk::entry $w.new_release -textvariable ::fbsdupd_new_release
-    grid $w.new_release -row 0 -column 1 -sticky w
+    grid $w.new_release -row 0 -column 1 -sticky we
 
-    ttk::label $w.exrel -text [format "%s: 11.3-RELEASE" [mc "Example"]]
+    ttk::label $w.exrel -text [format "%s: 11.3 or 11.3-RELEASE" [mc "Example"]]
     grid $w.exrel -row 1 -column 1 -sticky w
 
     bind $w.new_release <Return> "fbsdupd::newrel_check $top"
     focus $w.new_release
 
     tkwait window $top
-    fbsdupd::upgrade $::fbsdupd_new_release
+
+    set ::fbsdupd_new_release [string trim $::fbsdupd_new_release]
+    if {$::fbsdupd_new_release != ""} {
+        fbsdupd::upgrade $::fbsdupd_new_release
+    }
 }
 
 #
