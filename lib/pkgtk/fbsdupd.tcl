@@ -57,11 +57,31 @@ proc ::fbsdupd::view {} {
     $top configure -menu $top.menu
 
     utils menu_additems $top.menu {
-        {mc "Chec_k" command {fbsdupd::fetch}}
+        {mc "_Fetch" command {fbsdupd::fetch}}
+        {mc "_Upgrade" command {fbsdupd::upgrade}}
         {mc "_Close" command {destroy .fbsdupd}}
     }
 
-    fbsdupd::fetch 0
+    set w .fbsdupd.view
+
+    ttk::frame $w
+    grid columnconfigure $w 0 -weight 1
+    grid rowconfigure $w 0 -weight 0
+    grid rowconfigure $w 1 -weight 1
+    grid rowconfigure $w 2 -weight 0
+    grid $w -row 0 -column 0 -sticky nwse
+
+    ttk::label $w.info -text [format [mc "Current version: %s"] $fbsdupd::version_cur]
+    grid $w.info -row 0 -column 0 -sticky nwse
+    $w.info configure -padding {1 5}
+
+    text $w.cmdout
+    grid $w.cmdout -row 1 -column 0 -sticky nwse
+    $w.cmdout configure -state "disabled"
+
+    ttk::button $w.install -text [mc "Install"] -command {fbsdupd::install}
+    grid $w.install -row 2 -column 0 -sticky w
+    $w.install configure -state "disabled"
 }
 
 #
@@ -106,37 +126,21 @@ proc ::fbsdupd::readlines {src out cmd} {
 #
 # freebsd-update fetch
 #
-proc ::fbsdupd::fetch {{check 1}} {
+proc ::fbsdupd::fetch {} {
     set w .fbsdupd.view
 
-    if {[winfo exists $w]} {
+    if {[winfo exists $w.cmdout]} {
         destroy $w.cmdout
-    } else {
-        ttk::frame $w
-        grid columnconfigure $w 0 -weight 1
-        grid rowconfigure $w 0 -weight 0
-        grid rowconfigure $w 1 -weight 1
-        grid rowconfigure $w 2 -weight 0
-        grid $w -row 0 -column 0 -sticky nwse
-
-        ttk::label $w.info -text [format [mc "Current version: %s"] $fbsdupd::version_cur]
-        grid $w.info -row 0 -column 0 -sticky nwse
-        $w.info configure -padding {1 5}
-
-        ttk::button $w.install -text [mc "Install"] -command {fbsdupd::install}
-        grid $w.install -row 2 -column 0 -sticky w
-        $w.install configure -state "disabled"
     }
 
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     $w.cmdout configure -state "disabled"
 
-    if {$check} {
-        fbsdupd::run $w.cmdout "fetch"
-        if {$fbsdupd::cmd_error == 0} {
-            $w.install configure -state "enabled"
-        }
+    $w.install configure -state "disabled"
+    fbsdupd::run $w.cmdout "fetch"
+    if {$fbsdupd::cmd_error == 0} {
+        $w.install configure -state "enabled"
     }
 }
 
@@ -153,4 +157,27 @@ proc ::fbsdupd::install {} {
     $w.cmdout configure -state "disabled"
 
     fbsdupd::run $w.cmdout "install"
+}
+
+#
+# freebsd-update upgrade
+#
+proc ::fbsdupd::upgrade {} {
+    set w .fbsdupd.view
+
+    if {[winfo exists $w.cmdout]} {
+        destroy $w.cmdout
+    }
+
+    text $w.cmdout
+    grid $w.cmdout -row 1 -column 0 -sticky nwse
+    $w.cmdout configure -state "disabled"
+
+    set new_release {__LALALA__}
+
+    $w.install configure -state "disabled"
+    fbsdupd::run $w.cmdout "upgrade" "-r" $new_release
+    if {$fbsdupd::cmd_error == 0} {
+        $w.install configure -state "enabled"
+    }
 }
