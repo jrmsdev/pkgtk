@@ -49,7 +49,7 @@ proc ::fbsdupd::view {} {
     toplevel $top
     wm minsize $top 600 400
     wm transient $top .
-    wm title $top [mc "FreeBSD update"]
+    wm title $top [mc "FreeBSD system update"]
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
@@ -71,24 +71,37 @@ proc ::fbsdupd::view {} {
     grid rowconfigure $w 2 -weight 0
     grid $w -row 0 -column 0 -sticky nwse
 
-    ttk::label $w.info -text [format [mc "Current version: %s"] $fbsdupd::version_cur]
+    ttk::frame $w.info
+    grid columnconfigure $w.info 0 -weight 1
+    grid columnconfigure $w.info 1 -weight 0
+    grid rowconfigure $w.info 0 -weight 1
     grid $w.info -row 0 -column 0 -sticky nwse
-    $w.info configure -padding {1 5}
+    $w.info configure -padding 1
+
+    ttk::label $w.info.lbl \
+               -text [format [mc "Current version: %s"] $fbsdupd::version_cur]
+    grid $w.info.lbl -row 0 -column 0 -sticky we
+
+    ttk::button $w.info.install -text [mc "Install"] -command {fbsdupd::install}
+    grid $w.info.install -row 0 -column 1 -sticky e
+    $w.info.install configure -state "disabled"
 
     text $w.cmdout
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     $w.cmdout configure -state "disabled"
 
-    ttk::button $w.install -text [mc "Install"] -command {fbsdupd::install}
-    grid $w.install -row 2 -column 0 -sticky w
-    $w.install configure -state "disabled"
+    ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0
+    grid $w.pgb -row 2 -column 0 -sticky we
 }
 
 #
 # run freebsd-update tool and read lines of output
 #
 proc ::fbsdupd::run {out cmdname args} {
+    set parent [winfo parent $out]
     utils tkbusy_hold .fbsdupd
+    $parent.pgb configure -mode "indeterminate"
+    $parent.pgb start
     set fbsdupd::cmd_done 0
     set fbsdupd::cmd_error 0
     set cmd [join [list /usr/local/bin/sudo -n /usr/sbin/freebsd-update $cmdname $args] " "]
@@ -99,6 +112,8 @@ proc ::fbsdupd::run {out cmdname args} {
     fileevent $chan readable [list fbsdupd::readlines $chan $out $cmdname]
     tkwait variable fbsdupd::cmd_done
     $out configure -state "disabled"
+    $parent.pgb stop
+    $parent.pgb configure -mode "determinate"
     utils tkbusy_forget .fbsdupd
 }
 
@@ -139,10 +154,10 @@ proc ::fbsdupd::fetch {} {
     grid $w.cmdout -row 1 -column 0 -sticky nwse
     $w.cmdout configure -state "disabled"
 
-    $w.install configure -state "disabled"
+    $w.info.install configure -state "disabled"
     fbsdupd::run $w.cmdout "fetch"
     if {$fbsdupd::cmd_error == 0} {
-        $w.install configure -state "enabled"
+        $w.info.install configure -state "enabled"
     }
 }
 
@@ -151,7 +166,7 @@ proc ::fbsdupd::fetch {} {
 #
 proc ::fbsdupd::install {} {
     set w .fbsdupd.view
-    $w.install configure -state "disabled"
+    $w.info.install configure -state "disabled"
 
     destroy $w.cmdout
     text $w.cmdout
@@ -234,10 +249,10 @@ proc ::fbsdupd::upgrade {new_release} {
 
     set cfgfile [fbsdupd::config]
 
-    $w.install configure -state "disabled"
+    $w.info.install configure -state "disabled"
     fbsdupd::run $w.cmdout "upgrade" "-f" $cfgfile "-r" $new_release
     if {$fbsdupd::cmd_error == 0} {
-        $w.install configure -state "enabled"
+        $w.info.install configure -state "enabled"
     }
 
     file delete -force -- $cfgfile
