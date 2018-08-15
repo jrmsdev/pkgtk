@@ -18,3 +18,5 @@
 
 * (xdg/)desktop integration: icons, menu entry and such...
   maybe systray support too?
+
+* do not allow closing windows if background proc is running
