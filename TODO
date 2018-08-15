@@ -16,3 +16,5 @@
   maybe systray support too?
 
 * do not allow closing windows if background proc is running
+
+* got to list of installed packages after installing a package from a search?

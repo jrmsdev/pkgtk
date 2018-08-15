@@ -141,19 +141,15 @@ proc ::fbsdupd::readlines {src out cmd} {
         $out see end
     }
     if {[chan eof $src]} {
-        try {
-            chan configure $src -blocking 1
-            chan close $src
-        } trap CHILDSTATUS {results options} {
-            set rc [lindex [dict get $options -errorcode] 2]
-            set fbsdupd::cmd_error $rc
-            utils show_error "ERROR: freebsd-update $cmd ($rc)\n$results"
-            $out insert end "*** ERROR: return code $rc\n"
-            $out insert end $results
+        chan configure $src -blocking 1
+        if {[catch {chan close $src} err]} {
+            set fbsdupd::cmd_error 1
+            utils show_error "ERROR: freebsd-update $cmd\n\n$err"
+            $out insert end "*** ERROR ***\n"
+            $out insert end $err
             $out see end
-        } finally {
-            set fbsdupd::cmd_done 1
         }
+        set fbsdupd::cmd_done 1
     }
 }
 

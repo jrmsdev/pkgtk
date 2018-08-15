@@ -48,21 +48,16 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
         $out see end
     }
     if {[chan eof $chan]} {
-        try {
-            chan configure $chan -blocking 1
-            chan close $chan
-        } trap CHILDSTATUS {results options} {
-            set rc [lindex [dict get $options -errorcode] 2]
-            set fatalerror [expr !$dryrun && $rc != 1]
-            if {$fatalerror} {
-                utils show_error "ERROR: $cmd ($rc)\n$results"
-                $out insert end "*** ERROR: return code $rc\n"
-                $out insert end $results
+        chan configure $chan -blocking 1
+        if {[catch {chan close $chan} err]} {
+            if {!$dryrun} {
+                utils show_error "ERROR: $cmd\n\n$err"
+                $out insert end "*** ERROR ***\n"
+                $out insert end $err
                 $out see end
             }
-        } finally {
-            set cmdexec::bgdone 1
         }
+        set cmdexec::bgdone 1
     }
 }
 
