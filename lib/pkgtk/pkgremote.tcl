@@ -14,9 +14,9 @@ namespace eval ::pkgremote {
 #
 # available pkg action buttons
 #
-proc ::pkgremote::buttons {w} {
+proc ::pkgremote::buttons {w {reload "none"}} {
     ttk::button $w.install -text [mc "Install"] -state {disabled} \
-                           -command {pkgcmd::view_install}
+                           -command "pkgcmd::view_install $reload"
     grid $w.install -row 0 -column 0 -sticky w
 }
 

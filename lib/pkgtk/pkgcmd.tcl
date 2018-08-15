@@ -109,12 +109,15 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
 #
 # view pkg upgrade command
 #
-proc ::pkgcmd::view_upgrade {{all "NONE"}} {
+proc ::pkgcmd::view_upgrade {{reload "NONE"} {all "NONE"}} {
     if {$all != "NONE"} {
         pkgcmd::view "upgrade"
     } else {
         set pkg $pkgview::pkg_selected
         pkgcmd::view "upgrade" $pkg
+    }
+    if {$reload == "reload"} {
+        utils dispatch_view pkglocal::view
     }
 }
 
@@ -122,9 +125,12 @@ proc ::pkgcmd::view_upgrade {{all "NONE"}} {
 # view pkg remove command
 #   TODO: support adding -R arg
 #
-proc ::pkgcmd::view_remove {} {
+proc ::pkgcmd::view_remove {{reload "none"}} {
     set pkg $pkgview::pkg_selected
     pkgcmd::view "remove" $pkg
+    if {$reload == "reload"} {
+        utils dispatch_view pkglocal::view
+    }
 }
 
 #
@@ -137,9 +143,12 @@ proc ::pkgcmd::view_clean_cache {} {
 #
 # view pkg install command
 #
-proc ::pkgcmd::view_install {} {
+proc ::pkgcmd::view_install {{reload "none"}} {
     set pkg $pkgview::pkg_selected
     pkgcmd::view "install" $pkg
+    if {$reload == "reload"} {
+        utils dispatch_view pkgremote::view
+    }
 }
 
 #

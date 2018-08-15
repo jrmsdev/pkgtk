@@ -89,7 +89,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
 
     utils tkbusy_hold
     if {[string equal "remote" $pkgtype]} {
-        pkgremote::buttons $pkgbuttons
+        pkgremote::buttons $pkgbuttons "reload"
     } else {
         pkglocal::buttons $pkgbuttons
     }

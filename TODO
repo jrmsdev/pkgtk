@@ -1,6 +1,4 @@
-* reload installed packages tree after remove/upgrade (autoremove too?)
-
-* reload available packages tree afer install
+* tail cmdout... (auto scroll to the last inserted line)
 
 * show "all" installed packages too, instead of noauto only
 

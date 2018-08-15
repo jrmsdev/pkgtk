@@ -53,7 +53,7 @@ proc ::pkgtk::main_menu {} {
 
     utils menu_cascade .menu "packages" [mc "_Packages"] {
         {mc "_Installed" command {utils dispatch_view pkglocal::view}}
-        {mc "_Upgrade" command {pkgcmd::view_upgrade "all"}}
+        {mc "_Upgrade" command {pkgcmd::view_upgrade "noreload" "all"}}
         {s0 "" separator {}}
         {mc "_Available" command {utils dispatch_view pkgremote::view}}
         {mc "_Search" command {utils dispatch_view pkgsearch::view}}
