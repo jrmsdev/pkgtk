@@ -14,6 +14,7 @@ package require pkgrepo
 package require img
 package require version
 package require fbsdupd
+package require usercfg
 
 namespace eval ::pkgtk {
     namespace export main

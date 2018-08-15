@@ -16,15 +16,19 @@ INSTALL_FILE := $(INSTALL) -m 0644
 MKDIR := mkdir -vp -m 0755
 
 LIB_SOURCES != ls lib/pkgtk/*.tcl | grep -v pkgIndex
-LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
+LIB_USERCFG_SRCS != ls lib/pkgtk/usercfg/*.tcl | grep -v pkgIndex
 
-BUILD_DEPS := $(BUILDDIR)/bin/pkgtk $(LIB_FILES)
+LIB_FILES != for relp in $(LIB_SOURCES); do echo $(BUILDDIR)/$$relp; done
+LIB_USERCFG_FILES != for relp in $(LIB_USERCFG_SRCS); do echo $(BUILDDIR)/$$relp; done
+
+BUILD_DEPS := $(LIB_FILES) $(LIB_USERCFG_FILES)
+BUILD_DEPS += $(BUILDDIR)/bin/pkgtk
 BUILD_DEPS += $(BUILDDIR)/etc/sudoers.d/pkgtk
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/gui.tcl
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/repocfg-save
 
 PO_TEMPLATE := po/pkgtk.pot
-PO_SOURCES := libexec/pkgtk/gui.tcl $(LIB_SOURCES)
+PO_SOURCES := libexec/pkgtk/gui.tcl $(LIB_SOURCES) $(LIB_USERCFG_SRCS)
 PO_FILES != ls po/*.po 2>/dev/null || true
 MSG_RELNAMES != for pofile in $(PO_FILES); do echo po/`basename $$pofile .po`; done
 
@@ -32,11 +36,15 @@ MSG_RELNAMES != for pofile in $(PO_FILES); do echo po/`basename $$pofile .po`; d
 all: build
 
 .PHONY: pkgindex
-pkgindex: lib/pkgtk/pkgIndex.tcl
+pkgindex: lib/pkgtk/pkgIndex.tcl lib/pkgtk/usercfg/pkgIndex.tcl
 
-lib/pkgtk/pkgIndex.tcl: $(LIB_SOURCES)
+lib/pkgtk/pkgIndex.tcl: Makefile $(LIB_SOURCES)
 	@echo 'pkg_mkIndex lib/pkgtk *.tcl' | $(TCLSH)
 	touch lib/pkgtk/pkgIndex.tcl
+
+lib/pkgtk/usercfg/pkgIndex.tcl: Makefile $(LIB_USERCFG_SRCS)
+	@echo 'pkg_mkIndex lib/pkgtk/usercfg *.tcl' | $(TCLSH)
+	touch lib/pkgtk/usercfg/pkgIndex.tcl
 
 .PHONY: build
 build: pkgindex $(BUILD_DEPS) po-msgfmt
@@ -64,6 +72,10 @@ $(LIB_FILES): $(LIB_SOURCES)
 	@$(MKDIR) $(BUILDDIR)/lib/pkgtk
 	@$(INSTALL_FILE) lib/pkgtk/*.tcl $(BUILDDIR)/lib/pkgtk
 
+$(LIB_USERCFG_FILES): $(LIB_USERCFG_SRCS)
+	@$(MKDIR) $(BUILDDIR)/lib/pkgtk/usercfg
+	@$(INSTALL_FILE) lib/pkgtk/usercfg/*.tcl $(BUILDDIR)/lib/pkgtk/usercfg
+
 $(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk.in
 	@$(MKDIR) $(BUILDDIR)/etc/sudoers.d
 	@cat etc/sudoers.d/pkgtk.in | \
@@ -84,7 +96,7 @@ dist: build
 .PHONY: install
 install: build
 	@$(MKDIR) $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
-			$(DESTDIR)$(PREFIX)/lib/pkgtk \
+			$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
 			$(DESTDIR)$(PREFIX)/share/doc/pkgtk \
 			$(DESTDIR)$(PREFIX)/etc/sudoers.d
@@ -96,6 +108,8 @@ install: build
 				$(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk
+	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/usercfg/*.tcl \
+				$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/msgs/*.msg \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
