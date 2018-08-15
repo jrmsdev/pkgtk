@@ -6,6 +6,7 @@ package provide utils 0.0
 namespace eval ::utils {
     namespace export dispatch_view show_error tkbusy_hold tkbusy_forget sudo
     namespace export menu_underline_name menu_cascade menu_additems
+    namespace export style_cmdout
     namespace ensemble create
 }
 
@@ -101,4 +102,11 @@ proc ::utils::sudo {name args} {
         return 1
     }
     return 0
+}
+
+#
+# set style for a text widget used to show cmd output (console like)
+#
+proc ::utils::style_cmdout {w} {
+    $w configure -background "black" -foreground "white" -font "monospace 10"
 }

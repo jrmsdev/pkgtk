@@ -103,6 +103,7 @@ proc ::fbsdupd::view {} {
     text $w.outf.cmdout -yscrollcommand [list $w.outf.vsb set]
     grid $w.outf.cmdout -row 0 -column 0 -sticky nwse
     $w.outf.cmdout configure -state "disabled"
+    utils style_cmdout $w.outf.cmdout
 
     set fbsdupd::progressbar $w.pgb
     ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0

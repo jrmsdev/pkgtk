@@ -90,6 +90,7 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
 
     text $cmdout -yscrollcommand [list $w.outf.vsb set]
     grid $cmdout -row 0 -column 0 -sticky nwse
+    utils style_cmdout $cmdout
 
     ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0
     grid $w.pgb -row 1 -column 0 -sticky we
