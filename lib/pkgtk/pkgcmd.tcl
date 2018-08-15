@@ -4,6 +4,7 @@
 package provide pkgcmd 0.0
 
 package require utils
+package require cmdexec
 package require pkgview
 
 namespace eval ::pkgcmd {
@@ -12,35 +13,31 @@ namespace eval ::pkgcmd {
 #
 # run pkg command
 #
-proc ::pkgcmd::dorun {w cmd args} {
-    utils tkbusy_hold $w
-    $w.cmdout insert end "pkg $cmd\n\n"
+proc ::pkgcmd::dorun {out cmd args} {
+    $out insert end "pkg $cmd\n\n"
     if {$cmd == "update"} {
-        cmdexec::runbg $w.cmdout "$cmd"
+        cmdexec::runbg $out "$cmd"
     } else {
         if {$args != "NONE"} {
-            cmdexec::runbg $w.cmdout "$cmd -y $args"
+            cmdexec::runbg $out "$cmd -y $args"
         } else {
-            cmdexec::runbg $w.cmdout "$cmd -y"
+            cmdexec::runbg $out "$cmd -y"
         }
     }
-    $w.cmdout configure -state "disabled"
-    utils tkbusy_forget $w
+    $out configure -state "disabled"
 }
 
 #
 # run pkg command (dry run), whitout applying any changes to the system
 #
-proc ::pkgcmd::dryrun {w cmd args} {
-    utils tkbusy_hold $w
-    $w.cmdout insert end "pkg $cmd (dry run)\n\n"
+proc ::pkgcmd::dryrun {out cmd args} {
+    $out insert end "pkg $cmd (dry run)\n\n"
     if {$args != "NONE"} {
-        cmdexec::runbg $w.cmdout "$cmd -n $args" 1
+        cmdexec::runbg $out "$cmd -n $args" 1
     } else {
-        cmdexec::runbg $w.cmdout "$cmd -n" 1
+        cmdexec::runbg $out "$cmd -n" 1
     }
-    $w.cmdout configure -state "disabled"
-    utils tkbusy_forget $w
+    $out configure -state "disabled"
 }
 
 #
@@ -53,6 +50,7 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     }
 
     toplevel $top
+    wm minsize $top 600 400
     wm transient $top .
     wm title $top "pkg $cmd"
     grid rowconfigure $top 0 -weight 1
@@ -73,26 +71,37 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     }
 
     set w $top.view
+    set cmdout $w.outf.cmdout
+
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 0
     grid columnconfigure $w 0 -weight 1
     grid $w -sticky nwse
 
-    ttk::scrollbar $top.vsb -orient "vertical" -command [list $w.cmdout yview]
-    grid $top.vsb -row 0 -column 1 -sticky nwse
+    ttk::frame $w.outf
+    grid rowconfigure $w.outf 0 -weight 1
+    grid columnconfigure $w.outf 0 -weight 1
+    grid columnconfigure $w.outf 1 -weight 0
+    grid $w.outf -row 0 -column 0 -sticky nwse
 
-    text $w.cmdout -yscrollcommand [list $top.vsb set]
-    grid $w.cmdout -row 0 -column 0 -sticky nwse
+    ttk::scrollbar $w.outf.vsb -orient "vertical" -command [list $cmdout yview]
+    grid $w.outf.vsb -row 0 -column 1 -sticky nwse
+
+    text $cmdout -yscrollcommand [list $w.outf.vsb set]
+    grid $cmdout -row 0 -column 0 -sticky nwse
 
     ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0
     grid $w.pgb -row 1 -column 0 -sticky we
+    set cmdexec::progressbar $w.pgb
 
+    utils tkbusy_hold $w
     if {$dorun} {
-        pkgcmd::dorun $w $cmd $args
+        pkgcmd::dorun $cmdout $cmd $args
     } else {
-        pkgcmd::dryrun $w $cmd $args
+        pkgcmd::dryrun $cmdout $cmd $args
     }
+    utils tkbusy_forget $w
 
     tkwait window $top
 }

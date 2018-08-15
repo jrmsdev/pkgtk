@@ -2,6 +2,7 @@
 # See LICENSE file.
 
 package provide cmdexec 0.0
+
 package require utils
 
 namespace eval ::cmdexec {
@@ -12,6 +13,7 @@ namespace eval ::cmdexec {
     variable query_format {%n %v (%sh)\n\n%e}
     variable list_format {%o|%n-%v}
     variable bgdone 0
+    variable progressbar {}
 
     if {[info exists ::env(PKGTK_ROOTDIR)]} {
         set pkg_rootdir $::env(PKGTK_ROOTDIR)
@@ -66,17 +68,17 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
 # run command in background and insert lines of output
 #
 proc ::cmdexec::runbg {out args {dryrun 0}} {
-    set parent [winfo parent $out]
-    $parent.pgb configure -mode "indeterminate"
-    $parent.pgb start
+    set pgb $cmdexec::progressbar
+    $pgb configure -mode "indeterminate"
+    $pgb start
     set cmdexec::bgdone 0
     set cmd [join [cmdexec::getcmd [expr !$dryrun] $args] " "]
     set chan [open "|$cmd" "r"]
     chan configure $chan -blocking 0 -buffering line
     fileevent $chan readable [list cmdexec::bgread $out $cmd $dryrun $chan]
     tkwait variable cmdexec::bgdone
-    $parent.pgb stop
-    $parent.pgb configure -mode "determinate"
+    $pgb stop
+    $pgb configure -mode "determinate"
 }
 
 #
