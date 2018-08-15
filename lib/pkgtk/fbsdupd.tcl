@@ -146,8 +146,8 @@ proc ::fbsdupd::readlines {src out cmd} {
         if {[catch {chan close $src} err]} {
             set fbsdupd::cmd_error 1
             utils show_error "ERROR: freebsd-update $cmd\n\n$err"
-            $out insert end "*** ERROR ***\n"
-            $out insert end $err
+            $out insert end "*** ERROR ***\n" {cmderror}
+            $out insert end $err {cmderror}
             $out see end
         }
         set fbsdupd::cmd_done 1

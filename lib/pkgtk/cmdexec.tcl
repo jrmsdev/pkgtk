@@ -52,8 +52,8 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
         if {[catch {chan close $chan} err]} {
             if {!$dryrun} {
                 utils show_error "ERROR: $cmd\n\n$err"
-                $out insert end "*** ERROR ***\n"
-                $out insert end $err
+                $out insert end "*** ERROR ***\n" {cmderror}
+                $out insert end $err {cmderror}
                 $out see end
             }
         }

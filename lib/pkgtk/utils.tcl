@@ -109,4 +109,5 @@ proc ::utils::sudo {name args} {
 #
 proc ::utils::style_cmdout {w} {
     $w configure -background "black" -foreground "white" -font "monospace 10"
+    $w tag configure {cmderror} -foreground "red"
 }
