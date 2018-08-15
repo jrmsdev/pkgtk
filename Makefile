@@ -1,7 +1,6 @@
 SH := /bin/sh
-USER_HOME != echo ~
 
-PREFIX ?= $(USER_HOME)
+PREFIX ?= /usr/local
 DESTDIR ?=
 TCLSH ?= tclsh8.6
 SUDOERS_GROUP ?= wheel
