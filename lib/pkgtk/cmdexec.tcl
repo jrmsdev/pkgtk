@@ -45,6 +45,7 @@ proc ::cmdexec::getcmd {use_sudo args} {
 proc ::cmdexec::bgread {out cmd dryrun chan} {
     if {[chan gets $chan line] >= 0} {
         $out insert end "$line\n"
+        $out see end
     }
     if {[chan eof $chan]} {
         try {
@@ -57,6 +58,7 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
                 utils show_error "ERROR: $cmd ($rc)\n$results"
                 $out insert end "*** ERROR: return code $rc\n"
                 $out insert end $results
+                $out see end
             }
         } finally {
             set cmdexec::bgdone 1

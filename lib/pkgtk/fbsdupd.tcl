@@ -138,6 +138,7 @@ proc ::fbsdupd::run {out cmdname args} {
 proc ::fbsdupd::readlines {src out cmd} {
     if {[chan gets $src line] >= 0} {
         $out insert end "$line\n"
+        $out see end
     }
     if {[chan eof $src]} {
         try {
@@ -149,6 +150,7 @@ proc ::fbsdupd::readlines {src out cmd} {
             utils show_error "ERROR: freebsd-update $cmd ($rc)\n$results"
             $out insert end "*** ERROR: return code $rc\n"
             $out insert end $results
+            $out see end
         } finally {
             set fbsdupd::cmd_done 1
         }
