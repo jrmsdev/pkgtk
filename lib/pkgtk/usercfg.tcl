@@ -7,7 +7,7 @@ package require utils
 package require usercfg::view
 
 namespace eval ::usercfg {
-    namespace export load view getall get get_bool
+    namespace export load view editor getall get get_bool
     namespace ensemble create
 
     # hold config data
@@ -161,19 +161,26 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 }
 
 #
+# create a widget to launch the config editor on the specified section
+#
+proc ::usercfg::editor {w section opt val} {
+    button $w -text $val -command [list usercfg::view $section]
+    grid $w -row 0 -column 1 -sticky w
+}
+
+#
 # user config main view (toplevel window)
 #
-proc ::usercfg::view {} {
+proc ::usercfg::view {{select_section ""}} {
     set top .usercfg
 
     toplevel $top
-    #~ wm minsize $top 400 300
     wm transient $top .
     wm title $top [mc "pkgtk preferences"]
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
-    usercfg::view::main $top
+    usercfg::view::main $top $select_section
 
     tkwait window $top
 }

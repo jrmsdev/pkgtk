@@ -10,7 +10,7 @@ namespace eval ::usercfg::view {
 #
 # main view
 #
-proc ::usercfg::view::main {top} {
+proc ::usercfg::view::main {top select_section} {
     set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
@@ -25,6 +25,10 @@ proc ::usercfg::view::main {top} {
 
     foreach {section} [usercfg::config_sections] {
         usercfg::show_section $cfg $section
+    }
+
+    if {$select_section != ""} {
+        $cfg select $cfg.$select_section
     }
 }
 

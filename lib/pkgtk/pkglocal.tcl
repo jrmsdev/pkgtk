@@ -26,8 +26,9 @@ proc ::pkglocal::buttons {w} {
 #
 # view local (installed) packages
 #
-proc ::pkglocal::view {w {inc "noauto"}} {
-    pkgview::pkgtree_view $w "local" [pkglocal::list $inc]
+proc ::pkglocal::view {w} {
+    set inc [usercfg get pkg local.inc]
+    pkgview::pkgtree_view $w "local" [pkglocal::list $inc] $inc
 }
 
 #
@@ -52,6 +53,5 @@ proc ::pkglocal::options {parent inc} {
     ttk::label $parent.inc_lbl -text [mc "Include:"]
     grid $parent.inc_lbl -row 0 -column 0 -sticky w
 
-    ttk::label $parent.inc -text $inc
-    grid $parent.inc -row 0 -column 1 -sticky w
+    usercfg editor $parent.inc pkg local.inc $inc
 }
