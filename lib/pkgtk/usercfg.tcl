@@ -7,7 +7,7 @@ package require utils
 package require usercfg::view
 
 namespace eval ::usercfg {
-    namespace export view get get_bool
+    namespace export view getall get get_bool
     namespace ensemble create
 
     # hold config data
@@ -111,7 +111,7 @@ proc ::usercfg::getall {section {optprefix ""}} {
     if {$optprefix != ""} {
         set p [format "%s.%s" $p $optprefix]
         set plen [string length $p]
-        foreach {opt} [dict keys $usercfg::db] {
+        foreach {opt} [lsort [dict keys $usercfg::db]] {
             set optlen [string length $opt]
             if {$optlen >= $plen} {
                 set opt_p [string range $opt 0 [expr $plen - 1]]
