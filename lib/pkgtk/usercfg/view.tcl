@@ -93,7 +93,7 @@ proc ::usercfg::show_option {o s_name g_name opt} {
 
     if {$o_type == "bool"} {
         set val [usercfg get_bool $section $opt]
-        usercfg::show_bool $o.val $val
+        usercfg::show_bool $o.val $section $opt $val
     } elseif {$o_type == "color"} {
         set val [usercfg get $section $opt]
         usercfg::show_color $o.val $section $opt $val
@@ -107,11 +107,24 @@ proc ::usercfg::show_option {o s_name g_name opt} {
 #
 # show bool option
 #
-proc ::usercfg::show_bool {w val} {
+proc ::usercfg::show_bool {w section opt curval} {
     ttk::combobox $w -values [list yes no] -state "readonly"
     $w set no
-    if {$val} {
+    if {$curval} {
         $w set yes
+    }
+    bind $w <<ComboboxSelected>> [list usercfg::save_bool $w $section $opt $curval]
+}
+
+#
+# save bool option
+#
+proc ::usercfg::save_bool {w section opt curval} {
+    puts "save bool: $section $opt '$curval'"
+    $w selection clear
+    set newval [expr [$w get] ? 1 : 0]
+    if {$newval != $curval} {
+        usercfg::save $section $opt [expr $newval ? "yes" : "no"]
     }
 }
 
@@ -129,5 +142,7 @@ proc ::usercfg::show_color {w section opt curval} {
 #
 proc ::usercfg::save_color {section opt curval} {
     set newval [tk_chooseColor -initialcolor $curval -title "pkgtk color"]
-    usercfg::save $section $opt $newval
+    if {$newval != "" && $newval != $curval} {
+        usercfg::save $section $opt $newval
+    }
 }
