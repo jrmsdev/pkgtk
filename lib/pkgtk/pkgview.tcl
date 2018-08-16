@@ -61,7 +61,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist {inc "noauto"}} {
     grid $w.left -sticky nwse
 
     set stats $w.left.stats
-    ttk::label $stats -takefocus 0
+    ttk::label $stats -takefocus 0 -padding {1 3}
     grid $stats -row 0 -column 0 -sticky nwse
 
     set pkgtree $w.left.pkgtree

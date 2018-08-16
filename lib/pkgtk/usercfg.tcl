@@ -168,15 +168,14 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 proc ::usercfg::editor {w section opt val} {
     button $w -text $val -command [list usercfg::editor_update $section $opt $val]
     grid $w -row 0 -column 1 -sticky w
+    $w configure -padx 1 -pady 1
 }
 
 #
 # manage a config change from editor launcher
 #
 proc ::usercfg::editor_update {section opt val} {
-    if {[usercfg::view $section]} {
-        utils reload_view
-    }
+    usercfg::view $section
 }
 
 #
@@ -193,9 +192,11 @@ proc ::usercfg::view {{show_section "ALL"}} {
     grid columnconfigure $top 0 -weight 1
 
     usercfg::view::main $top $show_section
-
     tkwait window $top
-    return $usercfg::changed
+
+    if {$usercfg::changed} {
+        utils reload_view
+    }
 }
 
 #
