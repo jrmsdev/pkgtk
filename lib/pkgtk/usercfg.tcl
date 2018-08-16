@@ -174,7 +174,9 @@ proc ::usercfg::editor {w section opt val} {
 # manage a config change from editor launcher
 #
 proc ::usercfg::editor_update {section opt val} {
-    usercfg::view $section
+    if {[usercfg::view $section]} {
+        utils reload_view
+    }
 }
 
 #
@@ -193,6 +195,7 @@ proc ::usercfg::view {{show_section "ALL"}} {
     usercfg::view::main $top $show_section
 
     tkwait window $top
+    return $usercfg::changed
 }
 
 #

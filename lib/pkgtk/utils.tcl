@@ -6,7 +6,10 @@ package provide utils 0.0
 namespace eval ::utils {
     namespace export dispatch_view show_error tkbusy_hold tkbusy_forget sudo
     namespace export menu_underline_name menu_cascade menu_additems
+    namespace export reload_view
     namespace ensemble create
+
+    variable curview
 }
 
 #
@@ -17,7 +20,15 @@ proc ::utils::dispatch_view {name} {
     if [winfo exists $w] {
         destroy $w
     }
+    set utils::curview $name
     $name $w
+}
+
+#
+# reload current view
+#
+proc ::utils::reload_view {} {
+    utils::dispatch_view $utils::curview
 }
 
 #
