@@ -56,8 +56,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist {inc "noauto"}} {
 
     ttk::frame $w.left -takefocus 0 -padding 1
     grid rowconfigure $w.left 0 -weight 0
-    grid rowconfigure $w.left 1 -weight 0
-    grid rowconfigure $w.left 2 -weight 1
+    grid rowconfigure $w.left 1 -weight 1
     grid columnconfigure $w.left 0 -weight 1
     grid $w.left -sticky nwse
 
@@ -65,30 +64,31 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist {inc "noauto"}} {
     ttk::label $stats -takefocus 0
     grid $stats -row 0 -column 0 -sticky nwse
 
-    set options $w.left.options
-    ttk::frame $options
-    grid $options -row 1 -column 0 -sticky nwse
-
     set pkgtree $w.left.pkgtree
     ttk::treeview $pkgtree -show tree -selectmode browse -takefocus 1
-    grid $pkgtree -row 2 -column 0 -sticky nwse
+    grid $pkgtree -row 1 -column 0 -sticky nwse
 
     $paned add $w.left -weight 1
 
-    ttk::frame $w.right -takefocus 0
-    grid rowconfigure $w.right 0 -weight 1
-    grid rowconfigure $w.right 1 -weight 0
+    ttk::frame $w.right -takefocus 0 -padding 1
+    grid rowconfigure $w.right 0 -weight 0
+    grid rowconfigure $w.right 1 -weight 1
+    grid rowconfigure $w.right 2 -weight 0
     grid columnconfigure $w.right 0 -weight 1
     grid $w.right -sticky nwse
 
-    set pkgbuttons $w.right.pkgbuttons
-    ttk::frame $pkgbuttons -takefocus 0
-    grid $pkgbuttons -row 1 -column 0
+    set options $w.right.options
+    ttk::frame $options
+    grid $options -row 0 -column 0 -sticky nwse
 
     set pkginfo $w.right.pkginfo
     ttk::label $pkginfo -takefocus 0
-    grid $pkginfo -row 0 -column 0
+    grid $pkginfo -row 1 -column 0 -sticky nwse
     $pkginfo configure -anchor "center" -justify "left"
+
+    set pkgbuttons $w.right.pkgbuttons
+    ttk::frame $pkgbuttons -takefocus 0
+    grid $pkgbuttons -row 2 -column 0 -sticky n
 
     $paned add $w.right -weight 9
 
