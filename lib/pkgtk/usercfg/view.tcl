@@ -20,7 +20,7 @@ proc ::usercfg::view::main {top} {
     ttk::notebook $cfg
     grid $cfg -row 0 -column 0 -sticky nwse
 
-    foreach {section} [usercfg::sections_list] {
+    foreach {section} [usercfg::config_sections] {
         usercfg::show_section $cfg $section
     }
 }
@@ -39,7 +39,7 @@ proc ::usercfg::show_section {cfg section} {
     grid columnconfigure $s 0 -weight 1
 
     set g_idx 0
-    foreach {group} [usercfg::section_groups $s_name] {
+    foreach {group} [usercfg::config_groups $s_name] {
         grid rowconfigure $s $g_idx -weight 1
         set g_name [lindex $group 0]
         set g_show_name [lindex $group 1]
@@ -61,7 +61,7 @@ proc ::usercfg::show_section {cfg section} {
 proc ::usercfg::show_group {g s_name group} {
     set g_name [lindex $group 0]
     set o_idx 0
-    foreach {opt} [usercfg::section_options $s_name $g_name] {
+    foreach {opt} [usercfg::config_options $s_name $g_name] {
         grid rowconfigure $g $o_idx -weight 1
         set o_name [lindex $opt 0]
         set o $g.$o_name

@@ -14,7 +14,7 @@ namespace eval ::usercfg {
     variable db
 
     # define configuration
-    variable SECTIONS {
+    variable CONFIG {
         {name "style" mc "Style" mc "Style settings" {
             {name "console" mc "Console" mc "Format commands output" {
                 {name "colored" type "bool" defval 1 mc "Colored text?"}
@@ -28,9 +28,9 @@ namespace eval ::usercfg {
 #
 # list sections from defined config
 #
-proc ::usercfg::sections_list {} {
+proc ::usercfg::config_sections {} {
     set l {}
-    foreach {s} $usercfg::SECTIONS {
+    foreach {s} $usercfg::CONFIG {
         set name [lindex $s 1]
         set show_name [lindex $s 3]
         set show_desc [lindex $s 5]
@@ -42,9 +42,9 @@ proc ::usercfg::sections_list {} {
 #
 # return section groups of options from defined configuration
 #
-proc ::usercfg::section_groups {section} {
+proc ::usercfg::config_groups {section} {
     set rtrn {}
-    foreach {s} $usercfg::SECTIONS {
+    foreach {s} $usercfg::CONFIG {
         set sn [lindex $s 1]
         if {$sn == $section} {
             foreach {g} [lindex $s 6] {
@@ -61,9 +61,9 @@ proc ::usercfg::section_groups {section} {
 #
 # return options of a section group from defined configuration
 #
-proc ::usercfg::section_options {section group} {
+proc ::usercfg::config_options {section group} {
     set rtrn {}
-    foreach {s} $usercfg::SECTIONS {
+    foreach {s} $usercfg::CONFIG {
         set sn [lindex $s 1]
         if {$sn == $section} {
             foreach {g} [lindex $s 6] {
@@ -87,11 +87,11 @@ proc ::usercfg::section_options {section group} {
 # set default settings
 #
 proc ::usercfg::set_defaults {} {
-    foreach {s} [usercfg::sections_list] {
+    foreach {s} [usercfg::config_sections] {
         set section [lindex $s 0]
-        foreach {g} [usercfg::section_groups $section] {
+        foreach {g} [usercfg::config_groups $section] {
             set group [lindex $g 0]
-            foreach {o} [usercfg::section_options $section $group] {
+            foreach {o} [usercfg::config_options $section $group] {
                 set opt [lindex $o 0]
                 set opt_defval [lindex $o 2]
                 set db_key [format "%s.%s.%s" $section $group $opt]
@@ -204,4 +204,10 @@ proc ::usercfg::readfile {fn} {
         }
     }
     close $fh
+}
+
+#
+# save config option
+#
+proc ::usercfg::save {section opt val} {
 }
