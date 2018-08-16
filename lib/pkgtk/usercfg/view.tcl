@@ -4,6 +4,7 @@
 package provide usercfg::view 0.0
 
 namespace eval ::usercfg::view {
+    variable cfg
 }
 
 #
@@ -17,6 +18,8 @@ proc ::usercfg::view::main {top} {
     grid $w -row 0 -column 0 -sticky nwse
 
     set cfg $w.cfg
+    set usercfg::view::cfg $cfg
+
     ttk::notebook $cfg
     grid $cfg -row 0 -column 0 -sticky nwse
 
@@ -28,46 +31,61 @@ proc ::usercfg::view::main {top} {
 #
 # show config section
 #
-proc ::usercfg::show_section {cfg section} {
+proc ::usercfg::show_section {cfg section {reload "none"}} {
+    #~ puts "show_section: $section $reload"
+    set doreload 0
+    if {$reload == "reload"} {
+        set doreload 1
+    }
+
     set s_name [lindex $section 0]
     set s_show_name [lindex $section 1]
     #~ set s_show_desc [lindex $section 2]
 
     set s $cfg.$s_name
-    ttk::frame $s
-    grid $s -sticky nwse
-    grid columnconfigure $s 0 -weight 1
+    if {! $doreload} {
+        ttk::frame $s
+        grid $s -sticky nwse
+        grid columnconfigure $s 0 -weight 1
+    }
 
     set g_idx 0
     foreach {group} [usercfg::config_groups $s_name] {
-        grid rowconfigure $s $g_idx -weight 1
         set g_name [lindex $group 0]
         set g_show_name [lindex $group 1]
         #~ set g_show_desc [lindex $group 2]
         set g $s.$g_name
-        ttk::labelframe $g -text [mc $g_show_name]
-        grid $g -row $g_idx -column 0 -sticky nwse
-        grid columnconfigure $g 0 -weight 1
-        usercfg::show_group $g $s_name $group
+        if {! $doreload} {
+            grid rowconfigure $s $g_idx -weight 1
+            ttk::labelframe $g -text [mc $g_show_name]
+            grid $g -row $g_idx -column 0 -sticky nwse
+            grid columnconfigure $g 0 -weight 1
+        }
+        usercfg::show_group $g $s_name $group $doreload
         incr g_idx
     }
 
-    $cfg add $s -text [mc $s_show_name] -sticky nwse
+    if {! $doreload} {
+        $cfg add $s -text [mc $s_show_name] -sticky nwse
+    }
 }
 
 #
 # show config section group
 #
-proc ::usercfg::show_group {g s_name group} {
+proc ::usercfg::show_group {g s_name group doreload} {
+    #~ puts "show_group: $s_name '$group' $doreload"
     set g_name [lindex $group 0]
     set o_idx 0
     foreach {opt} [usercfg::config_options $s_name $g_name] {
-        grid rowconfigure $g $o_idx -weight 1
         set o_name [lindex $opt 0]
         set o $g.$o_name
-        ttk::frame $o
-        grid $o -row $o_idx -column 0 -sticky nwse
-        usercfg::show_option $o $s_name $g_name $opt
+        if {! $doreload} {
+            grid rowconfigure $g $o_idx -weight 1
+            ttk::frame $o
+            grid $o -row $o_idx -column 0 -sticky nwse
+        }
+        usercfg::show_option $o $s_name $g_name $opt $doreload
         incr o_idx
     }
 }
@@ -75,7 +93,8 @@ proc ::usercfg::show_group {g s_name group} {
 #
 # show config section group option
 #
-proc ::usercfg::show_option {o s_name g_name opt} {
+proc ::usercfg::show_option {o s_name g_name opt doreload} {
+    #~ puts "show_option: $o $s_name $g_name '$opt' $doreload"
     set o_name [lindex $opt 0]
     set o_type [lindex $opt 1]
     #~ set o_defval [lindex $opt 2]
@@ -84,12 +103,16 @@ proc ::usercfg::show_option {o s_name g_name opt} {
     set section $s_name
     set opt $g_name.$o_name
 
-    grid rowconfigure $o 0 -weight 1
-    grid columnconfigure $o 0 -weight 0
-    grid columnconfigure $o 1 -weight 0
+    if {$doreload} {
+        destroy $o.val
+    } else {
+        grid rowconfigure $o 0 -weight 1
+        grid columnconfigure $o 0 -weight 0
+        grid columnconfigure $o 1 -weight 0
 
-    ttk::label $o.lbl -text $o_name
-    grid $o.lbl -row 0 -column 0 -sticky w
+        ttk::label $o.lbl -text $o_name
+        grid $o.lbl -row 0 -column 0 -sticky w
+    }
 
     if {$o_type == "bool"} {
         set val [usercfg get_bool $section $opt]

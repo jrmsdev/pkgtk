@@ -219,6 +219,9 @@ proc ::usercfg::save {section opt val} {
     set line [format "%s.%s: %s" $section $opt $val]
     if {[catch {usercfg::writefile $usercfg::filename $section.$opt $val} err]} {
         utils show_error $err
+    } else {
+        dict set usercfg::db $section.$opt $val
+        usercfg::show_section $usercfg::view::cfg $section "reload"
     }
 }
 
@@ -226,7 +229,6 @@ proc ::usercfg::save {section opt val} {
 # write configuration file
 #
 proc ::usercfg::writefile {fn opt val} {
-    #~ puts "usercfg writefile: $fn '$line'"
     file mkdir [file dirname $fn]
     set opt_done 0
     set tmpfn "/NONE"
