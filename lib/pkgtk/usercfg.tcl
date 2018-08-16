@@ -89,10 +89,8 @@ proc ::usercfg::section_options {section group} {
 proc ::usercfg::set_defaults {} {
     foreach {s} [usercfg::sections_list] {
         set section [lindex $s 0]
-        puts "SECTION: $section"
         foreach {g} [usercfg::section_groups $section] {
             set group [lindex $g 0]
-            puts "SECTION: $section $group"
             foreach {o} [usercfg::section_options $section $group] {
                 set opt [lindex $o 0]
                 set opt_defval [lindex $o 2]
@@ -101,6 +99,29 @@ proc ::usercfg::set_defaults {} {
             }
         }
     }
+}
+
+#
+# return a dict with options->value pairs
+# for options that match optprefix from a config section
+#
+proc ::usercfg::getall {section {optprefix ""}} {
+    set rtrn {}
+    set p $section
+    if {$optprefix != ""} {
+        set p [format "%s.%s" $p $optprefix]
+        set plen [string length $p]
+        foreach {opt} [dict keys $usercfg::db] {
+            set optlen [string length $opt]
+            if {$optlen >= $plen} {
+                set opt_p [string range $opt 0 [expr $plen - 1]]
+                if {$opt_p == $p} {
+                    dict set rtrn $opt [dict get $usercfg::db $opt]
+                }
+            }
+        }
+    }
+    return $rtrn
 }
 
 #
