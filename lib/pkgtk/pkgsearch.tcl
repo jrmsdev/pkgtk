@@ -22,7 +22,7 @@ proc ::pkgsearch::view {w} {
     grid $w -sticky nwse
 
     set search $w.search
-    ttk::frame $search
+    ttk::frame $search -padding 1
     grid rowconfigure $search 0 -weight 1
     grid columnconfigure $search 0 -weight 0
     grid columnconfigure $search 1 -weight 1

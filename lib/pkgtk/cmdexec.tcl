@@ -106,7 +106,7 @@ proc ::cmdexec::stats {args} {
 # exec pkg to list local (installed) packages
 #   only include noauto packages by default
 #
-proc ::cmdexec::lslocal {{inc "noauto"}} {
+proc ::cmdexec::lslocal {inc} {
     if {$inc == "all"} {
         set cmd [cmdexec::getcmd 0 query -a $cmdexec::list_format]
     } else {

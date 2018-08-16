@@ -49,24 +49,29 @@ proc ::pkgview::pkgbuttons_disable {w} {
 #
 # packages tree view
 #
-proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
+proc ::pkgview::pkgtree_view {w pkgtype pkglist {inc "noauto"}} {
     set paned $w
     ttk::panedwindow $paned -orient "horizontal" -takefocus 0
     grid $paned -sticky nwse
 
-    ttk::frame $w.left -takefocus 0
-    grid rowconfigure $w.left 0 -weight 1
-    grid rowconfigure $w.left 1 -weight 9
+    ttk::frame $w.left -takefocus 0 -padding 1
+    grid rowconfigure $w.left 0 -weight 0
+    grid rowconfigure $w.left 1 -weight 0
+    grid rowconfigure $w.left 2 -weight 1
     grid columnconfigure $w.left 0 -weight 1
     grid $w.left -sticky nwse
 
     set stats $w.left.stats
     ttk::label $stats -takefocus 0
-    grid $stats -row 0 -column 0 -sticky w
+    grid $stats -row 0 -column 0 -sticky nwse
+
+    set options $w.left.options
+    ttk::frame $options
+    grid $options -row 1 -column 0 -sticky nwse
 
     set pkgtree $w.left.pkgtree
     ttk::treeview $pkgtree -show tree -selectmode browse -takefocus 1
-    grid $pkgtree -row 1 -column 0 -sticky nwse
+    grid $pkgtree -row 2 -column 0 -sticky nwse
 
     $paned add $w.left -weight 1
 
@@ -88,19 +93,19 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
     $paned add $w.right -weight 9
 
     utils tkbusy_hold
-    if {[string equal "remote" $pkgtype]} {
-        pkgremote::buttons $pkgbuttons "reload"
-    } else {
-        pkglocal::buttons $pkgbuttons
-    }
 
+    # pkg buttons, stats and options
     set llen [llength $pkglist]
     if {$pkgtype == "remote"} {
+        pkgremote::buttons $pkgbuttons "reload"
         $stats configure -text [format [mc "Available packages: %d"] $llen]
     } else {
+        pkglocal::buttons $pkgbuttons
         $stats configure -text [format [mc "Installed packages: %d"] $llen]
+        pkglocal::options $options $inc
     }
 
+    # pkgtree
     set cur_section {}
     set focus_item {}
     for {set i 0} {$i < $llen} {incr i} {
@@ -121,6 +126,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist} {
         }
         $pkgtree insert $cur_section end -id $pkgid -text $pkg_name
     }
+
     utils tkbusy_forget
 
     $pkgtree focus $focus_item
