@@ -7,7 +7,7 @@ package require utils
 package require usercfg::view
 
 namespace eval ::usercfg {
-    namespace export view getall get get_bool
+    namespace export load view getall get get_bool
     namespace ensemble create
 
     # hold config data
@@ -18,9 +18,11 @@ namespace eval ::usercfg {
     variable CONFIG {
         {name "style" mc "Style" mc "Style settings" {
             {name "console" mc "Console" mc "Format commands output" {
-                {name "colored" type "bool" defval 1 mc "Colored text?"}
-                {name "background" type "color" defval "black" mc ""}
-                {name "foreground" type "color" defval "white" mc ""}
+                {name "colored" type "bool" defval 1 mc "Colored text"}
+                {name "font" type "str" defval "monospace 10" mc "Font"}
+                {name "background" type "color" defval "black" mc "Background"}
+                {name "foreground" type "color" defval "white" mc "Foreground"}
+                {name "error_fg" type "color" defval "red" mc "Error foreground"}
             }}
         }}
     }
@@ -74,8 +76,8 @@ proc ::usercfg::config_options {section group} {
                         set o_name [lindex $opt 1]
                         set o_type [lindex $opt 3]
                         set o_defval [lindex $opt 5]
-                        set o_show_desc [lindex $opt 7]
-                        lappend rtrn [list $o_name $o_type $o_defval $o_show_desc]
+                        set o_label [lindex $opt 7]
+                        lappend rtrn [list $o_name $o_type $o_defval $o_label]
                     }
                 }
             }

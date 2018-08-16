@@ -98,7 +98,7 @@ proc ::usercfg::show_option {o s_name g_name opt doreload} {
     set o_name [lindex $opt 0]
     set o_type [lindex $opt 1]
     #~ set o_defval [lindex $opt 2]
-    #~ set o_show_desc [lindex $opt 3]
+    set o_label [lindex $opt 3]
 
     set section $s_name
     set opt $g_name.$o_name
@@ -110,7 +110,7 @@ proc ::usercfg::show_option {o s_name g_name opt doreload} {
         grid columnconfigure $o 0 -weight 0
         grid columnconfigure $o 1 -weight 0
 
-        ttk::label $o.lbl -text $o_name
+        ttk::label $o.lbl -text $o_label
         grid $o.lbl -row 0 -column 0 -sticky w
     }
 

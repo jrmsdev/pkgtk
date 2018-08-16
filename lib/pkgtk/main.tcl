@@ -105,6 +105,7 @@ proc ::pkgtk::main {} {
     grid rowconfigure . 0 -weight 1
     grid columnconfigure . 0 -weight 1
     . configure -padx 1 -pady 1
+    usercfg load
     img create_icon .
     pkgtk::main_menu
     utils dispatch_view pkglocal::view
