@@ -59,9 +59,19 @@ proc ::usercfg::show_section {cfg section {reload "none"} {showopt "none"}} {
         grid columnconfigure $s 0 -weight 1
     }
 
+    set showopt_group "ALL"
+    if {$showopt != "none"} {
+        set showopt_group [lindex [split $showopt "."] 0]
+    }
+
     set g_idx 0
     foreach {group} [usercfg::config_groups $s_name] {
         set g_name [lindex $group 0]
+        if {$showopt_group != "ALL"} {
+            if {$showopt_group != $g_name} {
+                continue
+            }
+        }
         set g_show_name [lindex $group 1]
         #~ set g_show_desc [lindex $group 2]
         set g $s.$g_name
@@ -82,6 +92,9 @@ proc ::usercfg::show_section {cfg section {reload "none"} {showopt "none"}} {
             grid $g.values -row 0 -column 1 -sticky nwse
         }
         usercfg::show_group $g $s_name $group $doreload $showopt
+        if {$showopt_group != "ALL"} {
+            break
+        }
         incr g_idx
     }
 
@@ -94,8 +107,8 @@ proc ::usercfg::show_section {cfg section {reload "none"} {showopt "none"}} {
 # show config section group
 #
 proc ::usercfg::show_group {g s_name group doreload showopt} {
-    #~ puts "show_group: $s_name '$group' $doreload"
     set g_name [lindex $group 0]
+    #~ puts "show_group: $s_name $g_name $doreload '$showopt'"
     set o_idx 0
     foreach {opt} [usercfg::config_options $s_name $g_name] {
         set o_name [lindex $opt 0]
@@ -124,8 +137,8 @@ proc ::usercfg::show_group {g s_name group doreload showopt} {
 # show config section group option
 #
 proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload} {
-    #~ puts "show_option: $o $s_name $g_name '$opt' $doreload"
     set o_name [lindex $opt_data 0]
+    #~ puts "show_option: $s_name $g_name $o_name $doreload"
     set o_type [lindex $opt_data 1]
     #~ set o_defval [lindex $opt 2]
     set o_label [lindex $opt_data 3]

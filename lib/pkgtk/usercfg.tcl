@@ -194,6 +194,10 @@ proc ::usercfg::view {{show_section "ALL"} {show_opt "ALL"}} {
     set usercfg::changed 0
     set top .usercfg
 
+    if {[winfo exists $top]} {
+        destroy $top
+    }
+
     toplevel $top
     wm transient $top .
     wm title $top [mc "pkgtk preferences"]
