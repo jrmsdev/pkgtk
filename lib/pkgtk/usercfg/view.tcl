@@ -91,6 +91,9 @@ proc ::usercfg::show_option {o s_name g_name opt} {
     if {$o_type == "bool"} {
         set val [usercfg get_bool $s_name $g_name.$o_name]
         usercfg::show_bool $o.val $val
+    } elseif {$o_type == "color"} {
+        set val [usercfg get $s_name $g_name.$o_name]
+        usercfg::show_color $o.val $val
     } else {
         set val [usercfg get $s_name $g_name.$o_name]
         ttk::label $o.val -text $val
@@ -107,4 +110,13 @@ proc ::usercfg::show_bool {w val} {
     if {$val} {
         $w set yes
     }
+}
+
+#
+# show color option
+#
+proc ::usercfg::show_color {w val} {
+    button $w -background $val -foreground $val \
+        -activebackground $val -activeforeground $val \
+        -command [list tk_chooseColor -initialcolor $val -title "pkgtk color"]
 }
