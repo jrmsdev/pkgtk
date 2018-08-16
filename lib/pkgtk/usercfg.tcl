@@ -31,6 +31,11 @@ namespace eval ::usercfg {
                             args {noauto all}}
             }}
         }}
+        {name "repos" mc "Repositories" mc "Repositories settings" {
+            {name "update" mc "Update" mc "Update settings" {
+                {name "onstart" type "bool" defval 1 mc "Run when program starts"}
+            }}
+        }}
     }
 
     variable changed 0
