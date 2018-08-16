@@ -110,6 +110,7 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt doreload} {
     set o_type [lindex $opt 1]
     #~ set o_defval [lindex $opt 2]
     set o_label [lindex $opt 3]
+    set o_args [lindex $opt 4]
 
     set section $s_name
     set opt $g_name.$o_name
@@ -124,15 +125,23 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt doreload} {
     if {$o_type == "bool"} {
         set val [usercfg get_bool $section $opt]
         usercfg::show_bool $oval $section $opt $val
+
     } elseif {$o_type == "color"} {
         set val [usercfg get $section $opt]
         usercfg::show_color $oval $section $opt $val
+
     } elseif {$o_type == "str"} {
         set val [usercfg get $section $opt]
         usercfg::show_str $oval $section $opt $val
+
+    } elseif {$o_type == "cbox"} {
+        set val [usercfg get $section $opt]
+        usercfg::show_cbox $oval $section $opt $val $o_args
+
     } else {
         set val [usercfg get $section $opt]
         ttk::label $oval -text $val -foreground red
+
     }
     grid $oval -row 0 -column 0 -sticky nwse
 }
@@ -194,6 +203,26 @@ proc ::usercfg::show_str {w section opt curval} {
 proc ::usercfg::save_str {w section opt curval} {
     set newval [string trim [$w get]]
     if {$newval != "" && $newval != $curval} {
+        usercfg::save $section $opt $newval
+    }
+}
+
+#
+# show cbox option
+#
+proc ::usercfg::show_cbox {w section opt curval cbvals} {
+    ttk::combobox $w -values $cbvals -state "readonly"
+    $w set $curval
+    bind $w <<ComboboxSelected>> [list usercfg::save_cbox $w $section $opt $curval]
+}
+
+#
+# save cbox option
+#
+proc ::usercfg::save_cbox {w section opt curval} {
+    $w selection clear
+    set newval [$w get]
+    if {$newval != $curval} {
         usercfg::save $section $opt $newval
     }
 }
