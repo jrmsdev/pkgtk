@@ -111,7 +111,7 @@ proc ::pkgtk::main {} {
     pkgtk::main_menu
 
     if {[usercfg get_bool repos update.onstart]} {
-        pkgcmd::view_update
+        pkgcmd::view_update "autoclose"
     }
 
     utils dispatch_view pkglocal::view

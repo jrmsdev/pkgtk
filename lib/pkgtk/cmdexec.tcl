@@ -14,6 +14,7 @@ namespace eval ::cmdexec {
     variable list_format {%o|%n-%v}
     variable bgdone 0
     variable progressbar {}
+    variable failed 0
 
     if {[info exists ::env(PKGTK_ROOTDIR)]} {
         set pkg_rootdir $::env(PKGTK_ROOTDIR)
@@ -51,6 +52,7 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
         chan configure $chan -blocking 1
         if {[catch {chan close $chan} err]} {
             if {!$dryrun} {
+                set cmdexec::failed 1
                 utils show_error "ERROR: $cmd\n\n$err"
                 $out insert end "*** ERROR ***\n" {cmderror}
                 $out insert end $err {cmderror}
@@ -65,6 +67,7 @@ proc ::cmdexec::bgread {out cmd dryrun chan} {
 # run command in background and insert lines of output
 #
 proc ::cmdexec::runbg {out args {dryrun 0}} {
+    set cmdexec::failed 0
     set pgb $cmdexec::progressbar
     $pgb configure -mode "indeterminate"
     $pgb start

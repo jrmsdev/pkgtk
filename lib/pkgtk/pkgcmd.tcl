@@ -42,9 +42,16 @@ proc ::pkgcmd::dryrun {out cmd args} {
 }
 
 #
+# check if the last command failed
+#
+proc ::pkgcmd::failed {} {
+    return $cmdexec::failed
+}
+
+#
 # pkg command view
 #
-proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
+proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0} {autoclose "NONE"}} {
     set top $pkgview::toplevel_child
     if {[winfo exists $top]} {
         destroy $top
@@ -105,7 +112,15 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0}} {
     }
     utils tkbusy_forget $w
 
-    tkwait window $top
+    if {$autoclose == "autoclose"} {
+        if {[pkgcmd::failed]} {
+            tkwait window $top
+        } else {
+            destroy $top
+        }
+    } else {
+        tkwait window $top
+    }
 }
 
 #
@@ -163,6 +178,6 @@ proc ::pkgcmd::view_autoremove {} {
 #
 # view pkg update command
 #
-proc ::pkgcmd::view_update {} {
-    pkgcmd::view "update" "" 1
+proc ::pkgcmd::view_update {{autoclose "noauto"}} {
+    pkgcmd::view "update" "" 1 $autoclose
 }
