@@ -153,12 +153,6 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 # user config main view (toplevel window)
 #
 proc ::usercfg::view {} {
-    set usercfg::filename [file join $::env(HOME) .config pkgtk.cfg]
-
-    if {[usercfg::load] != 0} {
-        return
-    }
-
     set top .usercfg
 
     toplevel $top
@@ -180,6 +174,7 @@ proc ::usercfg::view {} {
 #
 proc ::usercfg::load {} {
     usercfg::set_defaults
+    set usercfg::filename [file join $::env(HOME) .config pkgtk.cfg]
     if {[file exists $usercfg::filename] && [file isfile $usercfg::filename]} {
         if {[catch {usercfg::readfile $usercfg::filename} err]} {
             utils show_error $err
