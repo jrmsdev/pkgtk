@@ -172,7 +172,6 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 #
 proc ::usercfg::editor {w section opt val} {
     button $w -text $val -command [list usercfg::editor_update $section $opt $val]
-    grid $w -row 0 -column 1 -sticky w
     $w configure -padx 1 -pady 1
 }
 

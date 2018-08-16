@@ -148,17 +148,21 @@ proc ::pkgrepo::view {w} {
     ttk::frame $w
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 0 -weight 0
-    grid rowconfigure $w 1 -weight 1
-    grid rowconfigure $w 2 -weight 0
+    grid rowconfigure $w 1 -weight 0
+    grid rowconfigure $w 2 -weight 1
+    grid rowconfigure $w 3 -weight 0
     grid $w -sticky nwse
 
+    pkgrepo::options $w.options
+    grid $w.options -row 1 -column 0 -sticky nwse
+
     ttk::label $w.dbstats -takefocus 0 -text [cmdexec stats -r]
-    grid $w.dbstats -row 0 -column 0 -sticky nw
+    grid $w.dbstats -row 0 -column 0 -sticky nwse
     $w.dbstats configure -padding {0 0 0 5}
 
     set repos $w.repos
     ttk::notebook $repos
-    grid $repos -row 1 -column 0 -sticky nwse
+    grid $repos -row 2 -column 0 -sticky nwse
     set pkgrepo::repos_w $repos
 
     bind $repos <<NotebookTabChanged>> "pkgrepo::tab_changed $repos"
@@ -167,7 +171,7 @@ proc ::pkgrepo::view {w} {
     set pkgrepo::buttons $buttons
 
     ttk::frame $buttons
-    grid $buttons -row 2 -column 0 -sticky nwse
+    grid $buttons -row 3 -column 0 -sticky nwse
 
     ttk::button $buttons.save -text [mc "Save"] -state "disabled" \
                               -command {pkgrepo::changes_save}
@@ -190,6 +194,20 @@ proc ::pkgrepo::view {w} {
 
     $repos select $repos.r0
     ttk::notebook::enableTraversal $repos
+}
+
+#
+# repos options widget
+#
+proc ::pkgrepo::options {w} {
+    ttk::frame $w
+
+    ttk::label $w.onstart_lbl -text [mc "Update when program starts:"]
+    grid $w.onstart_lbl -row 0 -column 0 -sticky w
+
+    usercfg editor $w.onstart repos update.onstart \
+                              [usercfg get repos update.onstart]
+    grid $w.onstart -row 0 -column 1 -sticky w
 }
 
 #

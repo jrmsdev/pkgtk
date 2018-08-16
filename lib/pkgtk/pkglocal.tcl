@@ -54,4 +54,5 @@ proc ::pkglocal::options {parent inc} {
     grid $parent.inc_lbl -row 0 -column 0 -sticky w
 
     usercfg editor $parent.inc pkg local.inc $inc
+    grid $parent.inc -row 0 -column 1 -sticky w
 }

@@ -6,10 +6,6 @@
 
 * pkgsearch: add options... like search in pkg comment/description, etc...
 
-* run pkg update at startup but ignore errors if the user has not enough
-  privileges... (?) as the user may just want to take a look to current state of
-  packages info... (?)
-
 * (xdg/)desktop integration: icons, menu entry and such...
   maybe systray support too?
 
