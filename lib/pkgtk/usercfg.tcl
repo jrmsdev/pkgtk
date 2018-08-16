@@ -141,7 +141,7 @@ proc ::usercfg::get {section optname {defval ""}} {
 proc ::usercfg::get_bool {section optname {defval 0}} {
     set val [usercfg::get $section $optname "__NONE__"]
     if {$val != "__NONE__" && [string is boolean $val]} {
-        return $val ? 1 : 0
+        return [expr $val ? 1 : 0]
     }
     return $defval
 }
@@ -157,7 +157,7 @@ proc ::usercfg::view {} {
     set top .usercfg
 
     toplevel $top
-    wm minsize $top 400 300
+    #~ wm minsize $top 400 300
     wm transient $top .
     wm title $top [mc "pkgtk preferences"]
     grid rowconfigure $top 0 -weight 1
