@@ -204,6 +204,12 @@ proc ::usercfg::view {{show_section "ALL"} {show_opt "ALL"}} {
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
+    #~ menu $top.menu -tearoff 0
+    #~ $top configure -menu $top.menu
+
+    #~ $top.menu add command -label [mc "Close"] -underline 0 \
+                          #~ -command [list destroy $top]
+
     usercfg::view::main $top $show_section $show_opt
     tkwait window $top
 

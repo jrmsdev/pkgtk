@@ -1,0 +1,12 @@
+﻿[Desktop Entry]
+Type=Application
+Version=1.0
+Name=pkgtk
+Name[es]=pkgtk
+GenericName=pkgtk
+GenericName[es]=pkgtk
+Comment=FreeBSD package manager
+Comment[es]=Manejador de paquetes FreeBSD
+Exec=pkgtk
+Icon=pkgtk
+StartupNotify=true
