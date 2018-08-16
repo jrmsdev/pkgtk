@@ -135,6 +135,7 @@ proc ::usercfg::get {section optname {defval ""}} {
     if {[dict exists $usercfg::db $opt]} {
         return [dict get $usercfg::db $opt]
     }
+    puts stderr "pkgtk config not found: $opt"
     return $defval
 }
 
