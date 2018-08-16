@@ -1,5 +1,3 @@
-* show "all" installed packages too, instead of noauto only
-
 * exclude already installed packages from available list (?)
 
 * pkgrepo: check at least one repo remains enabled
@@ -17,4 +15,4 @@
 
 * do not allow closing windows if background proc is running
 
-* got to list of installed packages after installing a package from a search?
+* go to list of installed packages after installing a package from a search?
