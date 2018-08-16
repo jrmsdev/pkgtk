@@ -257,14 +257,14 @@ proc ::usercfg::readfile {fn} {
 #
 # save config option
 #
-proc ::usercfg::save {section opt val} {
+proc ::usercfg::save {section showopt opt val} {
     set line [format "%s.%s: %s" $section $opt $val]
     if {[catch {usercfg::writefile $usercfg::filename $section.$opt $val} err]} {
         utils show_error $err
     } else {
         dict set usercfg::db $section.$opt $val
         set usercfg::changed 1
-        usercfg::show_section $usercfg::view::cfg $section "reload"
+        usercfg::show_section $usercfg::view::cfg $section "reload" $showopt
     }
 }
 

@@ -124,9 +124,11 @@ proc ::usercfg::show_group {g s_name group doreload showopt} {
             grid $oval -row $o_idx -column 0 -sticky nwse
         }
         if {$showopt == "none"} {
-            usercfg::show_option $olbl.data $oval.data $s_name $g_name $opt $doreload
+            usercfg::show_option $olbl.data $oval.data $s_name $g_name \
+                                 $opt $doreload $showopt
         } elseif {$showopt == [format "%s.%s" $g_name $o_name]} {
-            usercfg::show_option $olbl.data $oval.data $s_name $g_name $opt $doreload
+            usercfg::show_option $olbl.data $oval.data $s_name $g_name \
+                                 $opt $doreload $showopt
             break
         }
         incr o_idx
@@ -136,7 +138,7 @@ proc ::usercfg::show_group {g s_name group doreload showopt} {
 #
 # show config section group option
 #
-proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload} {
+proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload showopt} {
     set o_name [lindex $opt_data 0]
     #~ puts "show_option: $s_name $g_name $o_name $doreload"
     set o_type [lindex $opt_data 1]
@@ -156,19 +158,19 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload} {
 
     if {$o_type == "bool"} {
         set val [usercfg get_bool $section $opt]
-        usercfg::show_bool $oval $section $opt $val
+        usercfg::show_bool $oval $section $showopt $opt $val
 
     } elseif {$o_type == "color"} {
         set val [usercfg get $section $opt]
-        usercfg::show_color $oval $section $opt $val
+        usercfg::show_color $oval $section $showopt $opt $val
 
     } elseif {$o_type == "str"} {
         set val [usercfg get $section $opt]
-        usercfg::show_str $oval $section $opt $val
+        usercfg::show_str $oval $section $showopt $opt $val
 
     } elseif {$o_type == "cbox"} {
         set val [usercfg get $section $opt]
-        usercfg::show_cbox $oval $section $opt $val $o_args
+        usercfg::show_cbox $oval $section $showopt $opt $val $o_args
 
     } else {
         set val [usercfg get $section $opt]
@@ -181,80 +183,80 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload} {
 #
 # show bool option
 #
-proc ::usercfg::show_bool {w section opt curval} {
+proc ::usercfg::show_bool {w section showopt opt curval} {
     ttk::combobox $w -values [list yes no] -state "readonly"
     $w set no
     if {$curval} {
         $w set yes
     }
-    bind $w <<ComboboxSelected>> [list usercfg::save_bool $w $section $opt $curval]
+    bind $w <<ComboboxSelected>> [list usercfg::save_bool $w $section $showopt $opt $curval]
 }
 
 #
 # save bool option
 #
-proc ::usercfg::save_bool {w section opt curval} {
+proc ::usercfg::save_bool {w section showopt opt curval} {
     $w selection clear
     set newval [expr [$w get] ? 1 : 0]
     if {$newval != $curval} {
-        usercfg::save $section $opt [expr $newval ? "yes" : "no"]
+        usercfg::save $section $showopt $opt [expr $newval ? "yes" : "no"]
     }
 }
 
 #
 # show color option
 #
-proc ::usercfg::show_color {w section opt curval} {
+proc ::usercfg::show_color {w section showopt opt curval} {
     button $w -background $curval -foreground $curval \
         -activebackground $curval -activeforeground $curval \
-        -command [list usercfg::save_color $section $opt $curval]
+        -command [list usercfg::save_color $section $showopt $opt $curval]
 }
 
 #
 # save color option
 #
-proc ::usercfg::save_color {section opt curval} {
+proc ::usercfg::save_color {section showopt opt curval} {
     set newval [tk_chooseColor -initialcolor $curval -title "pkgtk color"]
     if {$newval != "" && $newval != $curval} {
-        usercfg::save $section $opt $newval
+        usercfg::save $section $showopt $opt $newval
     }
 }
 
 #
 # show str option
 #
-proc ::usercfg::show_str {w section opt curval} {
+proc ::usercfg::show_str {w section showopt opt curval} {
     ttk::entry $w
     $w insert end $curval
-    bind $w <Return> [list usercfg::save_str $w $section $opt $curval]
+    bind $w <Return> [list usercfg::save_str $w $section $showopt $opt $curval]
 }
 
 #
 # save str option
 #
-proc ::usercfg::save_str {w section opt curval} {
+proc ::usercfg::save_str {w section showopt opt curval} {
     set newval [string trim [$w get]]
     if {$newval != "" && $newval != $curval} {
-        usercfg::save $section $opt $newval
+        usercfg::save $section $showopt $opt $newval
     }
 }
 
 #
 # show cbox option
 #
-proc ::usercfg::show_cbox {w section opt curval cbvals} {
+proc ::usercfg::show_cbox {w section showopt opt curval cbvals} {
     ttk::combobox $w -values $cbvals -state "readonly"
     $w set $curval
-    bind $w <<ComboboxSelected>> [list usercfg::save_cbox $w $section $opt $curval]
+    bind $w <<ComboboxSelected>> [list usercfg::save_cbox $w $section $showopt $opt $curval]
 }
 
 #
 # save cbox option
 #
-proc ::usercfg::save_cbox {w section opt curval} {
+proc ::usercfg::save_cbox {w section showopt opt curval} {
     $w selection clear
     set newval [$w get]
     if {$newval != $curval} {
-        usercfg::save $section $opt $newval
+        usercfg::save $section $showopt $opt $newval
     }
 }
