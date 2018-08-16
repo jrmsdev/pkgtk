@@ -127,9 +127,12 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt doreload} {
     } elseif {$o_type == "color"} {
         set val [usercfg get $section $opt]
         usercfg::show_color $oval $section $opt $val
+    } elseif {$o_type == "str"} {
+        set val [usercfg get $section $opt]
+        usercfg::show_str $oval $section $opt $val
     } else {
         set val [usercfg get $section $opt]
-        ttk::label $oval -text $val
+        ttk::label $oval -text $val -foreground red
     }
     grid $oval -row 0 -column 0 -sticky nwse
 }
@@ -171,6 +174,25 @@ proc ::usercfg::show_color {w section opt curval} {
 #
 proc ::usercfg::save_color {section opt curval} {
     set newval [tk_chooseColor -initialcolor $curval -title "pkgtk color"]
+    if {$newval != "" && $newval != $curval} {
+        usercfg::save $section $opt $newval
+    }
+}
+
+#
+# show str option
+#
+proc ::usercfg::show_str {w section opt curval} {
+    ttk::entry $w
+    $w insert end $curval
+    bind $w <Return> [list usercfg::save_str $w $section $opt $curval]
+}
+
+#
+# save str option
+#
+proc ::usercfg::save_str {w section opt curval} {
+    set newval [string trim [$w get]]
     if {$newval != "" && $newval != $curval} {
         usercfg::save $section $opt $newval
     }
