@@ -25,6 +25,12 @@ namespace eval ::usercfg {
                 {name "error_fg" type "color" defval "red" mc "Error foreground"}
             }}
         }}
+        {name "pkg" mc "Packages" mc "Packages settings" {
+            {name "local" mc "Installed" mc "Installed packages" {
+                {name "inc" type "cbox" defval "noauto" mc "Include" \
+                            args {noauto all}}
+            }}
+        }}
     }
 }
 
@@ -77,7 +83,11 @@ proc ::usercfg::config_options {section group} {
                         set o_type [lindex $opt 3]
                         set o_defval [lindex $opt 5]
                         set o_label [lindex $opt 7]
-                        lappend rtrn [list $o_name $o_type $o_defval $o_label]
+                        set o_args {}
+                        foreach {a} [lindex $opt 9] {
+                            lappend o_args $a
+                        }
+                        lappend rtrn [list $o_name $o_type $o_defval $o_label $o_args]
                     }
                 }
             }
