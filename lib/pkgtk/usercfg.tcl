@@ -32,6 +32,8 @@ namespace eval ::usercfg {
             }}
         }}
     }
+
+    variable changed 0
 }
 
 #
@@ -164,14 +166,22 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 # create a widget to launch the config editor on the specified section
 #
 proc ::usercfg::editor {w section opt val} {
-    button $w -text $val -command [list usercfg::view $section]
+    button $w -text $val -command [list usercfg::editor_update $section $opt $val]
     grid $w -row 0 -column 1 -sticky w
+}
+
+#
+# manage a config change from editor launcher
+#
+proc ::usercfg::editor_update {section opt val} {
+    usercfg::view $section
 }
 
 #
 # user config main view (toplevel window)
 #
-proc ::usercfg::view {{select_section ""}} {
+proc ::usercfg::view {{show_section "ALL"}} {
+    set usercfg::changed 0
     set top .usercfg
 
     toplevel $top
@@ -180,7 +190,7 @@ proc ::usercfg::view {{select_section ""}} {
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
-    usercfg::view::main $top $select_section
+    usercfg::view::main $top $show_section
 
     tkwait window $top
 }
@@ -236,6 +246,7 @@ proc ::usercfg::save {section opt val} {
         utils show_error $err
     } else {
         dict set usercfg::db $section.$opt $val
+        set usercfg::changed 1
         usercfg::show_section $usercfg::view::cfg $section "reload"
     }
 }

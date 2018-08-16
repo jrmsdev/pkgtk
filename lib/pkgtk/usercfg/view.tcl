@@ -10,7 +10,7 @@ namespace eval ::usercfg::view {
 #
 # main view
 #
-proc ::usercfg::view::main {top select_section} {
+proc ::usercfg::view::main {top section} {
     set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
@@ -23,12 +23,18 @@ proc ::usercfg::view::main {top select_section} {
     ttk::notebook $cfg
     grid $cfg -row 0 -column 0 -sticky nwse
 
-    foreach {section} [usercfg::config_sections] {
-        usercfg::show_section $cfg $section
-    }
-
-    if {$select_section != ""} {
-        $cfg select $cfg.$select_section
+    if {$section == "ALL"} {
+        foreach {s} [usercfg::config_sections] {
+            usercfg::show_section $cfg $s
+        }
+    } else {
+        foreach {s} [usercfg::config_sections] {
+            set sn [lindex $s 0]
+            if {$sn == $section} {
+                usercfg::show_section $cfg $s
+                break
+            }
+        }
     }
 }
 
