@@ -6,6 +6,7 @@
 package provide fbsdupd 0.0
 
 package require utils
+package require style
 
 namespace eval ::fbsdupd {
     namespace export can_run
@@ -103,7 +104,7 @@ proc ::fbsdupd::view {} {
     text $w.outf.cmdout -yscrollcommand [list $w.outf.vsb set]
     grid $w.outf.cmdout -row 0 -column 0 -sticky nwse
     $w.outf.cmdout configure -state "disabled"
-    utils style_cmdout $w.outf.cmdout
+    style cmdout $w.outf.cmdout
 
     set fbsdupd::progressbar $w.pgb
     ttk::progressbar $w.pgb -orient "horizontal" -mode "determinate" -value 0
