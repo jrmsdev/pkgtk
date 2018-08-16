@@ -210,4 +210,5 @@ proc ::usercfg::readfile {fn} {
 # save config option
 #
 proc ::usercfg::save {section opt val} {
+    puts "usercfg save: $section $opt '$val'"
 }

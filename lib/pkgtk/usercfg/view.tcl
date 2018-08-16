@@ -81,6 +81,9 @@ proc ::usercfg::show_option {o s_name g_name opt} {
     #~ set o_defval [lindex $opt 2]
     #~ set o_show_desc [lindex $opt 3]
 
+    set section $s_name
+    set opt $g_name.$o_name
+
     grid rowconfigure $o 0 -weight 1
     grid columnconfigure $o 0 -weight 0
     grid columnconfigure $o 1 -weight 0
@@ -89,13 +92,13 @@ proc ::usercfg::show_option {o s_name g_name opt} {
     grid $o.lbl -row 0 -column 0 -sticky w
 
     if {$o_type == "bool"} {
-        set val [usercfg get_bool $s_name $g_name.$o_name]
+        set val [usercfg get_bool $section $opt]
         usercfg::show_bool $o.val $val
     } elseif {$o_type == "color"} {
-        set val [usercfg get $s_name $g_name.$o_name]
-        usercfg::show_color $o.val $val
+        set val [usercfg get $section $opt]
+        usercfg::show_color $o.val $section $opt $val
     } else {
-        set val [usercfg get $s_name $g_name.$o_name]
+        set val [usercfg get $section $opt]
         ttk::label $o.val -text $val
     }
     grid $o.val -row 0 -column 1 -sticky w
@@ -115,8 +118,16 @@ proc ::usercfg::show_bool {w val} {
 #
 # show color option
 #
-proc ::usercfg::show_color {w val} {
-    button $w -background $val -foreground $val \
-        -activebackground $val -activeforeground $val \
-        -command [list tk_chooseColor -initialcolor $val -title "pkgtk color"]
+proc ::usercfg::show_color {w section opt curval} {
+    button $w -background $curval -foreground $curval \
+        -activebackground $curval -activeforeground $curval \
+        -command [list usercfg::save_color $section $opt $curval]
+}
+
+#
+# save color option
+#
+proc ::usercfg::save_color {section opt curval} {
+    set newval [tk_chooseColor -initialcolor $curval -title "pkgtk color"]
+    usercfg::save $section $opt $newval
 }
