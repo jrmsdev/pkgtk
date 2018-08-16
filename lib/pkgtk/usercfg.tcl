@@ -12,6 +12,7 @@ namespace eval ::usercfg {
 
     # hold config data
     variable db
+    variable filename ""
 
     # define configuration
     variable CONFIG {
@@ -150,6 +151,8 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 # user config main view (toplevel window)
 #
 proc ::usercfg::view {} {
+    set usercfg::filename [file join $::env(HOME) .config pkgtk.cfg]
+
     if {[usercfg::load] != 0} {
         return
     }
@@ -175,9 +178,8 @@ proc ::usercfg::view {} {
 #
 proc ::usercfg::load {} {
     usercfg::set_defaults
-    set filename [string trim [lindex [glob -nocomplain "~/.config/pkgtk.cfg"] 0]]
-    if {$filename != ""} {
-        if {[catch {usercfg::readfile $filename} err]} {
+    if {[file exists $usercfg::filename] && [file isfile $usercfg::filename]} {
+        if {[catch {usercfg::readfile $usercfg::filename} err]} {
             utils show_error $err
             return 1
         }
@@ -194,13 +196,17 @@ proc ::usercfg::readfile {fn} {
     while {[gets $fh line] >= 0} {
         set line [string trim $line]
         set opt [string trim [lindex [split $line ":"] 0]]
-        if {$opt != ""} {
-            if {$opt in $validkeys} {
-                set val [string tolower [string trim [lindex [split $line ":"] 1]]]
-                dict set usercfg::db $opt "$val"
-            } else {
-                puts stderr "pkgtk ignore invalid config option: $opt"
-            }
+        if {$opt == ""} {
+            continue
+        }
+        if {[string first "#" $opt 0] == 0} {
+            continue
+        }
+        if {$opt in $validkeys} {
+            set val [string tolower [string trim [lindex [split $line ":"] 1]]]
+            dict set usercfg::db $opt "$val"
+        } else {
+            puts stderr "pkgtk ignore invalid config option: $opt"
         }
     }
     close $fh
@@ -210,5 +216,43 @@ proc ::usercfg::readfile {fn} {
 # save config option
 #
 proc ::usercfg::save {section opt val} {
-    puts "usercfg save: $section $opt '$val'"
+    set line [format "%s.%s: %s" $section $opt $val]
+    if {[catch {usercfg::writefile $usercfg::filename $section.$opt $val} err]} {
+        utils show_error $err
+    }
+}
+
+#
+# write configuration file
+#
+proc ::usercfg::writefile {fn opt val} {
+    #~ puts "usercfg writefile: $fn '$line'"
+    file mkdir [file dirname $fn]
+    set opt_done 0
+    set tmpfn "/NONE"
+    set wfh [file tempfile tmpfn ".pkgtk.user.cfg"]
+    puts $wfh "# pkgtk config file - DO NOT EDIT HERE"
+    set fh [open $fn r]
+    while {[gets $fh src] >= 0} {
+        set src [string trim $src]
+        if {$src == ""} {
+            continue
+        }
+        if {[string first "#" $src 0] == 0} {
+            continue
+        }
+        set dst $src
+        set src_opt [string trim [lindex [split $src ":"] 0]]
+        if {$src_opt == $opt} {
+            set dst [format "%s: %s" $opt $val]
+            set opt_done 1
+        }
+        puts $wfh $dst
+    }
+    close $fh
+    if {!$opt_done} {
+        puts $wfh [format "%s: %s" $opt $val]
+    }
+    close $wfh
+    file rename -force $tmpfn $fn
 }

@@ -120,7 +120,6 @@ proc ::usercfg::show_bool {w section opt curval} {
 # save bool option
 #
 proc ::usercfg::save_bool {w section opt curval} {
-    puts "save bool: $section $opt '$curval'"
     $w selection clear
     set newval [expr [$w get] ? 1 : 0]
     if {$newval != $curval} {

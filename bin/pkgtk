@@ -19,6 +19,11 @@ if test -n "${PKGTK_ROOTDIR}"; then
     export PKGTK_ROOTDIR
 fi
 
+if test -z "${HOME}"; then
+    HOME=`echo ~`
+    export HOME
+fi
+
 if test -n "${LANG}"; then
     export LANG
 fi
