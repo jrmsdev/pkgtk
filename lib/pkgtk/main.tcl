@@ -77,6 +77,7 @@ proc ::pkgtk::main_menu {} {
     }
 
     utils menu_additems .menu {
+        {mc "Pre_ferences" command {usercfg view}}
         {mc "_About" command {pkgtk::view_about}}
     }
 }
