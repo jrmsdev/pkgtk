@@ -232,24 +232,26 @@ proc ::usercfg::writefile {fn opt val} {
     set tmpfn "/NONE"
     set wfh [file tempfile tmpfn ".pkgtk.user.cfg"]
     puts $wfh "# pkgtk config file - DO NOT EDIT HERE"
-    set fh [open $fn r]
-    while {[gets $fh src] >= 0} {
-        set src [string trim $src]
-        if {$src == ""} {
-            continue
+    if {[file exists $fn] && [file isfile $fn]} {
+        set fh [open $fn r]
+        while {[gets $fh src] >= 0} {
+            set src [string trim $src]
+            if {$src == ""} {
+                continue
+            }
+            if {[string first "#" $src 0] == 0} {
+                continue
+            }
+            set dst $src
+            set src_opt [string trim [lindex [split $src ":"] 0]]
+            if {$src_opt == $opt} {
+                set dst [format "%s: %s" $opt $val]
+                set opt_done 1
+            }
+            puts $wfh $dst
         }
-        if {[string first "#" $src 0] == 0} {
-            continue
-        }
-        set dst $src
-        set src_opt [string trim [lindex [split $src ":"] 0]]
-        if {$src_opt == $opt} {
-            set dst [format "%s: %s" $opt $val]
-            set opt_done 1
-        }
-        puts $wfh $dst
+        close $fh
     }
-    close $fh
     if {!$opt_done} {
         puts $wfh [format "%s: %s" $opt $val]
     }
