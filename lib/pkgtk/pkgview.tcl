@@ -99,6 +99,7 @@ proc ::pkgview::pkgtree_view {w pkgtype pkglist {inc "noauto"}} {
     if {$pkgtype == "remote"} {
         pkgremote::buttons $pkgbuttons "reload"
         $stats configure -text [format [mc "Available packages: %d"] $llen]
+        pkgremote::options $options
     } else {
         pkglocal::buttons $pkgbuttons
         $stats configure -text [format [mc "Installed packages: %d"] $llen]

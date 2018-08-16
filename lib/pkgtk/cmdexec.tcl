@@ -121,9 +121,26 @@ proc ::cmdexec::lslocal {inc} {
 #
 # exec pkg to list remote (available) packages
 #
-proc ::cmdexec::lsremote {} {
+proc ::cmdexec::lsremote {exclude_installed} {
     set cmd [cmdexec::getcmd 0 rquery -a $cmdexec::list_format]
-    return [exec {*}$cmd]
+    set l [exec {*}$cmd]
+    if {$exclude_installed} {
+        set localdb {}
+        foreach {lp} [cmdexec::lslocal all] {
+            set ln [string trim [lindex [split $lp "|"] 1]]
+            dict set localdb $ln 1
+        }
+        set rtrn {}
+        foreach {rp} $l {
+            set rn [string trim [lindex [split $rp "|"] 1]]
+            if {[dict exists $localdb $rn]} {
+                continue
+            }
+            lappend rtrn $rp
+        }
+        return $rtrn
+    }
+    return $l
 }
 
 #

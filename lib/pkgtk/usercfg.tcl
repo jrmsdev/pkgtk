@@ -18,7 +18,7 @@ namespace eval ::usercfg {
     variable CONFIG {
         {name "style" mc "Style" mc "Style settings" {
             {name "console" mc "Console" mc "Format commands output" {
-                {name "colored" type "bool" defval 1 mc "Colored text"}
+                {name "colored" type "bool" defval "yes" mc "Colored text"}
                 {name "font" type "str" defval "monospace 10" mc "Font"}
                 {name "background" type "color" defval "black" mc "Background"}
                 {name "foreground" type "color" defval "white" mc "Foreground"}
@@ -30,10 +30,15 @@ namespace eval ::usercfg {
                 {name "inc" type "cbox" defval "noauto" mc "Include" \
                             args {noauto all}}
             }}
+            {name "remote" mc "Available" mc "Available packages" {
+                {name "exclude_installed" type "bool" defval "yes" \
+                       mc "Exclude installed"}
+            }}
         }}
         {name "repos" mc "Repositories" mc "Repositories settings" {
             {name "update" mc "Update" mc "Update settings" {
-                {name "onstart" type "bool" defval 1 mc "Run when program starts"}
+                {name "onstart" type "bool" defval "yes" \
+                       mc "Run when program starts"}
             }}
         }}
     }

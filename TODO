@@ -1,5 +1,3 @@
-* exclude already installed packages from available list (?)
-
 * pkgrepo: check at least one repo remains enabled
 
 * pkgrepo: validate configs by running pkg stats -r or similar... (?)
