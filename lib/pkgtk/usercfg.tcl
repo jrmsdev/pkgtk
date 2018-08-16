@@ -171,21 +171,21 @@ proc ::usercfg::get_bool {section optname {defval 0}} {
 # create a widget to launch the config editor on the specified section
 #
 proc ::usercfg::editor {w section opt val} {
-    button $w -text $val -command [list usercfg::editor_update $section $opt $val]
+    button $w -text $val -command [list usercfg::editor_update $section $opt]
     $w configure -padx 1 -pady 1
 }
 
 #
 # manage a config change from editor launcher
 #
-proc ::usercfg::editor_update {section opt val} {
-    usercfg::view $section
+proc ::usercfg::editor_update {section opt} {
+    usercfg::view $section $opt
 }
 
 #
 # user config main view (toplevel window)
 #
-proc ::usercfg::view {{show_section "ALL"}} {
+proc ::usercfg::view {{show_section "ALL"} {show_opt "ALL"}} {
     set usercfg::changed 0
     set top .usercfg
 
@@ -195,7 +195,7 @@ proc ::usercfg::view {{show_section "ALL"}} {
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
 
-    usercfg::view::main $top $show_section
+    usercfg::view::main $top $show_section $show_opt
     tkwait window $top
 
     if {$usercfg::changed} {

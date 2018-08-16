@@ -10,7 +10,7 @@ namespace eval ::usercfg::view {
 #
 # main view
 #
-proc ::usercfg::view::main {top section} {
+proc ::usercfg::view::main {top section opt} {
     set w $top.view
     ttk::frame $w
     grid rowconfigure $w 0 -weight 1
@@ -31,7 +31,7 @@ proc ::usercfg::view::main {top section} {
         foreach {s} [usercfg::config_sections] {
             set sn [lindex $s 0]
             if {$sn == $section} {
-                usercfg::show_section $cfg $s
+                usercfg::show_section $cfg $s "noreload" $opt
                 break
             }
         }
@@ -41,7 +41,7 @@ proc ::usercfg::view::main {top section} {
 #
 # show config section
 #
-proc ::usercfg::show_section {cfg section {reload "none"}} {
+proc ::usercfg::show_section {cfg section {reload "none"} {showopt "none"}} {
     #~ puts "show_section: $section $reload"
     set doreload 0
     if {$reload == "reload"} {
@@ -67,18 +67,21 @@ proc ::usercfg::show_section {cfg section {reload "none"}} {
         set g $s.$g_name
         if {! $doreload} {
             grid rowconfigure $s $g_idx -weight 1
-            ttk::labelframe $g -text [mc $g_show_name]
+
+            ttk::labelframe $g -text [mc $g_show_name] -padding 0
             grid $g -row $g_idx -column 0 -sticky nwse
-            grid columnconfigure $g 0 -weight 1
+            grid columnconfigure $g 0 -weight 0
             grid columnconfigure $g 1 -weight 1
-            ttk::frame $g.labels
+
+            ttk::frame $g.labels -padding 0
             grid columnconfigure $g.labels 0 -weight 1
             grid $g.labels -row 0 -column 0 -sticky nwse
-            ttk::frame $g.values
+
+            ttk::frame $g.values -padding 0
             grid columnconfigure $g.values 0 -weight 1
             grid $g.values -row 0 -column 1 -sticky nwse
         }
-        usercfg::show_group $g $s_name $group $doreload
+        usercfg::show_group $g $s_name $group $doreload $showopt
         incr g_idx
     }
 
@@ -90,7 +93,7 @@ proc ::usercfg::show_section {cfg section {reload "none"}} {
 #
 # show config section group
 #
-proc ::usercfg::show_group {g s_name group doreload} {
+proc ::usercfg::show_group {g s_name group doreload showopt} {
     #~ puts "show_group: $s_name '$group' $doreload"
     set g_name [lindex $group 0]
     set o_idx 0
@@ -100,13 +103,19 @@ proc ::usercfg::show_group {g s_name group doreload} {
         set oval $g.values.$o_name
         if {! $doreload} {
             grid rowconfigure $g.labels $o_idx -weight 1
-            grid rowconfigure $g.values $o_idx -weight 1
-            ttk::frame $olbl
+            ttk::frame $olbl -padding 0
             grid $olbl -row $o_idx -column 0 -sticky nwse
-            ttk::frame $oval
+
+            grid rowconfigure $g.values $o_idx -weight 1
+            ttk::frame $oval -padding 0
             grid $oval -row $o_idx -column 0 -sticky nwse
         }
-        usercfg::show_option $olbl.data $oval.data $s_name $g_name $opt $doreload
+        if {$showopt == "none"} {
+            usercfg::show_option $olbl.data $oval.data $s_name $g_name $opt $doreload
+        } elseif {$showopt == [format "%s.%s" $g_name $o_name]} {
+            usercfg::show_option $olbl.data $oval.data $s_name $g_name $opt $doreload
+            break
+        }
         incr o_idx
     }
 }
@@ -114,13 +123,13 @@ proc ::usercfg::show_group {g s_name group doreload} {
 #
 # show config section group option
 #
-proc ::usercfg::show_option {olbl oval s_name g_name opt doreload} {
+proc ::usercfg::show_option {olbl oval s_name g_name opt_data doreload} {
     #~ puts "show_option: $o $s_name $g_name '$opt' $doreload"
-    set o_name [lindex $opt 0]
-    set o_type [lindex $opt 1]
+    set o_name [lindex $opt_data 0]
+    set o_type [lindex $opt_data 1]
     #~ set o_defval [lindex $opt 2]
-    set o_label [lindex $opt 3]
-    set o_args [lindex $opt 4]
+    set o_label [lindex $opt_data 3]
+    set o_args [lindex $opt_data 4]
 
     set section $s_name
     set opt $g_name.$o_name
@@ -128,7 +137,7 @@ proc ::usercfg::show_option {olbl oval s_name g_name opt doreload} {
     if {$doreload} {
         destroy $oval
     } else {
-        ttk::label $olbl -text $o_label
+        ttk::label $olbl -text $o_label -padding 0
         grid $olbl -row 0 -column 0 -sticky nwse
     }
 
