@@ -48,10 +48,12 @@ lib/pkgtk/usercfg/pkgIndex.tcl: Makefile $(LIB_USERCFG_SRCS)
 
 .PHONY: build
 build: pkgindex $(BUILD_DEPS) po-msgfmt
-	@$(MKDIR) $(BUILDDIR)/share/doc/pkgtk
-	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
 	@$(MKDIR) $(BUILDDIR)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) po/*.msg $(BUILDDIR)/lib/pkgtk/msgs
+	@$(MKDIR) $(BUILDDIR)/share/doc/pkgtk
+	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
+	@test -s TODO && $(INSTALL_FILE) TODO $(BUILDDIR)/share/doc/pkgtk
+	@git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@$(MKDIR) $(BUILDDIR)/bin
