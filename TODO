@@ -2,8 +2,6 @@
 
 * pkgrepo: validate configs by running pkg stats -r or similar... (?)
 
-* pkgsearch: add options... like search in pkg comment/description, etc...
-
 * (xdg/)desktop integration: icons, menu entry and such...
   maybe systray support too?
 
