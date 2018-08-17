@@ -27,11 +27,6 @@ BUILD_DEPS += $(BUILDDIR)/etc/sudoers.d/pkgtk
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/gui.tcl
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/repocfg-save
 
-PO_TEMPLATE := po/pkgtk.pot
-PO_SOURCES := libexec/pkgtk/gui.tcl $(LIB_SOURCES) $(LIB_USERCFG_SRCS)
-PO_FILES != ls po/*.po 2>/dev/null || true
-MSG_RELNAMES != for pofile in $(PO_FILES); do echo po/`basename $$pofile .po`; done
-
 .PHONY: all
 all: build
 
@@ -53,7 +48,7 @@ build: pkgindex $(BUILD_DEPS) po-msgfmt
 	@$(MKDIR) $(BUILDDIR)/share/doc/pkgtk
 	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
 	@test -s TODO && $(INSTALL_FILE) TODO $(BUILDDIR)/share/doc/pkgtk
-	@git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
+	git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@$(MKDIR) $(BUILDDIR)/bin
@@ -127,27 +122,19 @@ uninstall:
 	@rm -vrf $(DESTDIR)$(PREFIX)/lib/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/share/doc/pkgtk
 
-$(PO_TEMPLATE): $(PO_SOURCES)
-	xgettext -d pkgtk -o $(PO_TEMPLATE) -LTcl -kmc -F $(PO_SOURCES)
-
 .PHONY: po-update
-po-update: $(PO_TEMPLATE)
-	@for pofile in $(PO_FILES); do echo -n "msgmerge $$pofile"; \
-			msgmerge --backup off -U $$pofile $(PO_TEMPLATE); done
+po-update:
+	@$(MAKE) -C po update
 
 .PHONY: po-msgfmt
 po-msgfmt:
-	@for reln in $(MSG_RELNAMES); do \
-		rm -f $${reln}.msg; \
-		touch $${reln}.msg; \
-		echo -n "msgfmt $${reln}.po... "; \
-		msgfmt --statistics --tcl $${reln}.msg -l $$(basename $$reln) -d po $${reln}.po; \
-	done
+	@$(MAKE) -C po msgfmt
 
 .PHONY: po-all
-po-all: po-update po-msgfmt
+po-all:
+	@$(MAKE) -C po all
 
 .PHONY: clean
 clean:
+	@$(MAKE) -C po clean
 	@rm -rvf dist build
-	@rm -vf $(PO_TEMPLATE) po/*.msg

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-14 00:55-0300\n"
+"POT-Creation-Date: 2018-08-17 00:17-0300\n"
 "PO-Revision-Date: 2018-08-14 01:01-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
@@ -17,151 +17,168 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/pkgtk/fbsdupd.tcl:52
-msgid "FreeBSD update"
+#: ../lib/pkgtk/fbsdupd.tcl:56
+#, fuzzy
+msgid "FreeBSD system update"
 msgstr "Actualizar FreeBSD"
 
-#: lib/pkgtk/fbsdupd.tcl:60
+#: ../lib/pkgtk/fbsdupd.tcl:64
 msgid "_Fetch"
 msgstr "_Obtener"
 
-#: lib/pkgtk/fbsdupd.tcl:61 lib/pkgtk/main.tcl:56
+#: ../lib/pkgtk/fbsdupd.tcl:65 ../lib/pkgtk/main.tcl:57
 msgid "_Upgrade"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/fbsdupd.tcl:62
+#: ../lib/pkgtk/fbsdupd.tcl:66
 msgid "_Close"
 msgstr "_Cerrar"
 
-#: lib/pkgtk/fbsdupd.tcl:74
+#: ../lib/pkgtk/fbsdupd.tcl:86
 #, tcl-format
 msgid "Current version: %s"
 msgstr "Versión actual: %s"
 
-#: lib/pkgtk/fbsdupd.tcl:82 lib/pkgtk/pkgremote.tcl:18
+#: ../lib/pkgtk/fbsdupd.tcl:89 ../lib/pkgtk/pkgremote.tcl:19
 msgid "Install"
 msgstr "Instalar"
 
-#: lib/pkgtk/fbsdupd.tcl:178
+#: ../lib/pkgtk/fbsdupd.tcl:205
 msgid "FreeBSD release target"
 msgstr "Nueva versión FreeBSD"
 
-#: lib/pkgtk/fbsdupd.tcl:191
+#: ../lib/pkgtk/fbsdupd.tcl:218
 msgid "Release target:"
 msgstr "Nueva versión:"
 
-#: lib/pkgtk/fbsdupd.tcl:197
+#: ../lib/pkgtk/fbsdupd.tcl:224
 msgid "Example"
 msgstr "Ejemplo"
 
-#: lib/pkgtk/main.tcl:33
+#: ../lib/pkgtk/main.tcl:34
 msgid "About pkgtk"
 msgstr "Información sobre pkgtk"
 
-#: lib/pkgtk/main.tcl:37 lib/pkgtk/main.tcl:101
+#: ../lib/pkgtk/main.tcl:38 ../lib/pkgtk/main.tcl:103
 msgid "FreeBSD package manager"
 msgstr "Manejador de paquetes FreeBSD"
 
-#: lib/pkgtk/main.tcl:40
+#: ../lib/pkgtk/main.tcl:41
 msgid "Released under BSD license (see LICENSE file)"
 msgstr "Liberado bajo licencia BSD (ver archivo LICENSE)"
 
-#: lib/pkgtk/main.tcl:54
+#: ../lib/pkgtk/main.tcl:55
 msgid "_Packages"
 msgstr "_Paquetes"
 
-#: lib/pkgtk/main.tcl:55
+#: ../lib/pkgtk/main.tcl:56
 msgid "_Installed"
 msgstr "_Instalados"
 
-#: lib/pkgtk/main.tcl:58
+#: ../lib/pkgtk/main.tcl:59
 msgid "_Available"
 msgstr "_Disponibles"
 
-#: lib/pkgtk/main.tcl:59
+#: ../lib/pkgtk/main.tcl:60
 msgid "_Search"
 msgstr "_Buscar"
 
-#: lib/pkgtk/main.tcl:61
+#: ../lib/pkgtk/main.tcl:62
 msgid "Auto_remove"
 msgstr "Pu_rgar"
 
-#: lib/pkgtk/main.tcl:62
+#: ../lib/pkgtk/main.tcl:63
 msgid "_Clean cache"
 msgstr "_Limpiar cache"
 
-#: lib/pkgtk/main.tcl:64
+#: ../lib/pkgtk/main.tcl:65
 msgid "_Quit"
 msgstr "_Salir"
 
-#: lib/pkgtk/main.tcl:67
+#: ../lib/pkgtk/main.tcl:68
 msgid "_Repositories"
 msgstr "_Repositorios"
 
-#: lib/pkgtk/main.tcl:68
+#: ../lib/pkgtk/main.tcl:69
 msgid "_Configuration"
 msgstr "_Configuración"
 
-#: lib/pkgtk/main.tcl:69
+#: ../lib/pkgtk/main.tcl:70
 msgid "_Update"
 msgstr "_Actualizar"
 
-#: lib/pkgtk/main.tcl:74
+#: ../lib/pkgtk/main.tcl:75
 msgid "_System"
 msgstr "_Sistema"
 
-#: lib/pkgtk/main.tcl:79
+#: ../lib/pkgtk/main.tcl:80
+msgid "Pre_ferences"
+msgstr ""
+
+#: ../lib/pkgtk/main.tcl:81
 msgid "_About"
 msgstr "_Info"
 
-#: lib/pkgtk/pkgcmd.tcl:64
+#: ../lib/pkgtk/pkgcmd.tcl:71
 msgid "Close"
 msgstr "Cerrar"
 
-#: lib/pkgtk/pkgcmd.tcl:67
+#: ../lib/pkgtk/pkgcmd.tcl:74
 #, tcl-format
 msgid "Confirm %s"
 msgstr "Confirmar %s"
 
-#: lib/pkgtk/pkgcmd.tcl:70
+#: ../lib/pkgtk/pkgcmd.tcl:77
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: lib/pkgtk/pkglocal.tcl:18
+#: ../lib/pkgtk/pkglocal.tcl:18
 msgid "Remove"
 msgstr "Eliminar"
 
-#: lib/pkgtk/pkglocal.tcl:21
+#: ../lib/pkgtk/pkglocal.tcl:21
 msgid "Upgrade"
 msgstr "Actualizar"
 
-#: lib/pkgtk/pkgrepo.tcl:89
+#: ../lib/pkgtk/pkglocal.tcl:53
+msgid "Include:"
+msgstr ""
+
+#: ../lib/pkgtk/pkgremote.tcl:51
+msgid "Exclude installed:"
+msgstr ""
+
+#: ../lib/pkgtk/pkgrepo.tcl:85
 msgid "# created by pkgtk"
 msgstr "# creado por pkgtk"
 
-#: lib/pkgtk/pkgrepo.tcl:169
+#: ../lib/pkgtk/pkgrepo.tcl:176
 msgid "Save"
 msgstr "Guardar"
 
-#: lib/pkgtk/pkgrepo.tcl:173
+#: ../lib/pkgtk/pkgrepo.tcl:180
 msgid "Discard"
 msgstr "Descartar"
 
-#: lib/pkgtk/pkgsearch.tcl:31
+#: ../lib/pkgtk/pkgrepo.tcl:205
+msgid "Update when program starts:"
+msgstr ""
+
+#: ../lib/pkgtk/pkgsearch.tcl:31
 msgid "Search:"
 msgstr "Buscar:"
 
-#: lib/pkgtk/pkgview.tcl:99
+#: ../lib/pkgtk/pkgview.tcl:101
 #, tcl-format
 msgid "Available packages: %d"
 msgstr "Paquetes disponibles: %d"
 
-#: lib/pkgtk/pkgview.tcl:101
+#: ../lib/pkgtk/pkgview.tcl:105
 #, tcl-format
 msgid "Installed packages: %d"
 msgstr "Paquetes instalados: %d"
 
-#: lib/pkgtk/pkgview.tcl:146
+#: ../lib/pkgtk/pkgview.tcl:153
 #, tcl-format
 msgid ""
 "Category : %s\n"
@@ -169,3 +186,7 @@ msgid ""
 msgstr ""
 "Categoría : %s\n"
 "Paquetes : %d"
+
+#: ../lib/pkgtk/usercfg.tcl:203
+msgid "pkgtk preferences"
+msgstr ""
