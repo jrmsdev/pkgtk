@@ -16,6 +16,7 @@ namespace eval ::pkgsearch {
         {name "exact" mc "exact" on "-e" off "" initval "off"}
     }
     variable options_db
+    variable query_found 0
 }
 
 #
@@ -50,11 +51,20 @@ proc ::pkgsearch::view {w} {
     ttk::panedwindow $w.paned -orient "horizontal" -takefocus 0
     grid $paned -row 2 -column 0 -sticky nwse
 
-    set pkglist $paned.pkglist
-    listbox $pkglist
-    grid $pkglist -sticky nwse
+    ttk::frame $paned.left
+    grid columnconfigure $paned.left 0 -weight 1
+    grid rowconfigure $paned.left 0 -weight 1
+    grid rowconfigure $paned.left 1 -weight 0
+    grid $paned.left -sticky nwse
 
-    $paned add $pkglist -weight 2
+    set pkglist $paned.left.pkglist
+    listbox $pkglist
+    grid $pkglist -row 0 -column 0 -sticky nwse
+
+    pkgsearch::results_info $paned.left.results
+    grid $paned.left.results -row 1 -column 0 -sticky nwse
+
+    $paned add $paned.left -weight 2
 
     ttk::frame $paned.right
     grid columnconfigure $paned.right 0 -weight 1
@@ -96,6 +106,7 @@ proc ::pkgsearch::show {plist pinfo pbtn} {
 #
 proc ::pkgsearch::run {pkglist pinfo pbtn query} {
     utils tkbusy_hold
+    set pkgsearch::query_found 0
     $pkglist delete 0 "end"
     pkgview::pkgbuttons_disable $pbtn
     $pinfo configure -text ""
@@ -110,9 +121,12 @@ proc ::pkgsearch::run {pkglist pinfo pbtn query} {
                 }
             }
             lappend cmdargs $q
+            set qfound 0
             foreach line [split [cmdexec search $cmdargs] "\n"] {
                 $pkglist insert "end" "$line"
+                incr qfound
             }
+            set pkgsearch::query_found $qfound
             focus $pkglist
         } trap CHILDSTATUS {results options} {
             set rc [lindex [dict get $options -errorcode] 2]
@@ -170,4 +184,17 @@ proc ::pkgsearch::option_widget {w name desc val_on val_off val_init} {
     ttk::checkbutton $w.val -variable pkgsearch::options_db($name) \
             -offvalue $val_off -onvalue $val_on
     grid $w.val -row 0 -column 1 -sticky w
+}
+
+#
+# pkg search results widget
+#
+proc ::pkgsearch::results_info {w} {
+    ttk::frame $w
+
+    ttk::label $w.val -textvariable pkgsearch::query_found
+    grid $w.val -row 0 -column 0 -sticky w
+
+    ttk::label $w.lbl -text [mc "package(s) found"]
+    grid $w.lbl -row 0 -column 1 -sticky w
 }
