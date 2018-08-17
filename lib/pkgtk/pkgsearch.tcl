@@ -14,9 +14,7 @@ namespace eval ::pkgsearch {
         {name "comment" mc "comment" on "-c" off "" initval "off"}
         {name "desc" mc "description" on "-D" off "" initval "off"}
         {name "exact" mc "exact" on "-e" off "" initval "off"}
-        {name "regex" mc "regular expression" on "-x" off "" initval "off"}
     }
-
     variable options_db
 }
 
@@ -47,8 +45,6 @@ proc ::pkgsearch::view {w} {
 
     pkgsearch::options $w.options
     grid $w.options -row 1 -column 0 -sticky we
-
-    puts "search options: [array get pkgsearch::options_db]"
 
     set paned $w.paned
     ttk::panedwindow $w.paned -orient "horizontal" -takefocus 0
@@ -106,7 +102,15 @@ proc ::pkgsearch::run {pkglist pinfo pbtn query} {
     set q [$query get]
     if {$q != ""} {
         try {
-            foreach line [split [cmdexec search $q] "\n"] {
+            #~ puts "search options: [array get pkgsearch::options_db]"
+            set cmdargs {}
+            foreach {oname oval} [array get pkgsearch::options_db] {
+                if {$oval != ""} {
+                    lappend cmdargs $oval
+                }
+            }
+            lappend cmdargs $q
+            foreach line [split [cmdexec search $cmdargs] "\n"] {
                 $pkglist insert "end" "$line"
             }
             focus $pkglist

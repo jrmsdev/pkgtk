@@ -147,6 +147,10 @@ proc ::cmdexec::lsremote {exclude_installed} {
 # exec pkg search
 #
 proc ::cmdexec::search {args} {
-    set cmd [cmdexec::getcmd 0 search -q $args]
+    set cmd [cmdexec::getcmd 0 search -q]
+    foreach {a} {*}$args {
+        lappend cmd $a
+    }
+    #~ puts "search cmd: '$cmd'"
     return [exec {*}$cmd]
 }
