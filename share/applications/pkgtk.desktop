@@ -9,4 +9,6 @@ Comment=FreeBSD package manager
 Comment[es]=Manejador de paquetes FreeBSD
 Exec=pkgtk
 Icon=pkgtk
+Terminal=false
+Categories=System;PackageManager;
 StartupNotify=true
