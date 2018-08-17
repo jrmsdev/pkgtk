@@ -7,6 +7,7 @@ package require utils
 
 namespace eval ::cmdexec {
     namespace export runbg rquery query stats lslocal lsremote search
+    namespace export repo_config_validate
     namespace ensemble create
 
     variable pkg_rootdir ""
@@ -152,5 +153,13 @@ proc ::cmdexec::search {args} {
         lappend cmd $a
     }
     #~ puts "search cmd: '$cmd'"
+    return [exec {*}$cmd]
+}
+
+#
+# validate repos config running pkg stats -r
+#
+proc ::cmdexec::repo_config_validate {} {
+    set cmd [cmdexec::getcmd 0 stats -r]
     return [exec {*}$cmd]
 }

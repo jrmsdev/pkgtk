@@ -11,6 +11,7 @@ namespace eval ::pkgrepo {
     namespace ensemble create
 
     variable config
+    variable bup_config
     variable dirty
     variable repos_w
     variable w_ids
@@ -68,6 +69,7 @@ proc ::pkgrepo::readfile {reposVar fn} {
                     set v [string replace $v end end ""]
                 }
                 dict set repos $repo_name $k [list $vtype $v]
+                dict set pkgrepo::bup_config $repo_name $k [list $vtype $v]
             }
         }
     }
@@ -80,13 +82,14 @@ proc ::pkgrepo::writefile {repo cfg} {
     set fn "NONE"
     if {[catch {set fh [file tempfile fn ".pkgtk-repo.conf"]} err]} {
         utils show_error $err
-        return
+        return 1
     } else {
         puts $fh [mc "# created by pkgtk"]
         puts $fh [pkgrepo::dump_settings $repo $cfg]
     }
     if {[catch {close $fh} err]} {
         utils show_error $err
+        return 1
     }
     set err [utils sudo repocfg-save $fn $repo]
     if {$err} {
@@ -182,6 +185,7 @@ proc ::pkgrepo::view {w} {
     grid $buttons.discard -row 0 -column 1
 
     set pkgrepo::config [pkgrepo::get_config]
+
     set idx 0
     foreach repo_name [lsort [dict keys $pkgrepo::config]] {
         set repo_data [dict get $pkgrepo::config $repo_name]
@@ -319,7 +323,7 @@ proc ::pkgrepo::bool_selected {w repo opt} {
 # get a repo config original (read from file) value
 #
 proc ::pkgrepo::config_origval {repo opt} {
-    return [lindex [dict get [dict get $pkgrepo::config $repo] $opt] 1]
+    return [lindex [dict get [dict get $pkgrepo::bup_config $repo] $opt] 1]
 }
 
 #
@@ -413,7 +417,7 @@ proc ::pkgrepo::changes_save {} {
     }
     set repo [pkgrepo::curtab_reponame]
     set newcfg [dict get $pkgrepo::dirty $repo]
-    set bupdata [dict get $pkgrepo::config $repo]
+    set bupdata [dict get $pkgrepo::bup_config $repo]
     set newdata [pkgrepo::config_update $repo $newcfg]
     set err [pkgrepo::writefile $repo $newdata]
     set w [dict get $pkgrepo::w_ids $repo]
@@ -423,7 +427,14 @@ proc ::pkgrepo::changes_save {} {
     if {$err} {
         pkgrepo::show $w $repo $bupdata
     } else {
-        pkgrepo::show $w $repo $newdata
+        set err [pkgrepo::validate_config]
+        if {$err} {
+            pkgrepo::writefile $repo $bupdata
+            pkgrepo::show $w $repo $bupdata
+            puts stderr "pkgtk repo $repo: restored backup '$bupdata'"
+        } else {
+            pkgrepo::show $w $repo $newdata
+        }
     }
 }
 
@@ -472,6 +483,17 @@ proc ::pkgrepo::check_repo_enabled {} {
     }
     #~ puts "enabled repos: $encount"
     if {$encount < 1} {
+        return 1
+    }
+    return 0
+}
+
+#
+# validate saved configuration
+#
+proc ::pkgrepo::validate_config {} {
+    if {[catch {cmdexec repo_config_validate} err]} {
+        utils show_error $err
         return 1
     }
     return 0
