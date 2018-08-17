@@ -1,4 +1,6 @@
-* pkgrepo: validate configs by running pkg stats -r or similar... (?)
+* pkgrepo: remove existent config
+
+* pkgrepo: create a new config (using /etc/pkg/FreeBSD.conf as template)
 
 * (xdg/)desktop integration: icons, menu entry and such...
   maybe systray support too?
