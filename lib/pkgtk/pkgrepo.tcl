@@ -406,6 +406,11 @@ proc ::pkgrepo::changes_discard {} {
 # save changes
 #
 proc ::pkgrepo::changes_save {} {
+    set err [pkgrepo::check_repo_enabled]
+    if {$err} {
+        utils show_error [mc "At least one repository has to remain enabled."]
+        return
+    }
     set repo [pkgrepo::curtab_reponame]
     set newcfg [dict get $pkgrepo::dirty $repo]
     set bupdata [dict get $pkgrepo::config $repo]
@@ -434,4 +439,40 @@ proc ::pkgrepo::config_update {repo newcfg} {
         dict set pkgrepo::config $repo $opt [list $type $val]
     }
     return [dict get $pkgrepo::config $repo]
+}
+
+#
+# check at least one repo remains enabled
+#
+proc ::pkgrepo::check_repo_enabled {} {
+    #~ puts "check repo enabled"
+    set enabled_repos {}
+    foreach {repo} [dict keys $pkgrepo::config] {
+        set rena [lindex [dict get $pkgrepo::config $repo "enabled"] 1]
+        #~ puts "repo: $repo $rena"
+        if {$rena == "yes"} {
+            dict set enabled_repos $repo 1
+        }
+    }
+    foreach {repo} [dict keys $pkgrepo::dirty] {
+        if {[dict exists $pkgrepo::dirty $repo "enabled"]} {
+            set rena [dict get $pkgrepo::dirty $repo "enabled"]
+            #~ puts "dirty: $repo $rena"
+            if {$rena == "yes"} {
+                dict set enabled_repos $repo 1
+            } else {
+                dict set enabled_repos $repo 0
+            }
+        }
+    }
+    set encount 0
+    foreach {repo} [dict keys $enabled_repos] {
+        #~ puts "encount: $encount [dict get $enabled_repos $repo]"
+        set encount [expr $encount + [dict get $enabled_repos $repo]]
+    }
+    #~ puts "enabled repos: $encount"
+    if {$encount < 1} {
+        return 1
+    }
+    return 0
 }

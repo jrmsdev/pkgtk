@@ -1,5 +1,3 @@
-* pkgrepo: check at least one repo remains enabled
-
 * pkgrepo: validate configs by running pkg stats -r or similar... (?)
 
 * (xdg/)desktop integration: icons, menu entry and such...
