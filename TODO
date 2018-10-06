@@ -1,3 +1,11 @@
+* slee (1) after running auto repo update on started, to show the command output
+  at least a bit...
+
+* system->fetch and system->upgrade from menu instead of launching them from
+  a window button
+
+* console output buffer by char/word instead of waiting for EOL?
+
 * pkgrepo: remove existent config
 
 * pkgrepo: create a new config (using /etc/pkg/FreeBSD.conf as template)
