@@ -61,8 +61,6 @@ proc ::fbsdupd::view {} {
     $top configure -menu $top.menu
 
     utils menu_additems $top.menu {
-        {mc "_Fetch" command {fbsdupd::fetch}}
-        {mc "_Upgrade" command {fbsdupd::release_upgrade}}
         {mc "_Close" command {destroy .fbsdupd}}
     }
 
@@ -159,6 +157,8 @@ proc ::fbsdupd::readlines {src out cmd} {
 # freebsd-update fetch
 #
 proc ::fbsdupd::fetch {} {
+    fbsdupd::view
+
     set cmdout $fbsdupd::cmdout
     set btns $fbsdupd::buttons
 
@@ -192,6 +192,8 @@ proc ::fbsdupd::install {} {
 # ask for the new release version and run upgrade
 #
 proc ::fbsdupd::release_upgrade {} {
+    fbsdupd::view
+
     set ::fbsdupd_new_release ""
 
     set top .fbsdupd.release_target

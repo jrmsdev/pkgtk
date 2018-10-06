@@ -70,8 +70,9 @@ proc ::pkgtk::main_menu {} {
     }
 
     if {[fbsdupd can_run]} {
-        utils menu_additems .menu {
-            {mc "_System" command {fbsdupd::view}}
+        utils menu_cascade .menu "system" [mc "_System"] {
+            {mc "_Fetch" command {fbsdupd::fetch}}
+            {mc "_Upgrade" command {fbsdupd::release_upgrade}}
         }
     }
 

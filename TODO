@@ -1,8 +1,5 @@
-* slee (1) after running auto repo update on started, to show the command output
+* sleep (1) after running auto repo update on start, to show the command output
   at least a bit...
-
-* system->fetch and system->upgrade from menu instead of launching them from
-  a window button
 
 * console output buffer by char/word instead of waiting for EOL?
 
