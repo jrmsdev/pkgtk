@@ -50,7 +50,7 @@ proc ::pkglocal::options {parent inc} {
     grid columnconfigure $parent 0 -weight 0
     grid columnconfigure $parent 1 -weight 1
 
-    ttk::label $parent.inc_lbl -text [mc "Include:"]
+    ttk::label $parent.inc_lbl -text [mc "Show:"]
     grid $parent.inc_lbl -row 0 -column 0 -sticky w
 
     usercfg editor $parent.inc pkg local.inc $inc

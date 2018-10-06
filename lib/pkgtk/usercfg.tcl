@@ -16,29 +16,41 @@ namespace eval ::usercfg {
 
     # define configuration
     variable CONFIG {
-        {name "style" mc "Style" mc "Style settings" {
-            {name "console" mc "Console" mc "Format commands output" {
-                {name "colored" type "bool" defval "yes" mc "Colored text"}
-                {name "font" type "str" defval "monospace 10" mc "Font"}
-                {name "background" type "color" defval "black" mc "Background"}
-                {name "foreground" type "color" defval "white" mc "Foreground"}
-                {name "error_fg" type "color" defval "red" mc "Error foreground"}
+        {name "style"
+            mc "Style" {
+            {name "console"
+               mc "Console" {
+                {name "colored" type "bool" defval "yes"
+                   mc "Colored text"}
+                {name "font" type "str" defval "monospace 10"
+                   mc "Font"}
+                {name "background" type "color" defval "black"
+                   mc "Background"}
+                {name "foreground" type "color" defval "white"
+                   mc "Foreground"}
+                {name "error_fg" type "color" defval "red"
+                   mc "Error foreground"}
             }}
         }}
-        {name "pkg" mc "Packages" mc "Packages settings" {
-            {name "local" mc "Installed" mc "Installed packages" {
-                {name "inc" type "cbox" defval "noauto" mc "Include" \
-                            args {noauto all}}
+        {name "pkg"
+            mc "Packages" {
+            {name "local"
+                mc "Installed" {
+                {name "inc" type "cbox" defval "noauto"
+                   mc "Show" args {noauto all}}
             }}
-            {name "remote" mc "Available" mc "Available packages" {
-                {name "exclude_installed" type "bool" defval "yes" \
-                       mc "Exclude installed"}
+            {name "remote"
+               mc "Available" {
+                {name "exclude_installed" type "bool" defval "yes"
+                   mc "Exclude installed"}
             }}
         }}
-        {name "repos" mc "Repositories" mc "Repositories settings" {
-            {name "update" mc "Update" mc "Update settings" {
-                {name "onstart" type "bool" defval "yes" \
-                       mc "Run when program starts"}
+        {name "repos"
+            mc "Repositories" {
+            {name "update"
+               mc "Update" {
+                {name "onstart" type "bool" defval "yes"
+                   mc "Run when program starts"}
             }}
         }}
     }
@@ -53,9 +65,10 @@ proc ::usercfg::config_sections {} {
     set l {}
     foreach {s} $usercfg::CONFIG {
         set name [lindex $s 1]
-        set show_name [lindex $s 3]
-        set show_desc [lindex $s 5]
-        lappend l [list $name $show_name $show_desc]
+        set show_name [mc [lindex $s 3]]
+        #~ set show_desc [mc [lindex $s 5]]
+        #~ lappend l [list $name $show_name $show_desc]
+        lappend l [list $name $show_name]
     }
     return $l
 }
@@ -68,11 +81,12 @@ proc ::usercfg::config_groups {section} {
     foreach {s} $usercfg::CONFIG {
         set sn [lindex $s 1]
         if {$sn == $section} {
-            foreach {g} [lindex $s 6] {
+            foreach {g} [lindex $s 4] {
                 set g_name [lindex $g 1]
-                set g_show_name [lindex $g 3]
-                set g_show_desc [lindex $g 5]
-                lappend rtrn [list $g_name $g_show_name $g_show_desc]
+                set g_show_name [mc [lindex $g 3]]
+                #~ set g_show_desc [lindex $g 5]
+                #~ lappend rtrn [list $g_name $g_show_name $g_show_desc]
+                lappend rtrn [list $g_name $g_show_name]
             }
         }
     }
@@ -87,14 +101,14 @@ proc ::usercfg::config_options {section group} {
     foreach {s} $usercfg::CONFIG {
         set sn [lindex $s 1]
         if {$sn == $section} {
-            foreach {g} [lindex $s 6] {
+            foreach {g} [lindex $s 4] {
                 set g_name [lindex $g 1]
                 if {$g_name == $group} {
-                    foreach {opt} [lindex $g 6] {
+                    foreach {opt} [lindex $g 4] {
                         set o_name [lindex $opt 1]
                         set o_type [lindex $opt 3]
                         set o_defval [lindex $opt 5]
-                        set o_label [lindex $opt 7]
+                        set o_label [mc [lindex $opt 7]]
                         set o_args {}
                         foreach {a} [lindex $opt 9] {
                             lappend o_args $a
@@ -157,7 +171,7 @@ proc ::usercfg::get {section optname {defval ""}} {
     if {[dict exists $usercfg::db $opt]} {
         return [dict get $usercfg::db $opt]
     }
-    puts stderr "pkgtk config not found: $opt"
+    puts stderr "pkgtk config not found: '$opt'"
     return $defval
 }
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-06 02:28-0300\n"
+"POT-Creation-Date: 2018-10-06 03:14-0300\n"
 "PO-Revision-Date: 2018-10-06 02:33-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
@@ -140,8 +140,8 @@ msgid "Upgrade"
 msgstr "Actualizar"
 
 #: ../lib/pkgtk/pkglocal.tcl:53
-msgid "Include:"
-msgstr "Incluir"
+msgid "Show:"
+msgstr "Mostrar:"
 
 #: ../lib/pkgtk/pkgremote.tcl:51
 msgid "Exclude installed:"
@@ -194,6 +194,66 @@ msgstr ""
 "Categoría : %s\n"
 "Paquetes : %d"
 
-#: ../lib/pkgtk/usercfg.tcl:203
+#: ../lib/pkgtk/usercfg.tcl:20
+msgid "Style"
+msgstr "Estilo"
+
+#: ../lib/pkgtk/usercfg.tcl:22
+msgid "Console"
+msgstr "Consola"
+
+#: ../lib/pkgtk/usercfg.tcl:24
+msgid "Colored text"
+msgstr "Texto coloreado"
+
+#: ../lib/pkgtk/usercfg.tcl:26
+msgid "Font"
+msgstr "Fuente"
+
+#: ../lib/pkgtk/usercfg.tcl:28
+msgid "Background"
+msgstr "Fondo"
+
+#: ../lib/pkgtk/usercfg.tcl:30
+msgid "Foreground"
+msgstr "Color de fuente"
+
+#: ../lib/pkgtk/usercfg.tcl:32
+msgid "Error foreground"
+msgstr "Color de fuente para errores"
+
+#: ../lib/pkgtk/usercfg.tcl:36
+msgid "Packages"
+msgstr "Paquetes"
+
+#: ../lib/pkgtk/usercfg.tcl:38
+msgid "Installed"
+msgstr "Instalados"
+
+#: ../lib/pkgtk/usercfg.tcl:40
+msgid "Show"
+msgstr "Mostrar"
+
+#: ../lib/pkgtk/usercfg.tcl:43
+msgid "Available"
+msgstr "Disponibles"
+
+#: ../lib/pkgtk/usercfg.tcl:45
+msgid "Exclude installed"
+msgstr "Excluir instalados"
+
+#: ../lib/pkgtk/usercfg.tcl:49
+msgid "Repositories"
+msgstr "Repositorios"
+
+#: ../lib/pkgtk/usercfg.tcl:51
+msgid "Update"
+msgstr "Actualizar"
+
+#: ../lib/pkgtk/usercfg.tcl:53
+msgid "Run when program starts"
+msgstr "Actualizar cuando inicia el programa"
+
+#: ../lib/pkgtk/usercfg.tcl:217
 msgid "pkgtk preferences"
 msgstr "preferencias pkgtk"

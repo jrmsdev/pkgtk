@@ -67,10 +67,8 @@ proc ::usercfg::show_section {cfg section {reload "none"} {showopt "none"}} {
     set g_idx 0
     foreach {group} [usercfg::config_groups $s_name] {
         set g_name [lindex $group 0]
-        if {$showopt_group != "ALL"} {
-            if {$showopt_group != $g_name} {
-                continue
-            }
+        if {$showopt_group != "ALL" && $showopt_group != $g_name} {
+            continue
         }
         set g_show_name [lindex $group 1]
         #~ set g_show_desc [lindex $group 2]
