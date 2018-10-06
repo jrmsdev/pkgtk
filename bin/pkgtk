@@ -4,7 +4,9 @@
 # See LICENSE file.
 
 PREFIX=`realpath $(dirname $0)/..`
+
 LIBDIR=${PREFIX}/lib/pkgtk
+export PKGTK_LIBDIR=${LIBDIR}
 
 TCLLIBPATH=${LIBDIR}
 export TCLLIBPATH

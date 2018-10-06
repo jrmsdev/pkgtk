@@ -5,7 +5,7 @@ DESTDIR ?=
 TCLSH ?= tclsh8.6
 SUDOERS_GROUP ?= wheel
 
-RELEASE != $(SH) -e mk/get-release.sh $(TCLSH)
+RELEASE != $(SH) -eu mk/get-release.sh $(TCLSH)
 RELNAME := pkgtk-$(RELEASE)
 BUILDDIR := build/$(RELNAME)
 
@@ -26,6 +26,7 @@ BUILD_DEPS += $(BUILDDIR)/bin/pkgtk
 BUILD_DEPS += $(BUILDDIR)/etc/sudoers.d/pkgtk
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/gui.tcl
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/repocfg-save
+BUILD_DEPS += $(BUILDDIR)/lib/pkgtk/release-branch.txt
 
 .PHONY: all
 all: build
@@ -49,6 +50,8 @@ build: pkgindex $(BUILD_DEPS) po-msgfmt
 	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
 	@test -s TODO && $(INSTALL_FILE) TODO $(BUILDDIR)/share/doc/pkgtk
 	git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
+
+### START: BUILD_DEPS
 
 $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 	@$(MKDIR) $(BUILDDIR)/bin
@@ -78,7 +81,12 @@ $(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk.in
 	@cat etc/sudoers.d/pkgtk.in | \
 		sed 's#%LIBEXEC%#$(PREFIX)/libexec/pkgtk#' | \
 		sed 's/%SUDOERS_GROUP%/$(SUDOERS_GROUP)/' >$(BUILDDIR)/etc/sudoers.d/pkgtk
-	@touch $(BUILDDIR)/etc/sudoers.d/pkgtk
+	touch $(BUILDDIR)/etc/sudoers.d/pkgtk
+
+$(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
+	$(SH) -eu mk/release-branch.sh >$(BUILDDIR)/lib/pkgtk/release-branch.txt
+
+### END: BUILD_DEPS
 
 .PHONY: dist
 dist: build
@@ -104,6 +112,8 @@ install: build
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/repocfg-save \
 				$(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
+				$(DESTDIR)$(PREFIX)/lib/pkgtk
+	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/release-branch.txt \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/usercfg/*.tcl \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg
