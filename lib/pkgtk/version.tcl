@@ -16,5 +16,5 @@ proc ::version::release {} {
     if {$version::RELEASE > 0} {
         set v "$v.$version::RELEASE"
     }
-    puts $v
+    return $v
 }

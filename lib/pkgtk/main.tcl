@@ -34,9 +34,8 @@ proc ::pkgtk::view_about {} {
     wm title $top [mc "About pkgtk"]
     ttk::label $top.info
     grid $top.info -sticky nwse
-    set txt [format "pkgtk v%s\n\n" $version::VERSION]
+    set txt [format "pkgtk v%s\n\n" [version::release]]
     set txt [format "%s%s\n" $txt [mc "FreeBSD package manager"]]
-    set txt [format "%s(r%s)\n\n" $txt $version::RELEASE]
     set txt [format "%shttps://gitlab.com/jrmsdev/pkgtk\n\n" $txt]
     set txt [format "%s%s\n" $txt [mc "Released under BSD license (see LICENSE file)"]]
     set txt [format "%sCopyright (c) 2018 Jeremías Casteglione <jrmsdev@gmail.com>" $txt]
