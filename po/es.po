@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-17 00:17-0300\n"
-"PO-Revision-Date: 2018-08-14 01:01-0300\n"
+"POT-Creation-Date: 2018-10-06 02:28-0300\n"
+"PO-Revision-Date: 2018-10-06 02:33-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -18,9 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../lib/pkgtk/fbsdupd.tcl:56
-#, fuzzy
 msgid "FreeBSD system update"
-msgstr "Actualizar FreeBSD"
+msgstr "Actualizar Sistema FreeBSD"
 
 #: ../lib/pkgtk/fbsdupd.tcl:64
 msgid "_Fetch"
@@ -113,7 +112,7 @@ msgstr "_Sistema"
 
 #: ../lib/pkgtk/main.tcl:80
 msgid "Pre_ferences"
-msgstr ""
+msgstr "Pre_ferencias"
 
 #: ../lib/pkgtk/main.tcl:81
 msgid "_About"
@@ -142,31 +141,39 @@ msgstr "Actualizar"
 
 #: ../lib/pkgtk/pkglocal.tcl:53
 msgid "Include:"
-msgstr ""
+msgstr "Incluir"
 
 #: ../lib/pkgtk/pkgremote.tcl:51
 msgid "Exclude installed:"
-msgstr ""
+msgstr "Excluir instalados"
 
-#: ../lib/pkgtk/pkgrepo.tcl:85
+#: ../lib/pkgtk/pkgrepo.tcl:87
 msgid "# created by pkgtk"
 msgstr "# creado por pkgtk"
 
-#: ../lib/pkgtk/pkgrepo.tcl:176
+#: ../lib/pkgtk/pkgrepo.tcl:179
 msgid "Save"
 msgstr "Guardar"
 
-#: ../lib/pkgtk/pkgrepo.tcl:180
+#: ../lib/pkgtk/pkgrepo.tcl:183
 msgid "Discard"
 msgstr "Descartar"
 
-#: ../lib/pkgtk/pkgrepo.tcl:205
+#: ../lib/pkgtk/pkgrepo.tcl:209
 msgid "Update when program starts:"
-msgstr ""
+msgstr "Actualizar cuando inicia el programa:"
 
-#: ../lib/pkgtk/pkgsearch.tcl:31
+#: ../lib/pkgtk/pkgrepo.tcl:415
+msgid "At least one repository has to remain enabled."
+msgstr "Al menos un repositorio debe permanecer instalado."
+
+#: ../lib/pkgtk/pkgsearch.tcl:40
 msgid "Search:"
 msgstr "Buscar:"
+
+#: ../lib/pkgtk/pkgsearch.tcl:198
+msgid "package(s) found"
+msgstr "paquete(s) encontrados"
 
 #: ../lib/pkgtk/pkgview.tcl:101
 #, tcl-format
@@ -189,4 +196,4 @@ msgstr ""
 
 #: ../lib/pkgtk/usercfg.tcl:203
 msgid "pkgtk preferences"
-msgstr ""
+msgstr "preferencias pkgtk"
