@@ -45,10 +45,9 @@ proc ::cmdexec::getcmd {use_sudo args} {
 # read a line of output from running background command/process
 #
 proc ::cmdexec::bgread {out cmd dryrun chan} {
-    if {[chan gets $chan line] >= 0} {
-        $out insert end "$line\n"
-        $out see end
-    }
+    set c [chan read $chan]
+    $out insert end $c
+    $out see end
     if {[chan eof $chan]} {
         chan configure $chan -blocking 1
         if {[catch {chan close $chan} err]} {
@@ -75,7 +74,7 @@ proc ::cmdexec::runbg {out args {dryrun 0}} {
     set cmdexec::bgdone 0
     set cmd [join [cmdexec::getcmd [expr !$dryrun] $args] " "]
     set chan [open "|$cmd" "r"]
-    chan configure $chan -blocking 0 -buffering line
+    chan configure $chan -blocking 0 -buffering none
     fileevent $chan readable [list cmdexec::bgread $out $cmd $dryrun $chan]
     tkwait variable cmdexec::bgdone
     $pgb stop

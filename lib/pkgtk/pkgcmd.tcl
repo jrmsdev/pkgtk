@@ -64,6 +64,7 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0} {autoclose "NONE"}} {
     grid rowconfigure $top 0 -weight 1
     grid columnconfigure $top 0 -weight 1
     grid columnconfigure $top 1 -weight 0
+    focus $top
 
     menu $top.menu
     $top configure -menu $top.menu
