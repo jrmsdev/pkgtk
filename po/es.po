@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pkgtk master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-07 03:20-0300\n"
-"PO-Revision-Date: 2018-10-07 03:23-0300\n"
+"POT-Creation-Date: 2018-10-07 04:02-0300\n"
+"PO-Revision-Date: 2018-10-07 04:03-0300\n"
 "Last-Translator: Jeremías Casteglione <jrmsdev@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: \n"
@@ -118,16 +118,16 @@ msgstr "Pre_ferencias"
 msgid "_About"
 msgstr "_Info"
 
-#: ../lib/pkgtk/pkgcmd.tcl:71
+#: ../lib/pkgtk/pkgcmd.tcl:72
 msgid "Close"
 msgstr "Cerrar"
 
-#: ../lib/pkgtk/pkgcmd.tcl:74
+#: ../lib/pkgtk/pkgcmd.tcl:75
 #, tcl-format
 msgid "Confirm %s"
 msgstr "Confirmar %s"
 
-#: ../lib/pkgtk/pkgcmd.tcl:77
+#: ../lib/pkgtk/pkgcmd.tcl:78
 msgid "Cancel"
 msgstr "Cancelar"
 

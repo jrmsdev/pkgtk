@@ -4,7 +4,7 @@
 package provide version 0.0
 
 namespace eval ::version {
-    variable VERSION 0.7
+    variable VERSION 0.8
     variable RELEASE 0
 }
 
