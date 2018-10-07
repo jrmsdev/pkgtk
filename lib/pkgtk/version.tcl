@@ -24,7 +24,7 @@ proc ::version::release {} {
             set b "ERRBRANCH"
         }
         close $fh
-        set v "$v-$b"
+        set v "$v+$b"
     }
     return $v
 }

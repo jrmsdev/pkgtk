@@ -6,6 +6,7 @@ TCLSH ?= tclsh8.6
 SUDOERS_GROUP ?= wheel
 
 RELEASE != $(SH) -eu mk/get-release.sh $(TCLSH)
+RELEASE_BRANCH != $(SH) -eu mk/release-branch.sh
 RELNAME := pkgtk-$(RELEASE)
 BUILDDIR := build/$(RELNAME)
 
@@ -84,7 +85,10 @@ $(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk.in
 	touch $(BUILDDIR)/etc/sudoers.d/pkgtk
 
 $(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
-	$(SH) -eu mk/release-branch.sh >$(BUILDDIR)/lib/pkgtk/release-branch.txt
+	@if test "$(RELEASE_BRANCH)" != "master"; then \
+		echo $(RELEASE_BRANCH) >$(BUILDDIR)/lib/pkgtk/release-branch.txt; \
+		echo '$(RELEASE_BRANCH) -> $(BUILDDIR)/lib/pkgtk/release-branch.txt'; \
+	fi
 
 ### END: BUILD_DEPS
 
