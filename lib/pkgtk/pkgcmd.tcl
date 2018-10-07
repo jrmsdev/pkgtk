@@ -116,6 +116,7 @@ proc ::pkgcmd::view {cmd {args "NONE"} {dorun 0} {autoclose "NONE"}} {
         if {[pkgcmd::failed]} {
             tkwait window $top
         } else {
+            after 1500
             destroy $top
         }
     } else {
