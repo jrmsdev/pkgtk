@@ -6,16 +6,12 @@
 package require Tcl
 package require Tk
 
-package require msgcat
-namespace import msgcat::mc
-# TODO: msgcat::mcload
-
 proc askpass_done {val} {
     puts [$val get]
     destroy .
 }
 
-wm title . [mc "pkgtk sudo"]
+wm title . "pkgtk sudo"
 wm resizable . 0 0
 wm minsize . 300 150
 grid rowconfigure . 0 -weight 1
@@ -27,7 +23,7 @@ grid rowconfigure .f 0 -weight 1
 grid rowconfigure .f 1 -weight 1
 grid columnconfigure .f 0 -weight 1
 
-label .f.lbl -text [mc "sudo password:"]
+label .f.lbl -text "sudo password:"
 grid .f.lbl -row 0 -column 0 -sticky s
 
 entry .f.val -show {*}
