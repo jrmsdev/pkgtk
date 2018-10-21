@@ -2,7 +2,7 @@
 # See LICENSE file.
 
 package provide pkgtk 0.0
-package require Tk 8.6
+package require Tk
 
 package require utils
 package require pkglocal

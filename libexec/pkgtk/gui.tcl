@@ -3,7 +3,7 @@
 # Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>.
 # See LICENSE file.
 
-package require Tcl 8.6
+package require Tcl
 package require msgcat
 
 namespace import msgcat::mc

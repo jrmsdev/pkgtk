@@ -59,10 +59,9 @@ $(BUILDDIR)/bin/pkgtk: bin/pkgtk
 
 $(BUILDDIR)/libexec/pkgtk/gui.tcl: libexec/pkgtk/gui.tcl
 	@$(MKDIR) $(BUILDDIR)/libexec/pkgtk
-	@echo '#!/usr/bin/env $(TCLSH)' >$(BUILDDIR)/libexec/pkgtk/gui.tcl
+	echo '#!/usr/bin/env $(TCLSH)' >$(BUILDDIR)/libexec/pkgtk/gui.tcl
 	@tail -n +2 libexec/pkgtk/gui.tcl >>$(BUILDDIR)/libexec/pkgtk/gui.tcl
 	@chmod 0755 $(BUILDDIR)/libexec/pkgtk/gui.tcl
-	touch $(BUILDDIR)/libexec/pkgtk/gui.tcl
 
 $(BUILDDIR)/libexec/pkgtk/repocfg-save: libexec/pkgtk/repocfg-save
 	@$(MKDIR) $(BUILDDIR)/libexec/pkgtk
@@ -70,7 +69,9 @@ $(BUILDDIR)/libexec/pkgtk/repocfg-save: libexec/pkgtk/repocfg-save
 
 $(BUILDDIR)/libexec/pkgtk/sudo-askpass: libexec/pkgtk/sudo-askpass
 	@$(MKDIR) $(BUILDDIR)/libexec/pkgtk
-	@$(INSTALL_EXE) libexec/pkgtk/sudo-askpass $(BUILDDIR)/libexec/pkgtk
+	echo '#!/usr/bin/env $(TCLSH)' >$(BUILDDIR)/libexec/pkgtk/sudo-askpass
+	@tail -n +2 libexec/pkgtk/sudo-askpass >>$(BUILDDIR)/libexec/pkgtk/sudo-askpass
+	@chmod 0755 $(BUILDDIR)/libexec/pkgtk/sudo-askpass
 
 $(LIB_FILES): $(LIB_SOURCES)
 	@$(MKDIR) $(BUILDDIR)/lib/pkgtk
