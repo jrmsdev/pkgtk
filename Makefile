@@ -3,7 +3,6 @@ SH := /bin/sh
 PREFIX ?= /usr/local
 DESTDIR ?=
 TCLSH ?= tclsh8.6
-SUDOERS_GROUP ?= wheel
 
 RELEASE != $(SH) -eu mk/get-release.sh $(TCLSH)
 RELEASE_BRANCH != $(SH) -eu mk/release-branch.sh
@@ -24,7 +23,6 @@ LIB_USERCFG_FILES != for relp in $(LIB_USERCFG_SRCS); do echo $(BUILDDIR)/$$relp
 
 BUILD_DEPS := $(LIB_FILES) $(LIB_USERCFG_FILES)
 BUILD_DEPS += $(BUILDDIR)/bin/pkgtk
-BUILD_DEPS += $(BUILDDIR)/etc/sudoers.d/pkgtk
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/gui.tcl
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/repocfg-save
 BUILD_DEPS += $(BUILDDIR)/lib/pkgtk/release-branch.txt
@@ -77,13 +75,6 @@ $(LIB_USERCFG_FILES): $(LIB_USERCFG_SRCS)
 	@$(MKDIR) $(BUILDDIR)/lib/pkgtk/usercfg
 	@$(INSTALL_FILE) lib/pkgtk/usercfg/*.tcl $(BUILDDIR)/lib/pkgtk/usercfg
 
-$(BUILDDIR)/etc/sudoers.d/pkgtk: etc/sudoers.d/pkgtk.in
-	@$(MKDIR) $(BUILDDIR)/etc/sudoers.d
-	@cat etc/sudoers.d/pkgtk.in | \
-		sed 's#%LIBEXEC%#$(PREFIX)/libexec/pkgtk#' | \
-		sed 's/%SUDOERS_GROUP%/$(SUDOERS_GROUP)/' >$(BUILDDIR)/etc/sudoers.d/pkgtk
-	touch $(BUILDDIR)/etc/sudoers.d/pkgtk
-
 $(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
 	@if test "$(RELEASE_BRANCH)" != "master"; then \
 		echo $(RELEASE_BRANCH) >$(BUILDDIR)/lib/pkgtk/release-branch.txt; \
@@ -96,7 +87,6 @@ $(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
 dist: build
 	@$(MKDIR) dist
 	@tar -cJf dist/$(RELNAME).txz -C build $(RELNAME)/bin/pkgtk \
-					       $(RELNAME)/etc/sudoers.d/pkgtk \
 					       $(RELNAME)/lib/pkgtk \
 					       $(RELNAME)/libexec/pkgtk \
 					       $(RELNAME)/share/doc/pkgtk
@@ -107,8 +97,7 @@ install: build
 	@$(MKDIR) $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
-			$(DESTDIR)$(PREFIX)/share/doc/pkgtk \
-			$(DESTDIR)$(PREFIX)/etc/sudoers.d
+			$(DESTDIR)$(PREFIX)/share/doc/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/bin/pkgtk \
 				$(DESTDIR)$(PREFIX)/bin/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/gui.tcl \
@@ -125,13 +114,10 @@ install: build
 				$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs
 	@$(INSTALL_FILE) $(BUILDDIR)/share/doc/pkgtk/* \
 				$(DESTDIR)$(PREFIX)/share/doc/pkgtk
-	@$(INSTALL) -m 0440 $(BUILDDIR)/etc/sudoers.d/pkgtk \
-				$(DESTDIR)$(PREFIX)/etc/sudoers.d/pkgtk
 
 .PHONY: uninstall
 uninstall:
 	@rm -vf $(DESTDIR)$(PREFIX)/bin/pkgtk
-	@rm -vf $(DESTDIR)$(PREFIX)/etc/sudoers.d/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/lib/pkgtk
 	@rm -vrf $(DESTDIR)$(PREFIX)/share/doc/pkgtk
