@@ -39,4 +39,7 @@ fi
 PKGTK_LIBEXEC=${PREFIX}/libexec/pkgtk
 export PKGTK_LIBEXEC
 
+SUDO_ASKPASS=${PKGTK_LIBEXEC}/sudo-askpass
+export SUDO_ASKPASS
+
 exec ${PKGTK_LIBEXEC}/gui.tcl

@@ -1,0 +1,40 @@
+#!/usr/bin/env tclsh8.6
+
+# Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
+# See LICENSE file.
+
+package require Tcl 8.6
+package require Tk
+
+package require msgcat
+namespace import msgcat::mc
+# TODO: msgcat::mcload
+
+proc askpass_done {val} {
+    puts [$val get]
+    destroy .
+}
+
+wm title . [mc "pkgtk sudo askpass"]
+wm resizable . 0 0
+wm minsize . 300 0
+grid rowconfigure . 0 -weight 1
+grid columnconfigure . 0 -weight 1
+
+frame .f
+grid .f -row 0 -column 0 -sticky nwse
+grid rowconfigure .f 0 -weight 1
+grid columnconfigure .f 0 -weight 0
+grid columnconfigure .f 1 -weight 1
+
+label .f.lbl -text [mc "sudo password:"]
+grid .f.lbl -row 0 -column 0 -sticky nwse
+
+entry .f.val -show {*}
+grid .f.val -row 0 -column 1 -sticky nwse
+
+bind .f.val <Return> [list askpass_done .f.val]
+focus .f.val
+
+tkwait window .
+exit 0

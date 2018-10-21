@@ -103,7 +103,7 @@ proc ::utils::menu_additems {w items} {
 # run helper from libexec directory via sudo
 #
 proc ::utils::sudo {name args} {
-    set cmd [list /usr/local/bin/sudo -n [file join $::env(PKGTK_LIBEXEC) $name]]
+    set cmd [list /usr/local/bin/sudo -b -A [file join $::env(PKGTK_LIBEXEC) $name]]
     foreach {a} $args {
         lappend cmd $a
     }

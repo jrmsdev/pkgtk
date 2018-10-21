@@ -119,7 +119,7 @@ proc ::fbsdupd::run {out cmdname args} {
     $pgb start
     set fbsdupd::cmd_done 0
     set fbsdupd::cmd_error 0
-    set cmd [join [list /usr/local/bin/sudo -n /usr/sbin/freebsd-update $cmdname $args] " "]
+    set cmd [join [list /usr/local/bin/sudo -b -A /usr/sbin/freebsd-update $cmdname $args] " "]
     $out configure -state "normal"
     $out insert end "freebsd-update $cmdname\n\n"
     set chan [open "|$cmd" "r"]

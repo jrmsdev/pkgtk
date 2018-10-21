@@ -28,7 +28,7 @@ namespace eval ::cmdexec {
 #
 proc ::cmdexec::getcmd {use_sudo args} {
     if {$use_sudo} {
-        set cmd [list /usr/local/bin/sudo -n /usr/local/sbin/pkg]
+        set cmd [list /usr/local/bin/sudo -b -A /usr/local/sbin/pkg]
     } else {
         set cmd [list /usr/local/sbin/pkg]
     }
