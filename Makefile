@@ -25,6 +25,7 @@ BUILD_DEPS := $(LIB_FILES) $(LIB_USERCFG_FILES)
 BUILD_DEPS += $(BUILDDIR)/bin/pkgtk
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/gui.tcl
 BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/repocfg-save
+BUILD_DEPS += $(BUILDDIR)/libexec/pkgtk/sudo-askpass
 BUILD_DEPS += $(BUILDDIR)/lib/pkgtk/release-branch.txt
 
 .PHONY: all
@@ -67,6 +68,10 @@ $(BUILDDIR)/libexec/pkgtk/repocfg-save: libexec/pkgtk/repocfg-save
 	@$(MKDIR) $(BUILDDIR)/libexec/pkgtk
 	@$(INSTALL_EXE) libexec/pkgtk/repocfg-save $(BUILDDIR)/libexec/pkgtk
 
+$(BUILDDIR)/libexec/pkgtk/sudo-askpass: libexec/pkgtk/sudo-askpass
+	@$(MKDIR) $(BUILDDIR)/libexec/pkgtk
+	@$(INSTALL_EXE) libexec/pkgtk/sudo-askpass $(BUILDDIR)/libexec/pkgtk
+
 $(LIB_FILES): $(LIB_SOURCES)
 	@$(MKDIR) $(BUILDDIR)/lib/pkgtk
 	@$(INSTALL_FILE) lib/pkgtk/*.tcl $(BUILDDIR)/lib/pkgtk
@@ -103,6 +108,8 @@ install: build
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/gui.tcl \
 				$(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/repocfg-save \
+				$(DESTDIR)$(PREFIX)/libexec/pkgtk
+	@$(INSTALL_EXE) $(BUILDDIR)/libexec/pkgtk/sudo-askpass \
 				$(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk
