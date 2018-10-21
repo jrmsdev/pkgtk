@@ -73,6 +73,7 @@ proc ::pkgtk::main_menu {} {
         utils menu_cascade .menu "system" [mc "_System"] {
             {mc "_Fetch" command {fbsdupd::fetch}}
             {mc "_Upgrade" command {fbsdupd::release_upgrade}}
+            {xx "_IDS" command {fbsdupd::IDS}}
         }
     }
 

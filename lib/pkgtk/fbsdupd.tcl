@@ -304,3 +304,16 @@ proc ::fbsdupd::config {} {
     close $fh
     return $fn
 }
+
+#
+# freebsd-update IDS
+#
+proc ::fbsdupd::IDS {} {
+    fbsdupd::view
+
+    set btns $fbsdupd::buttons
+    destroy $btns.install
+
+    set cmdout $fbsdupd::cmdout
+    fbsdupd::run $cmdout "IDS"
+}
