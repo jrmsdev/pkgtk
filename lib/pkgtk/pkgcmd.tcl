@@ -18,6 +18,8 @@ proc ::pkgcmd::dorun {out cmd args} {
     $out insert end "pkg $cmd\n\n"
     if {$cmd == "update"} {
         cmdexec::runbg $out "$cmd"
+    } elseif {$cmd == "audit"} {
+        cmdexec::runbg $out "$cmd $args"
     } else {
         if {$args != "NONE"} {
             cmdexec::runbg $out "$cmd -y $args"
@@ -182,4 +184,11 @@ proc ::pkgcmd::view_autoremove {} {
 #
 proc ::pkgcmd::view_update {{autoclose "noauto"}} {
     pkgcmd::view "update" "" 1 $autoclose
+}
+
+#
+# view pkg audit command
+#
+proc ::pkgcmd::view_audit {} {
+    pkgcmd::view "audit" "-F" 1
 }

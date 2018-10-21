@@ -60,6 +60,7 @@ proc ::pkgtk::main_menu {} {
         {s1 "" separator {}}
         {mc "Auto_remove" command {pkgcmd::view_autoremove}}
         {mc "_Clean cache" command {pkgcmd::view_clean_cache}}
+        {mc "Au_dit" command {pkgcmd::view_audit}}
         {s2 "" separator {}}
         {mc "_Quit" command {pkgtk::quit 0}}
     }
