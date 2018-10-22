@@ -17,6 +17,6 @@ When root privileges are needed `sudo(8)` is used. If your password is needed a 
 
 ![sudo askpass window](./docs/img/sudo-askpass.png)
 
-Sudo is mainly used for `pkg(8)` actions or when writing repositoies configuration. Most of `pkg(8)` commands are run in *dry run* mode (-n) first under current user privileges, then, if the action is confirmed (-y), it runs again via `sudo(8)` for root privileges.
+Sudo is mainly used for `pkg(8)` actions or when writing repositories configuration. Most of `pkg(8)` commands are run in *dry run* mode (-n) first under current user privileges, then, if the action is confirmed (-y), it runs again via `sudo(8)` for root privileges.
 
 The same applies for `freebsd-update(8)`. But in that case most of its actions need root privileges.
