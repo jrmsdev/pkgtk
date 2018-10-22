@@ -1,6 +1,6 @@
 # pkgtk: FreeBSD package manager (pkgng) Tcl/Tk GUI.
 
-![view installed packages](./docs/img/view-installed.png)
+![view installed packages](./docs/screenshots/view-installed.png)
 
 ## Install from source
 
@@ -15,7 +15,7 @@
 
 When root privileges are needed `sudo(8)` is used. If your password is needed a pkgtk window will be opened asking for it.
 
-![sudo askpass window](./docs/img/sudo-askpass.png)
+![sudo askpass window](./docs/screenshots/sudo-askpass.png)
 
 Sudo is mainly used for `pkg(8)` actions or when writing repositories configuration. Most of `pkg(8)` commands are run in *dry run* mode (-n) first under current user privileges, then, if the action is confirmed (-y), it runs again via `sudo(8)` for root privileges.
 
@@ -25,4 +25,6 @@ The same applies for `freebsd-update(8)`. But in that case most of its actions n
 
 If `freebsd-version(1)` is *X.Y-RELEASE* `freebsd-update(8)` is supported.
 
-![freebsd-update fetch](./docs/img/system-fetch.png)
+![freebsd-update fetch](./docs/screenshots/system-fetch.png)
+
+See other [screenshots](./docs/screenshots.md).
