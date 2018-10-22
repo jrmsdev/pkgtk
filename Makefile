@@ -2,7 +2,7 @@ SH := /bin/sh
 
 PREFIX ?= /usr/local
 DESTDIR ?=
-TCLSH ?= tclsh8.6
+TCLSH ?= tclsh8.7
 
 RELEASE != $(SH) -eu mk/get-release.sh $(TCLSH)
 RELEASE_BRANCH != $(SH) -eu mk/release-branch.sh

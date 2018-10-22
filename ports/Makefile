@@ -14,6 +14,7 @@ LICENSE_FILE=		${WRKSRC}/LICENSE
 USE_GITHUB=		yes
 GH_ACCOUNT=		jrmsdev
 
-RUN_DEPENDS=
+BUILD_DEPENDS=		tclsh8.7:lang/tcl87
+RUN_DEPENDS=		${BUILD_DEPENDS}
 
 .include <bsd.port.mk>
