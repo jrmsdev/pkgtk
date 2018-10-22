@@ -88,7 +88,7 @@ $(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
 
 .PHONY: dist
 dist: build po-msgfmt
-	git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
+	test -d .git && git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog || true
 	@$(MKDIR) dist
 	@tar -cJf dist/$(RELNAME).txz -C build $(RELNAME)/bin/pkgtk \
 					       $(RELNAME)/lib/pkgtk \
@@ -98,7 +98,7 @@ dist: build po-msgfmt
 
 .PHONY: install
 install: build po-msgfmt
-	git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog
+	test -d .git && git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog || true
 	@$(MKDIR) $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
