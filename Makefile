@@ -46,7 +46,12 @@ lib/pkgtk/usercfg/pkgIndex.tcl: Makefile $(LIB_USERCFG_SRCS)
 build: pkgindex $(BUILD_DEPS)
 	@$(MKDIR) $(BUILDDIR)/share/doc/pkgtk
 	@$(INSTALL_FILE) LICENSE README.md $(BUILDDIR)/share/doc/pkgtk
-	@test -s TODO && $(INSTALL_FILE) TODO $(BUILDDIR)/share/doc/pkgtk
+	@if test -s TODO; then \
+		$(INSTALL_FILE) TODO $(BUILDDIR)/share/doc/pkgtk; fi
+	@if test -d .git; then \
+		git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog; fi
+	@if test "$(RELEASE_BRANCH)" == "NONE"; then \
+		rm -vf $(BUILDDIR)/lib/pkgtk/release-branch.txt; fi
 
 ### START: BUILD_DEPS
 
@@ -88,7 +93,6 @@ $(BUILDDIR)/lib/pkgtk/release-branch.txt: lib/pkgtk/version.tcl
 
 .PHONY: dist
 dist: build po-msgfmt
-	test -d .git && git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog || true
 	@$(MKDIR) dist
 	@tar -cJf dist/$(RELNAME).txz -C build $(RELNAME)/bin/pkgtk \
 					       $(RELNAME)/lib/pkgtk \
@@ -98,7 +102,6 @@ dist: build po-msgfmt
 
 .PHONY: install
 install: build po-msgfmt
-	test -d .git && git log >$(BUILDDIR)/share/doc/pkgtk/ChangeLog || true
 	@$(MKDIR) $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/libexec/pkgtk \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg \
 			$(DESTDIR)$(PREFIX)/lib/pkgtk/msgs \
@@ -113,8 +116,9 @@ install: build po-msgfmt
 				$(DESTDIR)$(PREFIX)/libexec/pkgtk
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/*.tcl \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk
-	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/release-branch.txt \
-				$(DESTDIR)$(PREFIX)/lib/pkgtk
+	@if test -s $(BUILDDIR)/lib/pkgtk/release-branch.txt; then \
+		$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/release-branch.txt \
+				$(DESTDIR)$(PREFIX)/lib/pkgtk; fi
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/usercfg/*.tcl \
 				$(DESTDIR)$(PREFIX)/lib/pkgtk/usercfg
 	@$(INSTALL_FILE) $(BUILDDIR)/lib/pkgtk/msgs/*.msg \
