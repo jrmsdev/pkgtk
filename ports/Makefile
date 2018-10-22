@@ -11,10 +11,11 @@ COMMENT=		pkgng Tcl/Tk GUI
 LICENSE=		BSD3CLAUSE
 LICENSE_FILE=		${WRKSRC}/LICENSE
 
+USES=			tcl:87
+
 USE_GITHUB=		yes
 GH_ACCOUNT=		jrmsdev
 
 BUILD_DEPENDS=		tclsh8.7:lang/tcl87
-RUN_DEPENDS=		${BUILD_DEPENDS}
 
 .include <bsd.port.mk>
