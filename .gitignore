@@ -2,3 +2,4 @@ build/
 dist/
 po/*.msg
 po/pkgtk.pot
+ports/work/
