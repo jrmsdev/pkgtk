@@ -1,3 +1,10 @@
+* fix freebsd upgrade to new release:
+  * avoid asking about installed components
+  * possible solution:
+    * cp /etc/freebsd-update.conf to temp location
+    * set StrictComponents as yes on temp file
+    * run freebsd-update -f /path/to/temp.conf
+
 * run pkg upgrade instead of pkg update on startup?
 
 * package upgrade fetch only
@@ -7,10 +14,10 @@
 * pkgrepo: create a new config (using /etc/pkg/FreeBSD.conf as template)
 
 * check modified open files?
-    * parse cmd output for modified packages (look for "extracting" lines)
-    * based on pkg list of each modified package
-        * check with fstat if the modified file is open
-            * report process that needs to be reloaded/restarted
+  * parse cmd output for modified packages (look for "extracting" lines)
+  * based on pkg list of each modified package
+    * check with fstat if the modified file is open
+      * report process that needs to be reloaded/restarted
 
 * (xdg/)desktop integration: icons, menu entry and such...
   maybe systray support too?
